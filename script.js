@@ -447,18 +447,16 @@ function displaySearchHistory() {
     }
 }
 
-// Geri bildirim modalını gösterir veya gizler.
+// Geri bildirim modalını açınca metin alanını temizler.
 function toggleFeedbackForm() {
     const feedbackModal = document.getElementById('feedbackModal');
     const feedbackTextarea = document.getElementById('feedbackText');
     
-    // Modalı görünür/gizli yap
     feedbackModal.classList.toggle('hidden');
 
-    // Eğer modal şu an görünür hale geldiyse (yani açıldıysa), içindeki metni temizle
+    // Eğer modal açıldıysa (gizli değilse) kutuyu boşalt
     if (!feedbackModal.classList.contains('hidden')) {
         feedbackTextarea.value = ''; 
-        feedbackTextarea.focus(); // Kullanıcıya kolaylık olması için odağı oraya ver
     }
 }
 
