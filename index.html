@@ -39,6 +39,7 @@
                 <span class="material-symbols-outlined">settings</span>
             </button>
         </div>
+
         <nav class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
             <button class="nav-item active"><span class="material-symbols-outlined text-sm">keyboard</span><span>Alfabe</span></button>
             <button class="nav-item"><span class="material-symbols-outlined text-sm">calendar_month</span><span>Takvim</span></button>
@@ -116,9 +117,9 @@
     const themeToggle = document.getElementById('themeToggle');
     let activeInput = latin;
 
+    // Ayarlar & Tema
     settingsBtn.onclick = () => settingsModal.classList.remove('hidden');
     closeSettings.onclick = () => settingsModal.classList.add('hidden');
-    
     themeToggle.onclick = () => {
         const isDark = document.documentElement.classList.toggle('dark');
         themeToggle.innerText = isDark ? "Aydınlık" : "Karanlık";
@@ -146,10 +147,14 @@
             else if (action === 'space') { activeInput.value += ' '; }
             else if (action === 'enter') { activeInput.value += '\n'; }
             else if (!action) { activeInput.value += key.innerText.trim(); }
-            if (activeInput === latin) { greek.value = translateText(latin.value, "toGreek"); }
-            else { latin.value = translateText(greek.value, "toLatin"); }
+            updateTranslation();
         });
     });
+
+    function updateTranslation() {
+        if (activeInput === latin) { greek.value = translateText(latin.value, "toGreek"); }
+        else { latin.value = translateText(greek.value, "toLatin"); }
+    }
 </script>
 </body>
 </html>
