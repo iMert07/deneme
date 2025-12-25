@@ -16,107 +16,71 @@
                 extend: {
                     colors: {
                         "primary": "#137fec",
-                        "background-light": "#f6f7f8",
                         "background-dark": "#101922",
                         "surface-dark": "#192633",
-                        "surface-darker": "#111a22",
                         "border-dark": "#233648",
-                    },
-                    fontFamily: {
-                        "display": ["Inter", "sans-serif"],
-                        "body": ["Noto Sans", "sans-serif"],
-                    },
-                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
-                },
-            },
+                    }
+                }
+            }
         }
     </script>
     <style>
         textarea::-webkit-scrollbar { width: 8px; }
         textarea::-webkit-scrollbar-track { background: #192633; }
         textarea::-webkit-scrollbar-thumb { background: #324d67; border-radius: 4px; }
-        textarea::-webkit-scrollbar-thumb:hover { background: #405f7c; }
         .key-btn {
-            @apply flex items-center justify-center h-10 min-w-[36px] md:h-12 md:min-w-[44px] rounded-lg bg-white dark:bg-[#233648] text-slate-800 dark:text-white font-medium shadow-sm border-b-2 border-slate-300 dark:border-black/40 active:border-b-0 active:translate-y-[2px] cursor-pointer transition-all hover:bg-slate-50 dark:hover:bg-[#2d4358] text-sm md:text-base;
+            @apply flex items-center justify-center h-12 min-w-[44px] rounded-lg bg-white dark:bg-[#233648] text-slate-800 dark:text-white font-medium shadow-sm border-b-2 border-slate-300 dark:border-black/40 active:border-b-0 active:translate-y-[2px] cursor-pointer transition-all hover:bg-slate-50 dark:hover:bg-[#2d4358] text-base;
         }
+        .key-btn.wide { @apply flex-grow-[1.5] bg-slate-200 dark:bg-[#324d67]; }
+        .key-btn.extra-wide { @apply flex-grow-[4] bg-white dark:bg-[#233648]; }
     </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display overflow-x-hidden min-h-screen flex flex-col">
+<body class="bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white font-sans min-h-screen flex flex-col">
 
-<header class="sticky top-0 z-50 flex items-center justify-between border-b border-slate-200 dark:border-[#233648] bg-white dark:bg-[#111a22] px-6 py-3 lg:px-10">
-    <div class="flex items-center gap-4 text-slate-900 dark:text-white">
+<header class="sticky top-0 z-50 flex items-center justify-between border-b border-slate-200 dark:border-[#233648] bg-white dark:bg-[#111a22] px-6 py-3">
+    <div class="flex items-center gap-4">
         <div class="size-8 flex items-center justify-center rounded-lg bg-primary/10 text-primary">
             <span class="material-symbols-outlined text-2xl">translate</span>
         </div>
-        <h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Çeviri ve Dönüştürme Merkezi</h2>
+        <h2 class="text-lg font-bold">Orum Dili Çeviri Merkezi</h2>
     </div>
 </header>
 
-<main class="flex-1 w-full max-w-[1200px] mx-auto px-4 py-6 md:px-8 lg:px-12 flex flex-col gap-8">
-    <section class="flex flex-col gap-6">
-        <div class="flex flex-col lg:flex-row gap-4 h-auto lg:h-[400px]">
-            <div class="flex-1 flex flex-col bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] overflow-hidden shadow-sm">
-                <div class="flex items-center justify-between p-3 border-b border-slate-200 dark:border-[#324d67]">
-                    <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary text-xl">input</span>
-                        <span class="text-sm font-semibold text-slate-500 dark:text-slate-400">Latin Alfabesi</span>
-                    </div>
-                </div>
-                <div class="flex-1 relative group">
-                    <textarea id="latin" class="w-full h-full resize-none bg-transparent p-5 text-lg leading-relaxed text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-[#92adc9] focus:outline-none" placeholder="Metin girin..."></textarea>
-                    <div class="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onclick="clearAll()" class="p-2 rounded-lg bg-slate-100 dark:bg-[#233648] text-slate-500 dark:text-slate-300 hover:text-primary" title="Temizle">
-                            <span class="material-symbols-outlined text-lg">close</span>
-                        </button>
-                        <button onclick="copyToClipboard('latin')" class="p-2 rounded-lg bg-slate-100 dark:bg-[#233648] text-slate-500 dark:text-slate-300 hover:text-primary" title="Kopyala">
-                            <span class="material-symbols-outlined text-lg">content_copy</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
+<main class="flex-1 w-full max-w-[1200px] mx-auto px-4 py-6 flex flex-col gap-8">
+    <section class="flex flex-col lg:flex-row gap-4 h-auto lg:h-[350px]">
+        <div class="flex-1 flex flex-col bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] overflow-hidden shadow-sm">
+            <div class="p-3 border-b border-slate-200 dark:border-[#324d67] text-sm font-semibold text-slate-500">Latin Alfabesi</div>
+            <textarea id="latin" class="flex-1 p-5 text-lg bg-transparent border-none focus:ring-0 resize-none" placeholder="Buraya yazın..."></textarea>
+        </div>
 
-            <div class="hidden lg:flex flex-col justify-center">
-                <button class="group flex items-center justify-center size-10 rounded-full bg-white dark:bg-[#233648] border border-slate-200 dark:border-[#324d67] text-slate-500 shadow-sm">
-                    <span class="material-symbols-outlined">swap_horiz</span>
-                </button>
-            </div>
-
-            <div class="flex-1 flex flex-col bg-slate-50 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] overflow-hidden shadow-inner">
-                <div class="flex items-center justify-between p-3 border-b border-slate-200 dark:border-[#324d67]">
-                    <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-green-500 text-xl">output</span>
-                        <span class="text-sm font-semibold text-slate-500 dark:text-slate-400">Grek Alfabesi</span>
-                    </div>
-                </div>
-                <div class="flex-1 relative group">
-                    <textarea id="greek" class="w-full h-full resize-none bg-transparent p-5 text-lg leading-relaxed text-slate-700 dark:text-slate-200 focus:outline-none" placeholder="Çeviri burada görünecek"></textarea>
-                    <div class="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onclick="copyToClipboard('greek')" class="p-2 rounded-lg bg-slate-200 dark:bg-[#192633] text-slate-500 dark:text-slate-300 hover:text-primary" title="Kopyala">
-                            <span class="material-symbols-outlined text-lg">content_copy</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
+        <div class="flex-1 flex flex-col bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] overflow-hidden shadow-inner">
+            <div class="p-3 border-b border-slate-200 dark:border-[#324d67] text-sm font-semibold text-slate-500">Orum (Yeni) Alfabesi</div>
+            <textarea id="greek" class="flex-1 p-5 text-lg bg-transparent border-none focus:ring-0 resize-none" placeholder="Sonuç burada görünecek..."></textarea>
         </div>
     </section>
 
-    <section class="flex flex-col gap-4">
-        <div id="keyboard" class="w-full bg-slate-200 dark:bg-[#111a22] rounded-2xl p-4 md:p-6 shadow-inner border-t border-slate-300 dark:border-[#233648] overflow-x-auto">
-            <div class="flex flex-col gap-2 min-w-[700px] select-none">
-                <div class="flex justify-center gap-1.5">
-                    <div class="key-btn">1</div><div class="key-btn">2</div><div class="key-btn">3</div><div class="key-btn">4</div><div class="key-btn">5</div><div class="key-btn">6</div><div class="key-btn">7</div><div class="key-btn">8</div><div class="key-btn">9</div><div class="key-btn">0</div>
-                    <div class="key-btn flex-grow-[1.5] bg-slate-300 dark:bg-[#324d67]" data-action="delete"><span class="material-symbols-outlined text-sm">backspace</span></div>
+    <section class="w-full bg-slate-200 dark:bg-[#111a22] rounded-2xl p-4 md:p-6 shadow-inner border-t border-slate-300 dark:border-[#233648] overflow-x-auto">
+        <div class="flex flex-col gap-2 min-w-[700px]">
+            <div class="flex justify-center gap-1.5">
+                <div class="key-btn">θ</div><div class="key-btn">1</div><div class="key-btn">2</div><div class="key-btn">3</div><div class="key-btn">4</div><div class="key-btn">5</div><div class="key-btn">6</div><div class="key-btn">7</div><div class="key-btn">8</div><div class="key-btn">9</div><div class="key-btn">Φ</div><div class="key-btn">Λ</div>
+            </div>
+            <div class="flex justify-center gap-1.5">
+                <div class="key-btn">Ϙ</div><div class="key-btn">Ш</div><div class="key-btn">E</div><div class="key-btn">R</div><div class="key-btn">T</div><div class="key-btn">Y</div><div class="key-btn">U</div><div class="key-btn">Ͱ</div><div class="key-btn">Ω</div><div class="key-btn">P</div><div class="key-btn">Γ</div><div class="key-btn">Σ</div>
+            </div>
+            <div class="flex justify-center gap-1.5">
+                <div class="key-btn">,</div><div class="key-btn">A</div><div class="key-btn">S</div><div class="key-btn">D</div><div class="key-btn">F</div><div class="key-btn">G</div><div class="key-btn">H</div><div class="key-btn">J</div><div class="key-btn">K</div><div class="key-btn">L</div><div class="key-btn">Ь</div><div class="key-btn">.</div>
+            </div>
+            <div class="flex justify-center gap-1.5">
+                <div class="key-btn wide" data-action="shift">Shift</div>
+                <div class="key-btn">Z</div><div class="key-btn">Ψ</div><div class="key-btn">C</div><div class="key-btn">V</div><div class="key-btn">B</div><div class="key-btn">N</div><div class="key-btn">M</div><div class="key-btn">Π</div>
+                <div class="key-btn wide bg-red-100 dark:bg-red-900/30 text-red-500" data-action="delete">
+                    <span class="material-symbols-outlined">backspace</span>
                 </div>
-                <div class="flex justify-center gap-1.5">
-                    <div class="key-btn">Q</div><div class="key-btn">W</div><div class="key-btn">E</div><div class="key-btn">R</div><div class="key-btn">T</div><div class="key-btn">Y</div><div class="key-btn">U</div><div class="key-btn">I</div><div class="key-btn">O</div><div class="key-btn">P</div><div class="key-btn">Ğ</div><div class="key-btn">Ü</div>
-                </div>
-                <div class="flex justify-center gap-1.5">
-                    <div class="key-btn">A</div><div class="key-btn">S</div><div class="key-btn">D</div><div class="key-btn">F</div><div class="key-btn">G</div><div class="key-btn">H</div><div class="key-btn">J</div><div class="key-btn">K</div><div class="key-btn">L</div><div class="key-btn">Ş</div><div class="key-btn">İ</div>
-                    <div class="key-btn flex-grow-[1.8] bg-primary text-white" data-action="enter">Enter</div>
-                </div>
-                <div class="flex justify-center gap-1.5">
-                    <div class="key-btn flex-grow-[1] max-w-[400px]" data-action="space">Boşluk</div>
-                </div>
+            </div>
+            <div class="flex justify-center gap-1.5">
+                <div class="key-btn wide" onclick="location.reload()">Sıfırla</div>
+                <div class="key-btn extra-wide" data-action="space">Boşluk</div>
+                <div class="key-btn wide bg-primary text-white" data-action="enter">Enter</div>
             </div>
         </div>
     </section>
@@ -127,57 +91,51 @@
     const greek = document.getElementById('greek');
     let activeInput = latin;
 
+    // Orum Alfabesi Çeviri Sözlüğü
     const toGreek = {
-        "a":"Α","A":"Α","e":"Ε","E":"Ε","i":"Ͱ","İ":"Ͱ","n":"Ν","N":"Ν","r":"Ρ","R":"Ρ","l":"L","L":"L","ı":"Ь","I":"Ь","k":"Κ","K":"Κ","d":"D","D":"D","m":"Μ","M":"Μ","t":"Τ","T":"Τ","y":"R","Y":"R","s":"S","S":"S","u":"U","U":"U","o":"Q","O":"Q","b":"Β","B":"Β","ş":"Ш","Ş":"Ш","ü":"Υ","Ü":"Υ","z":"Ζ","Z":"Ζ","g":"G","G":"G","ç":"C","Ç":"C","ğ":"Γ","Ğ":"Γ","v":"V","V":"V","c":"J","C":"J","h":"Η","H":"Η","p":"Π","P":"Π","ö":"Ω","Ö":"Ω","f":"F","F":"F","x":"Ψ","X":"Ψ","j":"Σ","J":"Σ","0":"θ"
+        "a":"Α","A":"Α","e":"Ε","E":"Ε","i":"Ͱ","İ":"Ͱ","n":"Ν","N":"Ν","r":"Ρ","R":"Ρ","l":"L","L":"L","ı":"Ь","I":"Ь","k":"Κ","K":"Κ","d":"D","D":"D","m":"Μ","M":"Μ","t":"Τ","T":"Τ","y":"R","Y":"R","s":"S","S":"S","u":"U","U":"U","o":"Q","O":"Q","b":"Β","B":"Β","ş":"Ш","Ş":"Ш","ü":"Υ","Ü":"Υ","z":"Ζ","Z":"Ζ","g":"G","G":"G","ç":"C","Ç":"C","ğ":"Γ","Ğ":"Γ","v":"V","V":"V","c":"J","h":"Η","H":"Η","p":"Π","P":"Π","ö":"Ω","Ö":"Ω","f":"F","F":"F","x":"Ψ","X":"Ψ","j":"Σ","J":"Σ","0":"θ"
     };
 
     const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
 
-    function translateText(text, dir){
+    function translate(text, dir){
         const map = dir === "toGreek" ? toGreek : toLatin;
         return text.split('').map(ch => map[ch] || ch).join('');
     }
 
-    latin.addEventListener('input', () => { greek.value = translateText(latin.value, "toGreek"); });
-    greek.addEventListener('input', () => { latin.value = translateText(greek.value, "toLatin"); });
+    // Dinamik Takip
+    latin.addEventListener('input', () => { greek.value = translate(latin.value, "toGreek"); });
+    greek.addEventListener('input', () => { latin.value = translate(greek.value, "toLatin"); });
 
+    // Hangi kutu seçiliyse klavye oraya yazar
     latin.addEventListener('focus', () => activeInput = latin);
     greek.addEventListener('focus', () => activeInput = greek);
 
-    // Klavye Tuşları
+    // Klavye İşlevleri
     document.querySelectorAll('.key-btn').forEach(key => {
         key.addEventListener('click', () => {
-            const action = key.getAttribute('data-action');
-            const val = key.innerText;
+            const action = key.dataset.action;
+            const content = key.innerText.trim();
 
-            if(action === 'delete') {
+            if (action === 'delete') {
                 activeInput.value = activeInput.value.slice(0, -1);
-            } else if(action === 'enter') {
-                activeInput.value += '\n';
-            } else if(action === 'space') {
+            } else if (action === 'space') {
                 activeInput.value += ' ';
-            } else if(val.length === 1) {
-                activeInput.value += val;
+            } else if (action === 'enter') {
+                activeInput.value += '\n';
+            } else if (!action) {
+                // Eğer butonun bir action'ı yoksa direkt içindeki harfi bas
+                activeInput.value += content;
             }
 
-            // Çeviriyi anlık tetikle
-            if(activeInput === latin) {
-                greek.value = translateText(latin.value, "toGreek");
+            // Çeviriyi güncelle
+            if (activeInput === latin) {
+                greek.value = translate(latin.value, "toGreek");
             } else {
-                latin.value = translateText(greek.value, "toLatin");
+                latin.value = translate(greek.value, "toLatin");
             }
         });
     });
-
-    function copyToClipboard(id) {
-        const text = document.getElementById(id).value;
-        navigator.clipboard.writeText(text).then(() => alert('Kopyalandı!'));
-    }
-
-    function clearAll() {
-        latin.value = "";
-        greek.value = "";
-    }
 </script>
 </body>
 </html>
