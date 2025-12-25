@@ -30,11 +30,10 @@
     box-sizing: border-box;
 }
 
-/* --- TUŞ TASARIMI --- */
+/* --- TUŞ TASARIMI (TÜM HARFLERİ EŞİTLEYEN AYAR) --- */
 .key {
-    /* flex: 1 yerine sabit bir esneklik vererek harf boyutlarını eşitliyoruz */
-    flex: 0 1 60px; 
-    min-width: 0;
+    /* flex: 1 1 0px; sayesinde her tuş satırdaki boşluğu eşit oranda paylaşır */
+    flex: 1 1 0px; 
     height: 52px;
     display: flex;
     justify-content: center;
@@ -48,6 +47,7 @@
     user-select: none;
     border-bottom: 3px solid #cbd5e1;
     transition: all 0.05s ease;
+    min-width: 0; /* İçeriğin genişliği zorlamasını engeller */
 }
 
 .dark .key {
@@ -63,9 +63,10 @@
     color: white !important;
 }
 
-/* --- ÖZEL TUŞLAR (DENGELENDİ) --- */
+/* --- ÖZEL TUŞLAR (Shift, Enter, Sıfırla) --- */
 .key.wide {
-    flex: 0 1 120px; /* Shift, Enter, Sıfırla gibi tuşlar için ideal genişlik */
+    /* Normal bir tuşun yaklaşık 1.8 katı yer kaplar */
+    flex: 1.8 1 0px; 
     background: #cbd5e1;
     font-size: 13px;
     text-transform: uppercase;
@@ -75,13 +76,13 @@
     background: #324d67;
 }
 
-/* BOŞLUK TUŞU (Masaüstünde de Geniş Görünmesi İçin Güncellendi) */
+/* BOŞLUK TUŞU (Masaüstü ve Mobil Dengesi) --- */
 .key.extra-wide {
-    flex: 0 1 500px; /* Çok daha baskın bir esneklik değeri */
-    min-width: 250px; /* Bilgisayarda çok daralmaması için alt sınır */
+    /* Alt satırı diğer satırlarla aynı genişliğe ulaştırmak için yüksek değer */
+    flex: 8 1 0px; 
 }
 
-/* --- 📱 MOBİL OPTİMİZASYON (EŞİT TUŞLAR) --- */
+/* --- 📱 MOBİL OPTİMİZASYON --- */
 @media (max-width: 768px) {
     .keyboard {
         position: fixed;
@@ -101,7 +102,6 @@
 
     .dark .keyboard {
         background: #1a2633;
-        border: 1px solid #2d4358;
     }
 
     .row {
@@ -109,26 +109,10 @@
     }
 
     .key {
-        /* Mobilde tüm harf tuşlarının eşit olması için esnekliği serbest bırakıyoruz */
-        flex: 1 1 0; 
         height: 44px;
         font-size: 15px;
         border-radius: 5px;
         border-bottom-width: 2px;
-    }
-
-    /* Alttan ikinci satırdaki (Z, Ψ, C...) tuşların devleşmemesi için sınırlama */
-    .row:nth-child(4) .key:not(.wide) {
-        max-width: 45px; 
-    }
-
-    .key.wide {
-        flex: 1.8 1 0;
-    }
-
-    .key.extra-wide {
-        flex: 6 1 0;
-        min-width: 120px;
     }
 
     main { 
