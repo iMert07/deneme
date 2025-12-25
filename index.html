@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Anatolya'ya Dönüş</title>
+    <title>Anatolya</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -33,14 +33,14 @@
                 <div class="size-8 flex items-center justify-center rounded-lg bg-primary/10 text-primary">
                     <span class="material-symbols-outlined text-2xl">translate</span>
                 </div>
-                <h2 class="text-lg font-bold">Anatolya'ya Dönüş</h2>
+                <h2 class="text-lg font-bold">Anatolya</h2>
             </div>
             <button id="settingsBtn" class="size-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                 <span class="material-symbols-outlined">settings</span>
             </button>
         </div>
 
-        <nav class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+        <nav id="categoryNav" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
             <button class="nav-item active"><span class="material-symbols-outlined text-sm">keyboard</span><span>Alfabe</span></button>
             <button class="nav-item"><span class="material-symbols-outlined text-sm">calendar_month</span><span>Takvim</span></button>
             <button class="nav-item"><span class="material-symbols-outlined text-sm">schedule</span><span>Zaman</span></button>
@@ -54,23 +54,19 @@
 </header>
 
 <div id="settingsModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-    <div class="bg-white dark:bg-[#192633] w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border border-slate-200 dark:border-[#324d67]">
+    <div class="bg-white dark:bg-[#192633] w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden border border-slate-200 dark:border-[#324d67]">
         <div class="p-4 border-b border-slate-200 dark:border-[#324d67] flex justify-between items-center">
-            <h3 class="text-lg font-bold">Ayarlar</h3>
-            <button id="closeSettings" class="material-symbols-outlined">close</button>
+            <h3 class="text-lg font-bold uppercase tracking-wider">Ayarlar</h3>
+            <button id="closeSettings" class="material-symbols-outlined hover:text-red-500 transition-colors">close</button>
         </div>
-        <div class="p-6 flex flex-col gap-4">
+        <div class="p-6 flex flex-col gap-6">
             <div class="flex justify-between items-center">
-                <span>Karanlık Mod</span>
-                <button class="text-primary font-bold">Açık</button>
+                <span class="font-medium">Tema</span>
+                <button id="themeToggle" class="toggle-btn">Aydınlık</button>
             </div>
             <div class="flex justify-between items-center">
-                <span>Tuş Sesi</span>
-                <button class="text-slate-400">Kapalı</button>
-            </div>
-            <div class="flex justify-between items-center">
-                <span>Otomatik Çeviri</span>
-                <button class="text-primary font-bold">Açık</button>
+                <span class="font-medium">Menü</span>
+                <button id="menuToggle" class="toggle-btn">Açık</button>
             </div>
         </div>
     </div>
@@ -80,12 +76,12 @@
     <section class="flex flex-col lg:flex-row gap-4 h-auto lg:h-[350px]">
         <div class="flex-1 flex flex-col bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] overflow-hidden shadow-sm">
             <div class="p-3 border-b border-slate-200 dark:border-[#324d67] text-sm font-semibold text-slate-500">Eski Alfabe</div>
-            <textarea id="latin" class="flex-1 p-5 text-lg bg-transparent border-none focus:ring-0 resize-none" placeholder="Buraya yazın..."></textarea>
+            <textarea id="latin" class="flex-1 p-5 text-lg bg-transparent border-none focus:ring-0 resize-none outline-none" placeholder="Buraya yazın..."></textarea>
         </div>
 
         <div class="flex-1 flex flex-col bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] overflow-hidden shadow-inner">
             <div class="p-3 border-b border-slate-200 dark:border-[#324d67] text-sm font-semibold text-slate-500">Yeni Alfabe</div>
-            <textarea id="greek" class="flex-1 p-5 text-lg bg-transparent border-none focus:ring-0 resize-none" placeholder="Sonuç burada görünecek..."></textarea>
+            <textarea id="greek" class="flex-1 p-5 text-lg bg-transparent border-none focus:ring-0 resize-none outline-none" placeholder="Sonuç burada görünecek..."></textarea>
         </div>
     </section>
 
@@ -122,12 +118,32 @@
     const settingsBtn = document.getElementById('settingsBtn');
     const settingsModal = document.getElementById('settingsModal');
     const closeSettings = document.getElementById('closeSettings');
+    const themeToggle = document.getElementById('themeToggle');
+    const menuToggle = document.getElementById('menuToggle');
+    const categoryNav = document.getElementById('categoryNav');
     let activeInput = latin;
 
-    // AYARLAR MODAL KONTROLÜ
-    settingsBtn.onclick = () => settingsModal.classList.toggle('hidden');
+    // --- AYARLAR VE TEMA MANTIĞI ---
+    
+    // Modal Aç/Kapat
+    settingsBtn.onclick = () => settingsModal.classList.remove('hidden');
     closeSettings.onclick = () => settingsModal.classList.add('hidden');
-    window.onclick = (e) => { if(e.target == settingsModal) settingsModal.classList.add('hidden'); }
+    
+    // Tema Değiştirme (Tema Açık -> Aydınlık, Tema Kapalı -> Karanlık)
+    themeToggle.onclick = () => {
+        const isDark = document.documentElement.classList.toggle('dark');
+        themeToggle.innerText = isDark ? "Aydınlık" : "Karanlık";
+        themeToggle.classList.toggle('off', !isDark);
+    };
+
+    // Menü Barı Gizleme/Gösterme
+    menuToggle.onclick = () => {
+        const isHidden = categoryNav.classList.toggle('hidden');
+        menuToggle.innerText = isHidden ? "Kapalı" : "Açık";
+        menuToggle.classList.toggle('off', isHidden);
+    };
+
+    // --- KLAVYE VE ÇEVİRİ MANTIĞI ---
 
     const toGreek = {
         "a":"Α","A":"Α","e":"Ε","E":"Ε","i":"Ͱ","İ":"Ͱ","n":"Ν","N":"Ν","r":"Ρ","R":"Ρ","l":"L","L":"L","ı":"Ь","I":"Ь","k":"Κ","K":"Κ","d":"D","D":"D","m":"Μ","M":"Μ","t":"Τ","T":"Τ","y":"R","Y":"R","s":"S","S":"S","u":"U","U":"U","o":"Q","O":"Q","b":"Β","B":"Β","ş":"Ш","Ş":"Ш","ü":"Υ","Ü":"Υ","z":"Ζ","Z":"Ζ","g":"G","G":"G","ç":"C","Ç":"C","ğ":"Γ","Ğ":"Γ","v":"V","V":"V","c":"J","h":"Η","H":"Η","p":"Π","P":"Π","ö":"Ω","Ö":"Ω","f":"F","F":"F","x":"Ψ","X":"Ψ","j":"Σ","J":"Σ","0":"θ"
@@ -146,23 +162,15 @@
     greek.addEventListener('focus', () => activeInput = greek);
 
     document.querySelectorAll('.key').forEach(key => {
-        key.addEventListener('click', (e) => {
+        key.addEventListener('click', () => {
             const action = key.dataset.action;
             let content = key.innerText.trim();
+            if (action === 'delete') { activeInput.value = activeInput.value.slice(0, -1); }
+            else if (action === 'reset') { latin.value = ""; greek.value = ""; }
+            else if (action === 'space') { activeInput.value += ' '; }
+            else if (action === 'enter') { activeInput.value += '\n'; }
+            else if (!action) { activeInput.value += content; }
             
-            if (action === 'delete') { 
-                activeInput.value = activeInput.value.slice(0, -1); 
-            } else if (action === 'reset') {
-                latin.value = "";
-                greek.value = "";
-            } else if (action === 'space') { 
-                activeInput.value += ' '; 
-            } else if (action === 'enter') { 
-                activeInput.value += '\n'; 
-            } else if (!action) { 
-                activeInput.value += content; 
-            }
-
             if (activeInput === latin) { greek.value = translateText(latin.value, "toGreek"); }
             else { latin.value = translateText(greek.value, "toLatin"); }
         });
