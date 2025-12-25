@@ -5,7 +5,6 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Anatolya'ya Dönüş</title>
     <link rel="stylesheet" href="style.css">
-    
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
@@ -50,7 +49,7 @@
     </section>
 
     <section class="keyboard-container">
-        <div class="keyboard">
+        <div class="keyboard" id="mainKeyboard">
             <div class="row">
                 <div class="key">θ</div><div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">Φ</div><div class="key">Λ</div>
             </div>
@@ -58,19 +57,19 @@
                 <div class="key">Ϙ</div><div class="key">Ш</div><div class="key">E</div><div class="key">R</div><div class="key">T</div><div class="key">Y</div><div class="key">U</div><div class="key">Ͱ</div><div class="key">Ω</div><div class="key">P</div><div class="key">Γ</div><div class="key">Σ</div>
             </div>
             <div class="row">
-                <div class="key">,</div><div class="key">A</div><div class="key">S</div><div class="key">D</div><div class="key">F</div><div class="key">G</div><div class="key">H</div><div class="key">J</div><div class="key">K</div><div class="key">L</div><div class="key">Ь</div><div class="key">.</div>
+                <div class="key fn-key">,</div><div class="key">A</div><div class="key">S</div><div class="key">D</div><div class="key">F</div><div class="key">G</div><div class="key">H</div><div class="key">J</div><div class="key">K</div><div class="key">L</div><div class="key">Ь</div><div class="key fn-key">.</div>
             </div>
             <div class="row">
-                <div class="key wide" data-action="shift">Shift</div>
+                <div class="key wide fn-key" data-action="shift">Shift</div>
                 <div class="key">Z</div><div class="key">Ψ</div><div class="key">C</div><div class="key">V</div><div class="key">B</div><div class="key">N</div><div class="key">M</div><div class="key">Π</div>
-                <div class="key wide" data-action="delete">
+                <div class="key wide fn-key" data-action="delete">
                     <span class="material-symbols-outlined">backspace</span>
                 </div>
             </div>
             <div class="row">
-                <div class="key wide" data-action="reset">Sıfırla</div>
+                <div class="key wide fn-key" data-action="reset">Sıfırla</div>
                 <div class="key extra-wide" data-action="space">Boşluk</div>
-                <div class="key wide" data-action="enter">Enter</div>
+                <div class="key wide bg-primary text-white" data-action="enter">Enter</div>
             </div>
         </div>
     </section>
@@ -80,6 +79,7 @@
     const latin = document.getElementById('latin');
     const greek = document.getElementById('greek');
     let activeInput = latin;
+    let isShiftActive = false;
 
     const toGreek = {
         "a":"Α","A":"Α","e":"Ε","E":"Ε","i":"Ͱ","İ":"Ͱ","n":"Ν","N":"Ν","r":"Ρ","R":"Ρ","l":"L","L":"L","ı":"Ь","I":"Ь","k":"Κ","K":"Κ","d":"D","D":"D","m":"Μ","M":"Μ","t":"Τ","T":"Τ","y":"R","Y":"R","s":"S","S":"S","u":"U","U":"U","o":"Q","O":"Q","b":"Β","B":"Β","ş":"Ш","Ş":"Ш","ü":"Υ","Ü":"Υ","z":"Ζ","Z":"Ζ","g":"G","G":"G","ç":"C","Ç":"C","ğ":"Γ","Ğ":"Γ","v":"V","V":"V","c":"J","h":"Η","H":"Η","p":"Π","P":"Π","ö":"Ω","Ö":"Ω","f":"F","F":"F","x":"Ψ","X":"Ψ","j":"Σ","J":"Σ","0":"θ"
@@ -100,7 +100,7 @@
     document.querySelectorAll('.key').forEach(key => {
         key.addEventListener('click', () => {
             const action = key.dataset.action;
-            const content = key.innerText.trim();
+            let content = key.innerText.trim();
             
             if (action === 'delete') { 
                 activeInput.value = activeInput.value.slice(0, -1); 
@@ -112,15 +112,35 @@
             } else if (action === 'enter') { 
                 activeInput.value += '\n'; 
             } else if (action === 'shift') {
-                // Shift mantığı buraya gelecek
+                isShiftActive = !isShiftActive;
+                key.classList.toggle('bg-primary', isShiftActive);
+                key.classList.toggle('text-white', isShiftActive);
+                updateKeyVisuals();
             } else if (!action) { 
-                activeInput.value += content; 
+                // Shift durumuna göre harfi ekle
+                const finalChar = isShiftActive ? content.toUpperCase() : content.toLowerCase();
+                activeInput.value += finalChar;
+                
+                // Shift'i bir basımdan sonra kapat (Opsiyonel: kalıcı istersen bu satırı sil)
+                if(isShiftActive && action !== 'shift') {
+                    isShiftActive = false;
+                    document.querySelector('[data-action="shift"]').classList.remove('bg-primary', 'text-white');
+                    updateKeyVisuals();
+                }
             }
 
             if (activeInput === latin) { greek.value = translateText(latin.value, "toGreek"); }
             else { latin.value = translateText(greek.value, "toLatin"); }
         });
     });
+
+    function updateKeyVisuals() {
+        document.querySelectorAll('.key').forEach(k => {
+            if(!k.dataset.action && k.innerText.length === 1) {
+                k.style.textTransform = isShiftActive ? 'uppercase' : 'lowercase';
+            }
+        });
+    }
 </script>
 </body>
 </html>
