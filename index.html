@@ -63,14 +63,14 @@
             <div class="row">
                 <div class="key wide" data-action="shift">Shift</div>
                 <div class="key">Z</div><div class="key">Ψ</div><div class="key">C</div><div class="key">V</div><div class="key">B</div><div class="key">N</div><div class="key">M</div><div class="key">Π</div>
-                <div class="key wide bg-red-500/10 text-red-500" data-action="delete">
+                <div class="key wide" data-action="delete">
                     <span class="material-symbols-outlined">backspace</span>
                 </div>
             </div>
             <div class="row">
-                <div class="key wide" onclick="location.reload()">Sıfırla</div>
+                <div class="key wide" data-action="reset">Sıfırla</div>
                 <div class="key extra-wide" data-action="space">Boşluk</div>
-                <div class="key wide bg-primary text-white" data-action="enter">Enter</div>
+                <div class="key wide" data-action="enter">Enter</div>
             </div>
         </div>
     </section>
@@ -101,10 +101,21 @@
         key.addEventListener('click', () => {
             const action = key.dataset.action;
             const content = key.innerText.trim();
-            if (action === 'delete') { activeInput.value = activeInput.value.slice(0, -1); }
-            else if (action === 'space') { activeInput.value += ' '; }
-            else if (action === 'enter') { activeInput.value += '\n'; }
-            else if (!action) { activeInput.value += content; }
+            
+            if (action === 'delete') { 
+                activeInput.value = activeInput.value.slice(0, -1); 
+            } else if (action === 'reset') {
+                latin.value = "";
+                greek.value = "";
+            } else if (action === 'space') { 
+                activeInput.value += ' '; 
+            } else if (action === 'enter') { 
+                activeInput.value += '\n'; 
+            } else if (action === 'shift') {
+                // Shift mantığı buraya gelecek
+            } else if (!action) { 
+                activeInput.value += content; 
+            }
 
             if (activeInput === latin) { greek.value = translateText(latin.value, "toGreek"); }
             else { latin.value = translateText(greek.value, "toLatin"); }
