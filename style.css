@@ -1,12 +1,14 @@
-/* --- SİTE GENELİ (KAYDIRMA ENGELLİ) --- */
+/* --- SİTE GENELİ --- */
 html, body {
     height: 100%;
-    overflow: hidden; /* Dış kaydırma barı kalktı */
+    overflow: hidden;
     margin: 0;
     padding: 0;
+    /* Mobilde aşağı çekince yenilemeyi engelle (opsiyonel) */
+    overscroll-behavior-y: contain;
 }
 
-header, .keyboard, .nav-item {
+header, .keyboard, .nav-item, #settingsModal {
     user-select: none;
     -webkit-user-select: none;
 }
@@ -20,8 +22,8 @@ header, .keyboard, .nav-item {
     background: #f1f5f9;
     color: #64748b;
     border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
+    font-size: 0.75rem;
+    font-weight: 700;
     white-space: nowrap;
 }
 
@@ -53,10 +55,10 @@ header, .keyboard, .nav-item {
     max-width: 800px;
     padding: 10px;
     background: #e2e8f0;
-    border-radius: 1rem;
+    border-radius: 1rem 1rem 0 0; /* Üst köşeleri yuvarlak, altı düz */
 }
 
-.dark .keyboard { background: #111a22; border: 1px solid #233648; }
+.dark .keyboard { background: #111a22; border-top: 1px solid #233648; }
 
 .row {
     display: grid;
@@ -89,15 +91,34 @@ header, .keyboard, .nav-item {
 [data-action="reset"], [data-action="enter"] { grid-column: span 3 !important; }
 [data-action="space"] { grid-column: span 6 !important; }
 
-/* --- MOBİL OPTİMİZASYON --- */
+/* --- 📱 MOBİL ÖZEL DÜZENLEME --- */
 @media (max-width: 768px) {
-    .keyboard {
-        padding: 6px 4px;
-        gap: 4px;
+    /* Klavyeyi en alta sabitle */
+    .keyboard-container {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
     }
+
+    .keyboard {
+        padding: 6px 4px 10px 4px;
+        gap: 4px;
+        border-radius: 1.25rem 1.25rem 0 0;
+        box-shadow: 0 -10px 25px rgba(0,0,0,0.2);
+    }
+
     .row { gap: 4px; }
-    .key { height: 40px; border-bottom-width: 2px; }
+    .key { height: 42px; border-bottom-width: 2px; font-size: 0.9rem; }
     
-    /* Textarea alanlarının mobilde sığması için */
-    main { gap: 10px; padding-top: 10px; }
+    /* Main alanı klavyenin altında kalmasın diye padding ekle */
+    main { 
+        padding-bottom: 230px !important; /* Klavyenin yüksekliği kadar */
+        gap: 8px;
+    }
+
+    textarea {
+        font-size: 0.95rem !important;
+    }
 }
