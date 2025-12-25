@@ -7,11 +7,11 @@
     align-items: center;
     gap: 8px; /* Satırlar arası boşluk (y) */
     margin: 20px auto;
-    width: 95%;
-    max-width: 900px;
-    padding: 12px;
+    width: 100%;
+    max-width: 850px;
+    padding: 15px;
     background: #e2e8f0;
-    border-radius: 20px;
+    border-radius: 1.25rem;
     box-sizing: border-box;
 }
 
@@ -20,18 +20,19 @@
     border: 1px solid #233648;
 }
 
-/* SATIR YAPISI */
+/* SATIR YAPISI - GRID SİSTEMİNE GEÇİŞ */
 .row {
-    display: flex;
-    justify-content: center;
-    gap: 1.2%; /* Tuşlar arası yatay boşluk (y) */
+    display: grid;
+    /* Klavyeyi toplam 12 eşit sütuna bölüyoruz (En kalabalık satır baz alınarak) */
+    grid-template-columns: repeat(12, 1fr); 
+    gap: 6px; /* Senin 'y' değerin */
     width: 100%;
+    max-width: 800px;
 }
 
-/* --- TUŞ TASARIMI --- */
+/* --- TUŞ TASARIMI (1x) --- */
 .key {
-    /* Harfler her zaman 1 birimdir */
-    flex: 1; 
+    grid-column: span 1; /* Her harf tam 1 sütun kaplar */
     height: 52px;
     display: flex;
     justify-content: center;
@@ -39,18 +40,18 @@
     background: #ffffff;
     color: #1e293b;
     cursor: pointer;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 600;
     border-radius: 8px;
     border-bottom: 3px solid #cbd5e1;
     transition: all 0.05s ease;
-    min-width: 0; /* Taşmayı önleyen sigorta */
+    min-width: 0;
 }
 
 .dark .key {
     background: #233648;
     color: #f8fafc;
-    border-bottom: 3px solid #000000;
+    border-bottom: 3px solid #000;
 }
 
 .key:active {
@@ -59,28 +60,39 @@
     background: #137fec !important;
 }
 
-/* --- SENİN MATEMATİKSEL ORANLARIN (Flex üzerinden) --- */
+/* --- ÖZEL SATIR DÜZENLEMELERİ (Sütun Sayıları) --- */
 
-/* Shift ve Backspace (2x + 1y) -> Flex değeri 2 */
+/* 1. ve 2. Satırlar 12 tuş olduğu için otomatik hizalanır */
+
+/* 3. Satır (A-L arası): 11 tuş olduğu için ortalamak adına boşluk bırakabiliriz */
+.row:nth-child(3) {
+    padding: 0 4%; 
+}
+
+/* 4. Satır (Z satırı): Matematiksel Oranlar (2x + 1y) */
+.row:nth-child(4) {
+    /* 2 (Shift) + 8 (Harf) + 2 (Delete) = 12 Sütun tam sığar! */
+    grid-template-columns: repeat(12, 1fr);
+}
+
 [data-action="shift"], 
 [data-action="delete"] {
-    flex: 2 !important; 
+    grid-column: span 2 !important; /* Tam 2 harf (2x) ve 1 boşluk (1y) kaplar */
     background: #cbd5e1 !important;
-    text-transform: uppercase;
-    font-size: 0.9rem;
 }
 
-/* Sıfırla ve Enter (3x + 2y) -> Flex değeri 3 */
+/* 5. Satır (Boşluk satırı): Matematiksel Oranlar (3x + 6x + 3x) */
+.row:nth-child(5) {
+    grid-template-columns: repeat(12, 1fr);
+}
+
 [data-action="reset"], 
 [data-action="enter"] {
-    flex: 3 !important;
-    text-transform: uppercase;
-    font-size: 0.9rem;
+    grid-column: span 3 !important; /* 3x + 2y */
 }
 
-/* Boşluk (6x + 5y) -> Flex değeri 6 */
 [data-action="space"] {
-    flex: 6 !important;
+    grid-column: span 6 !important; /* 6x + 5y */
 }
 
 .dark [data-action="shift"], .dark [data-action="delete"], 
@@ -93,15 +105,16 @@
     .keyboard {
         position: fixed;
         bottom: 10px;
-        left: 2.5%;
-        width: 95%;
+        left: 2%;
+        width: 96%;
         padding: 8px 4px;
         border-radius: 12px;
-        box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
     }
 
+    .row { gap: 4px; } /* Mobilde 'y' 4px */
+
     .key {
-        height: 46px;
+        height: 45px;
         font-size: 1rem;
         border-bottom-width: 2px;
     }
