@@ -20,7 +20,7 @@
     border: 1px solid #233648;
 }
 
-/* SATIR YAPISI */
+/* SATIR YAPISI - 12 SÜTUNLU KESİN HİZALAMA */
 .row {
     display: grid;
     grid-template-columns: repeat(12, 1fr); 
@@ -37,13 +37,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #ffffff; /* Harfler beyaz */
+    background: #ffffff;
     color: #1e293b;
     cursor: pointer;
     font-size: 1.1rem;
     font-weight: 600;
     border-radius: 8px;
-    border-bottom: 3px solid #cbd5e1; /* Standart gölge */
+    border-bottom: 3px solid #cbd5e1;
     transition: all 0.05s ease;
     min-width: 0;
 }
@@ -56,46 +56,61 @@
 
 .key:active {
     transform: translateY(2px);
-    border-bottom: 0 !important;
+    border-bottom: 0;
 }
 
-/* --- TÜM FONKSİYON TUŞLARINI EŞİTLE (Shift, Space, Reset, Enter, Backspace) --- */
-.fn-key, 
-[data-action="shift"], 
-[data-action="delete"], 
-[data-action="reset"], 
-[data-action="space"], 
-[data-action="enter"] {
-    background: #cbd5e1 !important; /* Hepsini gri yaptık */
-    color: #1e293b !important;
+/* --- FONKSİYON TUŞLARI (Açık Renkli) --- */
+.fn-key {
+    background: #cbd5e1 !important;
 }
 
-.dark .fn-key, 
-.dark [data-action="shift"], 
-.dark [data-action="delete"], 
-.dark [data-action="reset"], 
-.dark [data-action="space"], 
-.dark [data-action="enter"] {
-    background: #324d67 !important; /* Karanlık modda hepsini aynı ton yaptık */
-    color: #f8fafc !important;
+.dark .fn-key {
+    background: #324d67 !important;
 }
 
 /* --- MATEMATİKSEL GENİŞLİKLER --- */
-[data-action="shift"], [data-action="delete"] { grid-column: span 2 !important; }
-[data-action="reset"], [data-action="enter"] { grid-column: span 3 !important; }
-[data-action="space"] { grid-column: span 6 !important; }
 
-/* --- MOBİL OPTİMİZASYON --- */
+/* Shift ve Backspace (2x + 1y) */
+[data-action="shift"], 
+[data-action="delete"] {
+    grid-column: span 2 !important;
+}
+
+/* Sıfırla ve Enter (3x + 2y) */
+[data-action="reset"], 
+[data-action="enter"] {
+    grid-column: span 3 !important;
+}
+
+/* Boşluk (6x + 5y) */
+[data-action="space"] {
+    grid-column: span 6 !important;
+}
+
+/* --- 📱 MOBİL OPTİMİZASYON (Dikeyde Küçültüldü) --- */
 @media (max-width: 768px) {
     .keyboard {
         position: fixed;
         bottom: 8px;
         left: 2%;
         width: 96%;
-        padding: 8px 4px 12px 4px;
+        padding: 6px 4px 10px 4px; /* Üst ve alt padding azaldı */
         border-radius: 1rem;
+        box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
+        gap: 4px; /* Satırlar arası dikey boşluk azaltıldı */
     }
-    .row { gap: 4px; }
-    .key { height: 44px; font-size: 1rem; border-bottom-width: 2px; }
-    main { padding-bottom: 260px !important; }
+
+    .row { 
+        gap: 4px; /* Tuşlar arası yatay boşluk mobilde daraltıldı */
+        margin-bottom: 0px; /* Satır altı marj sıfırlandı */
+    }
+
+    .key {
+        height: 40px; /* Tuş yüksekliği 44px'den 40px'e düşürüldü */
+        font-size: 0.95rem; /* Yazı boyutu hafif küçültüldü */
+        border-bottom-width: 2px;
+    }
+
+    /* Klavye dikeyde küçüldüğü için sayfa alt boşluğunu da optimize edelim */
+    main { padding-bottom: 240px !important; }
 }
