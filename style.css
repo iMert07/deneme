@@ -1,13 +1,43 @@
 /* style.css */
 
-/* --- GENEL SEÇİLEMEZLİK VE LOGO KORUMA --- */
-header h2, .material-symbols-outlined, header .size-8, .keyboard {
+/* --- GENEL SEÇİLEMEZLİK --- */
+header, .keyboard, .nav-item {
     user-select: none;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
 }
 
-/* --- KLAVYE ANA KUTUSU --- */
+/* --- MENÜ TASARIMI --- */
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: #f1f5f9;
+    color: #64748b;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.dark .nav-item {
+    background: #192633;
+    color: #94a3b8;
+}
+
+.nav-item.active {
+    background: #137fec15;
+    color: #137fec;
+    border-color: #137fec40;
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* --- KLAVYE TEMEL --- */
 .keyboard {
     display: flex;
     flex-direction: column;
@@ -19,15 +49,10 @@ header h2, .material-symbols-outlined, header .size-8, .keyboard {
     padding: 15px;
     background: #e2e8f0;
     border-radius: 1.25rem;
-    box-sizing: border-box;
 }
 
-.dark .keyboard {
-    background: #111a22;
-    border: 1px solid #233648;
-}
+.dark .keyboard { background: #111a22; border: 1px solid #233648; }
 
-/* SATIR YAPISI - 12 SÜTUNLU KESİN HİZALAMA */
 .row {
     display: grid;
     grid-template-columns: repeat(12, 1fr); 
@@ -37,7 +62,6 @@ header h2, .material-symbols-outlined, header .size-8, .keyboard {
     margin-bottom: 2px;
 }
 
-/* --- TUŞ TASARIMI (1x) --- */
 .key {
     grid-column: span 1; 
     height: 52px;
@@ -51,23 +75,12 @@ header h2, .material-symbols-outlined, header .size-8, .keyboard {
     font-weight: 600;
     border-radius: 8px;
     border-bottom: 3px solid #cbd5e1;
-    transition: background 0.1s, transform 0.05s ease;
-    min-width: 0;
+    transition: all 0.1s ease;
 }
 
-.dark .key {
-    background: #233648;
-    color: #f8fafc;
-    border-bottom: 3px solid #000000;
-}
+.dark .key { background: #233648; color: #f8fafc; border-bottom: 3px solid #000; }
 
-/* Masaüstü tıklama derinliği */
-.key:active {
-    transform: translateY(2px);
-    border-bottom: 0 !important;
-}
-
-/* --- 📱 MOBİL POPUP (BÜYÜME) EFEKTİ --- */
+/* MOBİL POPUP EFEKTİ */
 .key-active-effect {
     background: #137fec !important;
     color: white !important;
@@ -78,21 +91,15 @@ header h2, .material-symbols-outlined, header .size-8, .keyboard {
     border-bottom: 0 !important;
 }
 
-/* --- FONKSİYON TUŞLARI --- */
-.fn-key {
-    background: #cbd5e1 !important;
-}
+.fn-key { background: #cbd5e1 !important; }
+.dark .fn-key { background: #324d67 !important; }
 
-.dark .fn-key {
-    background: #324d67 !important;
-}
-
-/* --- MATEMATİKSEL GENİŞLİKLER --- */
+/* GENİŞLİKLER */
 [data-action="shift"], [data-action="delete"] { grid-column: span 2 !important; }
 [data-action="reset"], [data-action="enter"] { grid-column: span 3 !important; }
 [data-action="space"] { grid-column: span 6 !important; }
 
-/* --- MOBİL OPTİMİZASYON --- */
+/* --- MOBİL OPTİMİZASYON (DİKEY DARALTILMIŞ) --- */
 @media (max-width: 768px) {
     .keyboard {
         position: fixed;
@@ -100,18 +107,14 @@ header h2, .material-symbols-outlined, header .size-8, .keyboard {
         left: 2%;
         width: 96%;
         padding: 6px 4px 10px 4px;
-        border-radius: 1rem;
         box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
-        gap: 4px; /* Dikey boşluk azaldı */
+        gap: 4px; 
     }
-
-    .row { gap: 4px; margin-bottom: 0px; }
-
+    .row { gap: 4px; }
     .key {
-        height: 40px; /* Dikeyde küçültüldü */
+        height: 40px; 
         font-size: 1rem;
         border-bottom-width: 2px;
     }
-
     main { padding-bottom: 240px !important; }
 }
