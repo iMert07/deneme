@@ -23,7 +23,6 @@
 /* SATIR YAPISI - 12 SÜTUNLU KESİN HİZALAMA */
 .row {
     display: grid;
-    /* Her satırı 12 eşit parçaya bölüyoruz */
     grid-template-columns: repeat(12, 1fr); 
     gap: 6px; 
     width: 100%;
@@ -33,7 +32,7 @@
 
 /* --- TUŞ TASARIMI (1x) --- */
 .key {
-    grid-column: span 1; /* Varsayılan: Her tuş 1 birim (1x) */
+    grid-column: span 1; 
     height: 52px;
     display: flex;
     justify-content: center;
@@ -44,6 +43,7 @@
     font-size: 1.1rem;
     font-weight: 600;
     border-radius: 8px;
+    /* TÜM TUŞLARIN GÖLGESİ STANDART SİYAH/GRİ */
     border-bottom: 3px solid #cbd5e1;
     transition: all 0.05s ease;
     min-width: 0;
@@ -52,39 +52,24 @@
 .dark .key {
     background: #233648;
     color: #f8fafc;
-    border-bottom: 3px solid #000;
+    border-bottom: 3px solid #000000;
 }
 
 .key:active {
     transform: translateY(2px);
-    border-bottom: 0;
-    background: #137fec !important;
+    border-bottom: 0 !important;
 }
 
-/* --- FONKSİYON TUŞLARI (Açık Renkli Olanlar) --- */
-
-/* Shift, Backspace, Virgül ve Nokta */
-[data-action="shift"], 
-[data-action="delete"],
-.key:contains(","), /* Virgül */
-.key:contains(".")  /* Nokta */ {
+/* --- FONKSİYON TUŞLARI (Açık Renkli) --- */
+.fn-key {
     background: #cbd5e1 !important;
 }
 
-/* Alternatif olarak içeriğe göre seçemezse diye virgül ve nokta için özel kural */
-.row:nth-child(3) .key:first-child, /* Virgül (3. satırın başı) */
-.row:nth-child(3) .key:last-child   /* Nokta (3. satırın sonu) */ {
-    background: #cbd5e1 !important;
-}
-
-.dark [data-action="shift"], 
-.dark [data-action="delete"], 
-.dark .row:nth-child(3) .key:first-child, 
-.dark .row:nth-child(3) .key:last-child {
+.dark .fn-key {
     background: #324d67 !important;
 }
 
-/* --- MATEMATİKSEL GENİŞLİKLER (2x, 3x, 6x) --- */
+/* --- MATEMATİKSEL GENİŞLİKLER --- */
 
 /* Shift ve Backspace (2x + 1y) */
 [data-action="shift"], 
@@ -96,18 +81,17 @@
 [data-action="reset"], 
 [data-action="enter"] {
     grid-column: span 3 !important;
-    background: #cbd5e1 !important;
 }
 
-.dark [data-action="reset"], .dark [data-action="enter"] {
-    background: #324d67 !important;
-}
-
-/* Enter Butonuna Özel Renk (İsteğe Bağlı) */
+/* Enter Butonu: Gölge Rengini Diğerleriyle Eşitledim */
 [data-action="enter"] {
     background: #137fec !important;
     color: white !important;
-    border-bottom: 3px solid #0a56a3 !important;
+    border-bottom: 3px solid #0a56a3 !important; /* Koyu Mavi ama Siyahımsı Ton */
+}
+
+.dark [data-action="enter"] {
+    border-bottom: 3px solid #000000 !important;
 }
 
 /* Boşluk (6x + 5y) */
@@ -119,19 +103,21 @@
 @media (max-width: 768px) {
     .keyboard {
         position: fixed;
-        bottom: 10px;
+        bottom: 8px;
         left: 2%;
         width: 96%;
-        padding: 8px 4px;
+        padding: 8px 4px 12px 4px;
+        border-radius: 1rem;
+        box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
     }
 
     .row { gap: 4px; }
 
     .key {
-        height: 45px;
+        height: 44px;
         font-size: 1rem;
         border-bottom-width: 2px;
     }
 
-    main { padding-bottom: 280px !important; }
+    main { padding-bottom: 260px !important; }
 }
