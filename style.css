@@ -1,23 +1,23 @@
 /* style.css */
 
-/* --- GENEL SEÇİLEMEZLİK --- */
-header, .keyboard, .nav-item {
+/* --- GENEL SEÇİLEMEZLİK VE LOGO KORUMA --- */
+header h2, .material-symbols-outlined, header .size-8, .keyboard, .nav-item, #settingsModal {
     user-select: none;
-    -webkit-user-select: none;
-    -webkit-touch-callout: none;
+    -webkit-user-select: none; /* Safari desteği */
+    -webkit-touch-callout: none; /* Mobilde uzun basınca çıkan menüyü engeller */
 }
 
-/* --- MENÜ TASARIMI --- */
+/* --- KATEGORİ MENÜSÜ --- */
 .nav-item {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 12px;
+    padding: 6px 14px;
     background: #f1f5f9;
     color: #64748b;
     border-radius: 20px;
     font-size: 0.85rem;
-    font-weight: 500;
+    font-weight: 600;
     white-space: nowrap;
     transition: all 0.2s ease;
     border: 1px solid transparent;
@@ -34,10 +34,11 @@ header, .keyboard, .nav-item {
     border-color: #137fec40;
 }
 
+/* Yatay kaydırma çubuğunu gizleme (Menü Barı İçin) */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* --- KLAVYE TEMEL --- */
+/* --- KLAVYE ANA KUTUSU --- */
 .keyboard {
     display: flex;
     flex-direction: column;
@@ -49,10 +50,15 @@ header, .keyboard, .nav-item {
     padding: 15px;
     background: #e2e8f0;
     border-radius: 1.25rem;
+    box-sizing: border-box;
 }
 
-.dark .keyboard { background: #111a22; border: 1px solid #233648; }
+.dark .keyboard {
+    background: #111a22;
+    border: 1px solid #233648;
+}
 
+/* SATIR YAPISI */
 .row {
     display: grid;
     grid-template-columns: repeat(12, 1fr); 
@@ -62,6 +68,7 @@ header, .keyboard, .nav-item {
     margin-bottom: 2px;
 }
 
+/* --- TUŞ TASARIMI (1x) --- */
 .key {
     grid-column: span 1; 
     height: 52px;
@@ -75,46 +82,54 @@ header, .keyboard, .nav-item {
     font-weight: 600;
     border-radius: 8px;
     border-bottom: 3px solid #cbd5e1;
-    transition: all 0.1s ease;
+    transition: all 0.05s ease;
+    min-width: 0;
 }
 
-.dark .key { background: #233648; color: #f8fafc; border-bottom: 3px solid #000; }
-
-/* MOBİL POPUP EFEKTİ */
-.key-active-effect {
-    background: #137fec !important;
-    color: white !important;
-    transform: scale(1.4) translateY(-22px) !important;
-    z-index: 1000 !important;
-    box-shadow: 0 12px 24px rgba(0,0,0,0.4) !important;
-    border-radius: 8px !important;
-    border-bottom: 0 !important;
+.dark .key {
+    background: #233648;
+    color: #f8fafc;
+    border-bottom: 3px solid #000;
 }
 
-.fn-key { background: #cbd5e1 !important; }
-.dark .fn-key { background: #324d67 !important; }
+.key:active {
+    transform: translateY(2px);
+    border-bottom: 0;
+}
 
-/* GENİŞLİKLER */
+/* --- FONKSİYON TUŞLARI --- */
+.fn-key {
+    background: #cbd5e1 !important;
+}
+
+.dark .fn-key {
+    background: #324d67 !important;
+}
+
+/* --- MATEMATİKSEL GENİŞLİKLER --- */
 [data-action="shift"], [data-action="delete"] { grid-column: span 2 !important; }
 [data-action="reset"], [data-action="enter"] { grid-column: span 3 !important; }
 [data-action="space"] { grid-column: span 6 !important; }
 
-/* --- MOBİL OPTİMİZASYON (DİKEY DARALTILMIŞ) --- */
+/* --- MOBİL OPTİMİZASYON --- */
 @media (max-width: 768px) {
     .keyboard {
         position: fixed;
         bottom: 8px;
         left: 2%;
         width: 96%;
-        padding: 6px 4px 10px 4px;
+        padding: 8px 4px 12px 4px;
+        border-radius: 1rem;
         box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
-        gap: 4px; 
     }
+
     .row { gap: 4px; }
+
     .key {
-        height: 40px; 
+        height: 44px;
         font-size: 1rem;
         border-bottom-width: 2px;
     }
-    main { padding-bottom: 240px !important; }
+
+    main { padding-bottom: 260px !important; }
 }
