@@ -1,24 +1,14 @@
 /* style.css */
 
-/* --- MATEMATİKSEL DEĞİŞKENLER --- */
-:root {
-    --x: 50px;       /* Harf tuşu genişliği (1x) */
-    --y: 6px;        /* Tuşlar arası dikey/yatay boşluk */
-    --h: 52px;       /* Tuş yüksekliği */
-}
-
-/* --- KLAVYE KONTEYNER --- */
+/* 1. TÜM KLAVYE İÇİN MATEMATİKSEL TEMEL */
 .keyboard {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--y); /* Dikey boşluk y üzerinden */
+    display: block; /* Flex yerine blok yaparak genişliği kontrol altına alıyoruz */
     margin: 20px auto;
     width: fit-content;
     padding: 15px;
     background: #e2e8f0;
-    border-radius: 1.25rem;
-    box-sizing: border-box;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 .dark .keyboard {
@@ -26,18 +16,18 @@
     border: 1px solid #233648;
 }
 
-/* SATIR DÜZENİ */
+/* 2. SATIRLARDAKİ TUŞLARI YAN YANA DİZ */
 .row {
     display: flex;
     justify-content: center;
-    gap: var(--y); /* Yatay boşluk y üzerinden */
-    width: 100%;
+    gap: 6px;       /* Burası senin 'y' değerin */
+    margin-bottom: 6px; /* Satırlar arası boşluk da 'y' kadar */
 }
 
-/* --- TUŞ TEMEL (1x) --- */
+/* 3. TEMEL HARF (1x) - BİLGİSAYAR İÇİN SABİT 50px */
 .key {
-    width: var(--x);
-    height: var(--h);
+    width: 50px;    /* Burası senin 'x' değerin */
+    height: 52px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -50,7 +40,6 @@
     user-select: none;
     border-bottom: 3px solid #cbd5e1;
     transition: all 0.05s ease;
-    box-sizing: border-box;
 }
 
 .dark .key {
@@ -63,73 +52,67 @@
     transform: translateY(2px);
     border-bottom: 0;
     background: #137fec !important;
-    color: white !important;
 }
 
-/* --- MATEMATİKSEL FORMÜLLER --- */
+/* 4. SENİN VERDİĞİN ÖZEL MATEMATİKSEL ORANLAR */
 
-/* Shift ve Backspace (2x + 1y) */
+/* Shift ve Backspace (2x + 1y) -> (2*50) + 6 = 106px */
 [data-action="shift"], 
 [data-action="delete"] {
-    width: calc((var(--x) * 2) + var(--y)) !important;
+    width: 106px !important;
     background: #cbd5e1 !important;
 }
 
-.dark [data-action="shift"], 
-.dark [data-action="delete"] {
-    background: #324d67 !important;
-}
-
-/* Sıfırla ve Enter (3x + 2y) */
+/* Sıfırla ve Enter (3x + 2y) -> (3*50) + (2*6) = 162px */
 [data-action="reset"], 
 [data-action="enter"] {
-    width: calc((var(--x) * 3) + (var(--y) * 2)) !important;
+    width: 162px !important;
 }
 
-[data-action="enter"] {
-    background: #137fec !important;
-    color: white !important;
-    border-bottom: 3px solid #0a56a3;
-}
-
-[data-action="reset"] {
-    background: #cbd5e1 !important;
-}
-
-.dark [data-action="reset"] {
-    background: #324d67 !important;
-}
-
-/* Boşluk (6x + 5y) */
+/* Boşluk (6x + 5y) -> (6*50) + (5*6) = 330px */
 [data-action="space"] {
-    width: calc((var(--x) * 6) + (var(--y) * 5)) !important;
+    width: 330px !important;
 }
 
-/* --- MOBİL OPTİMİZASYON (Oranları Koru) --- */
+/* 5. MOBİL İÇİN MATEMATİKSEL DÜZENLEME (7.5vw üzerinden) */
 @media (max-width: 768px) {
-    :root {
-        --x: 7.2vw; 
-        --y: 4px;
-        --h: 44px;
-    }
-
     .keyboard {
         position: fixed;
-        bottom: 8px; 
-        left: 8px;
-        right: 8px;
-        width: calc(100% - 16px);
-        max-width: calc(100% - 16px);
-        padding: 8px 4px 12px 4px; 
-        border-radius: 1rem;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        bottom: 8px;
+        left: 4px;
+        right: 4px;
+        width: calc(100% - 8px);
+        padding: 8px 4px;
+        border-radius: 12px;
     }
 
+    .row {
+        gap: 4px; /* Mobilde 'y' 4px olsun */
+        margin-bottom: 4px;
+    }
+
+    /* Mobilde 1x = 7.5vw olsun */
     .key {
-        font-size: 14px;
-        border-radius: 5px;
+        width: 7.5vw; 
+        height: 45px;
+        font-size: 15px;
         border-bottom-width: 2px;
     }
 
-    main { padding-bottom: 260px !important; }
+    /* Mobilde 2x + 1y */
+    [data-action="shift"], [data-action="delete"] {
+        width: calc((7.5vw * 2) + 4px) !important;
+    }
+
+    /* Mobilde 3x + 2y */
+    [data-action="reset"], [data-action="enter"] {
+        width: calc((7.5vw * 3) + 8px) !important;
+    }
+
+    /* Mobilde 6x + 5y */
+    [data-action="space"] {
+        width: calc((7.5vw * 6) + 20px) !important;
+    }
+
+    main { padding-bottom: 280px !important; }
 }
