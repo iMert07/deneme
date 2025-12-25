@@ -1,14 +1,18 @@
 /* style.css */
 
-/* 1. TÜM KLAVYE İÇİN MATEMATİKSEL TEMEL */
+/* --- KLAVYE ANA KUTUSU --- */
 .keyboard {
-    display: block; /* Flex yerine blok yaparak genişliği kontrol altına alıyoruz */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px; /* Satırlar arası boşluk (y) */
     margin: 20px auto;
-    width: fit-content;
-    padding: 15px;
+    width: 95%;
+    max-width: 900px;
+    padding: 12px;
     background: #e2e8f0;
     border-radius: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-sizing: border-box;
 }
 
 .dark .keyboard {
@@ -16,17 +20,18 @@
     border: 1px solid #233648;
 }
 
-/* 2. SATIRLARDAKİ TUŞLARI YAN YANA DİZ */
+/* SATIR YAPISI */
 .row {
     display: flex;
     justify-content: center;
-    gap: 6px;       /* Burası senin 'y' değerin */
-    margin-bottom: 6px; /* Satırlar arası boşluk da 'y' kadar */
+    gap: 1.2%; /* Tuşlar arası yatay boşluk (y) */
+    width: 100%;
 }
 
-/* 3. TEMEL HARF (1x) - BİLGİSAYAR İÇİN SABİT 50px */
+/* --- TUŞ TASARIMI --- */
 .key {
-    width: 50px;    /* Burası senin 'x' değerin */
+    /* Harfler her zaman 1 birimdir */
+    flex: 1; 
     height: 52px;
     display: flex;
     justify-content: center;
@@ -34,12 +39,12 @@
     background: #ffffff;
     color: #1e293b;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 1.2rem;
     font-weight: 600;
     border-radius: 8px;
-    user-select: none;
     border-bottom: 3px solid #cbd5e1;
     transition: all 0.05s ease;
+    min-width: 0; /* Taşmayı önleyen sigorta */
 }
 
 .dark .key {
@@ -54,64 +59,51 @@
     background: #137fec !important;
 }
 
-/* 4. SENİN VERDİĞİN ÖZEL MATEMATİKSEL ORANLAR */
+/* --- SENİN MATEMATİKSEL ORANLARIN (Flex üzerinden) --- */
 
-/* Shift ve Backspace (2x + 1y) -> (2*50) + 6 = 106px */
+/* Shift ve Backspace (2x + 1y) -> Flex değeri 2 */
 [data-action="shift"], 
 [data-action="delete"] {
-    width: 106px !important;
+    flex: 2 !important; 
     background: #cbd5e1 !important;
+    text-transform: uppercase;
+    font-size: 0.9rem;
 }
 
-/* Sıfırla ve Enter (3x + 2y) -> (3*50) + (2*6) = 162px */
+/* Sıfırla ve Enter (3x + 2y) -> Flex değeri 3 */
 [data-action="reset"], 
 [data-action="enter"] {
-    width: 162px !important;
+    flex: 3 !important;
+    text-transform: uppercase;
+    font-size: 0.9rem;
 }
 
-/* Boşluk (6x + 5y) -> (6*50) + (5*6) = 330px */
+/* Boşluk (6x + 5y) -> Flex değeri 6 */
 [data-action="space"] {
-    width: 330px !important;
+    flex: 6 !important;
 }
 
-/* 5. MOBİL İÇİN MATEMATİKSEL DÜZENLEME (7.5vw üzerinden) */
+.dark [data-action="shift"], .dark [data-action="delete"], 
+.dark [data-action="reset"], .dark [data-action="enter"] {
+    background: #324d67 !important;
+}
+
+/* --- MOBİL OPTİMİZASYON --- */
 @media (max-width: 768px) {
     .keyboard {
         position: fixed;
-        bottom: 8px;
-        left: 4px;
-        right: 4px;
-        width: calc(100% - 8px);
+        bottom: 10px;
+        left: 2.5%;
+        width: 95%;
         padding: 8px 4px;
         border-radius: 12px;
+        box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
     }
 
-    .row {
-        gap: 4px; /* Mobilde 'y' 4px olsun */
-        margin-bottom: 4px;
-    }
-
-    /* Mobilde 1x = 7.5vw olsun */
     .key {
-        width: 7.5vw; 
-        height: 45px;
-        font-size: 15px;
+        height: 46px;
+        font-size: 1rem;
         border-bottom-width: 2px;
-    }
-
-    /* Mobilde 2x + 1y */
-    [data-action="shift"], [data-action="delete"] {
-        width: calc((7.5vw * 2) + 4px) !important;
-    }
-
-    /* Mobilde 3x + 2y */
-    [data-action="reset"], [data-action="enter"] {
-        width: calc((7.5vw * 3) + 8px) !important;
-    }
-
-    /* Mobilde 6x + 5y */
-    [data-action="space"] {
-        width: calc((7.5vw * 6) + 20px) !important;
     }
 
     main { padding-bottom: 280px !important; }
