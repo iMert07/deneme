@@ -1,7 +1,7 @@
 /* style.css */
 
-/* --- GENEL SEÇİLEMEZLİK (Logo vb. için) --- */
-header h2, .material-symbols-outlined, header .size-8 {
+/* --- GENEL SEÇİLEMEZLİK VE LOGO KORUMA --- */
+header h2, .material-symbols-outlined, header .size-8, .keyboard {
     user-select: none;
     -webkit-user-select: none; /* Safari desteği */
     -webkit-touch-callout: none; /* Mobilde uzun basınca çıkan menüyü engeller */
@@ -31,7 +31,7 @@ header h2, .material-symbols-outlined, header .size-8 {
     border: 1px solid #233648;
 }
 
-/* SATIR YAPISI */
+/* SATIR YAPISI - 12 SÜTUNLU KESİN HİZALAMA */
 .row {
     display: grid;
     grid-template-columns: repeat(12, 1fr); 
@@ -55,9 +55,8 @@ header h2, .material-symbols-outlined, header .size-8 {
     font-weight: 600;
     border-radius: 8px;
     border-bottom: 3px solid #cbd5e1;
-    transition: all 0.05s ease;
+    transition: background 0.1s, transform 0.05s ease;
     min-width: 0;
-    /* Tuşlar özelinde de seçimi garantiye alalım */
     user-select: none;
     -webkit-user-select: none;
 }
@@ -68,9 +67,22 @@ header h2, .material-symbols-outlined, header .size-8 {
     border-bottom: 3px solid #000;
 }
 
+/* Masaüstü için tıklama efekti */
 .key:active {
     transform: translateY(2px);
-    border-bottom: 0;
+    border-bottom: 0 !important;
+}
+
+/* --- 📱 MOBİL POPUP (BÜYÜME) EFEKTİ --- */
+/* JavaScript tarafından tetiklenir */
+.key-active-effect {
+    background: #137fec !important;
+    color: white !important;
+    transform: scale(1.4) translateY(-22px) !important;
+    z-index: 1000 !important;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.4) !important;
+    border-radius: 8px !important;
+    border-bottom: 0 !important;
 }
 
 /* --- FONKSİYON TUŞLARI --- */
@@ -94,18 +106,19 @@ header h2, .material-symbols-outlined, header .size-8 {
         bottom: 8px;
         left: 2%;
         width: 96%;
-        padding: 8px 4px 12px 4px;
+        padding: 6px 4px 10px 4px; /* Dikeyde biraz daraltıldı */
         border-radius: 1rem;
         box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
+        gap: 4px; /* Satırlar arası boşluk azaltıldı */
     }
 
-    .row { gap: 4px; }
+    .row { gap: 4px; margin-bottom: 0px; }
 
     .key {
-        height: 44px;
+        height: 40px; /* İstediğin gibi dikeyde küçültüldü */
         font-size: 1rem;
         border-bottom-width: 2px;
     }
 
-    main { padding-bottom: 260px !important; }
+    main { padding-bottom: 240px !important; }
 }
