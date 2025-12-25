@@ -43,6 +43,7 @@
     font-size: 1.1rem;
     font-weight: 600;
     border-radius: 8px;
+    /* Standart gölge rengi */
     border-bottom: 3px solid #cbd5e1;
     transition: all 0.05s ease;
     min-width: 0;
@@ -56,15 +57,15 @@
 
 .key:active {
     transform: translateY(2px);
-    border-bottom: 0;
+    border-bottom: 0 !important;
 }
 
 /* --- FONKSİYON TUŞLARI (Açık Renkli) --- */
-.fn-key {
+.fn-key, [data-action="space"] {
     background: #cbd5e1 !important;
 }
 
-.dark .fn-key {
+.dark .fn-key, .dark [data-action="space"] {
     background: #324d67 !important;
 }
 
@@ -82,7 +83,19 @@
     grid-column: span 3 !important;
 }
 
-/* Boşluk (6x + 5y) */
+/* ENTER ÖZEL: Renk mavi, GÖLGE DİĞERLERİYLE AYNI */
+[data-action="enter"] {
+    background: #137fec !important;
+    color: white !important;
+    /* Diğer tuşlarla aynı ton gölge */
+    border-bottom: 3px solid #0a56a3 !important; 
+}
+
+.dark [data-action="enter"] {
+    border-bottom: 3px solid #000 !important;
+}
+
+/* BOŞLUK (6x + 5y) */
 [data-action="space"] {
     grid-column: span 6 !important;
 }
