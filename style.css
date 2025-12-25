@@ -1,15 +1,15 @@
-/* --- SİTE GENELİ --- */
+/* --- SİTE GENELİ (SCROLL ENGELLENDİ) --- */
 html, body {
     height: 100%;
     overflow: hidden;
     margin: 0;
     padding: 0;
-    overscroll-behavior-y: contain;
 }
 
 header, .keyboard, .nav-item, #settingsModal {
     user-select: none;
     -webkit-user-select: none;
+    -webkit-touch-callout: none;
 }
 
 /* --- KATEGORİ MENÜSÜ --- */
@@ -21,9 +21,10 @@ header, .keyboard, .nav-item, #settingsModal {
     background: #f1f5f9;
     color: #64748b;
     border-radius: 20px;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     font-weight: 700;
     white-space: nowrap;
+    transition: all 0.2s ease;
 }
 
 .dark .nav-item { background: #192633; color: #94a3b8; }
@@ -43,12 +44,12 @@ header, .keyboard, .nav-item, #settingsModal {
 .toggle-btn.off { background: #e2e8f0; color: #64748b; }
 .dark .toggle-btn.off { background: #324d67; color: #94a3b8; }
 
-/* --- 💻 BİLGİSAYAR KLAVYE DÜZENİ --- */
+/* --- 💻 BİLGİSAYAR KLAVYE (DİKEY GENİŞLETİLDİ) --- */
 .keyboard {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px; /* Dikey boşluk artırıldı */
+    gap: 10px; 
     margin: 0 auto;
     width: 100%;
     max-width: 900px;
@@ -62,13 +63,13 @@ header, .keyboard, .nav-item, #settingsModal {
 .row {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
-    gap: 8px; /* Yatay boşluk artırıldı */
+    gap: 8px;
     width: 100%;
 }
 
 .key {
     grid-column: span 1;
-    height: 60px; /* Bilgisayarda dikeyde genişletildi (48px -> 60px) */
+    height: 60px; /* Dikeyde genişletildi */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -92,44 +93,26 @@ header, .keyboard, .nav-item, #settingsModal {
 [data-action="reset"], [data-action="enter"] { grid-column: span 3 !important; }
 [data-action="space"] { grid-column: span 6 !important; }
 
-/* --- 📱 MOBİL DÜZENLEME --- */
+/* --- 📱 MOBİL ÖZEL DÜZENLEME --- */
 @media (max-width: 768px) {
-    /* Metin kutularını ve klavyeyi yatayda daraltıyoruz */
-    main {
-        max-width: 92% !important; /* Yatayda daralma */
-        margin: 0 auto;
-        padding: 10px 0;
-    }
-
     .keyboard-container {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        z-index: 50;
-        padding: 0 4% 12px 4% !important; /* Klavyeyi yatayda daraltmak için padding */
+        padding: 0 2% 10px 2% !important; /* Yatayda hafif daraltıldı */
     }
 
     .keyboard {
-        border-radius: 1.25rem;
-        gap: 4px;
+        gap: 5px;
         padding: 8px;
-        box-shadow: 0 -10px 25px rgba(0,0,0,0.2);
+        border-radius: 1rem;
     }
 
     .key { 
-        height: 44px; /* Mobilde dikey yükseklik makul seviyede */
-        font-size: 0.9rem;
+        height: 44px; 
+        font-size: 0.9rem; 
         border-bottom-width: 2px;
     }
-    
-    /* Alttaki kutunun klavye altında kalmasını engellemek için */
-    main { 
-        padding-bottom: 250px !important; 
-    }
 
-    /* Textarea içindeki metin alanını daraltma */
-    section.flex-1 {
-        padding: 0 !important;
+    /* Mobilde textarea kutularının oranını korumak için */
+    main {
+        padding: 10px 2% !important;
     }
 }
