@@ -1,7 +1,9 @@
-/* --- SİTE GENELİ (SCROLL ENGELLENDİ) --- */
+/* style.css */
+
+/* --- SİTE GENELİ (TAM EKRAN SABİTLEME) --- */
 html, body {
     height: 100%;
-    overflow: hidden;
+    overflow: hidden; /* Sayfanın dış kaydırma çubuğunu tamamen kaldırır */
     margin: 0;
     padding: 0;
 }
@@ -12,7 +14,7 @@ header, .keyboard, .nav-item, #settingsModal {
     -webkit-touch-callout: none;
 }
 
-/* --- KATEGORİ MENÜSÜ --- */
+/* --- KATEGORİ MENÜSÜ (KAYDIRILABİLİR) --- */
 .nav-item {
     display: flex;
     align-items: center;
@@ -25,14 +27,25 @@ header, .keyboard, .nav-item, #settingsModal {
     font-weight: 700;
     white-space: nowrap;
     transition: all 0.2s ease;
+    border: 1px solid transparent;
 }
 
-.dark .nav-item { background: #192633; color: #94a3b8; }
-.nav-item.active { background: #137fec15; color: #137fec; }
+.dark .nav-item {
+    background: #192633;
+    color: #94a3b8;
+}
+
+.nav-item.active {
+    background: #137fec15;
+    color: #137fec;
+    border-color: #137fec40;
+}
+
+/* Kaydırma çubuğunu gizle ama işlevini koru */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* --- AYARLAR BUTONLARI --- */
+/* --- AYARLAR MODAL BUTONLARI --- */
 .toggle-btn {
     padding: 6px 16px;
     background: #137fec;
@@ -40,36 +53,48 @@ header, .keyboard, .nav-item, #settingsModal {
     border-radius: 8px;
     font-weight: bold;
     font-size: 0.8rem;
+    transition: all 0.2s;
 }
-.toggle-btn.off { background: #e2e8f0; color: #64748b; }
-.dark .toggle-btn.off { background: #324d67; color: #94a3b8; }
+
+.toggle-btn.off {
+    background: #e2e8f0;
+    color: #64748b;
+}
+
+.dark .toggle-btn.off {
+    background: #324d67;
+    color: #94a3b8;
+}
 
 /* --- 💻 BİLGİSAYAR KLAVYE (DİKEY GENİŞLETİLDİ) --- */
 .keyboard {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px; 
+    gap: 12px; /* Satırlar arası dikey boşluk */
     margin: 0 auto;
     width: 100%;
     max-width: 900px;
-    padding: 15px;
+    padding: 20px;
     background: #e2e8f0;
-    border-radius: 1.25rem;
+    border-radius: 1.5rem;
 }
 
-.dark .keyboard { background: #111a22; border: 1px solid #233648; }
+.dark .keyboard {
+    background: #111a22;
+    border: 1px solid #233648;
+}
 
 .row {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
-    gap: 8px;
+    gap: 10px; /* Tuşlar arası yatay boşluk */
     width: 100%;
 }
 
 .key {
     grid-column: span 1;
-    height: 60px; /* Dikeyde genişletildi */
+    height: 60px; /* Bilgisayarda dikey yükseklik */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -77,41 +102,60 @@ header, .keyboard, .nav-item, #settingsModal {
     color: #1e293b;
     cursor: pointer;
     font-size: 1.2rem;
-    font-weight: 600;
-    border-radius: 8px;
+    font-weight: 700;
+    border-radius: 10px;
     border-bottom: 4px solid #cbd5e1;
-    transition: all 0.1s ease;
+    transition: all 0.05s ease;
 }
 
-.dark .key { background: #233648; color: #f8fafc; border-bottom: 4px solid #000; }
-.key:active { transform: translateY(2px); border-bottom: 0 !important; }
+.dark .key {
+    background: #233648;
+    color: #f8fafc;
+    border-bottom: 4px solid #000000;
+}
 
-.fn-key { background: #cbd5e1 !important; }
-.dark .fn-key { background: #324d67 !important; }
+.key:active {
+    transform: translateY(3px);
+    border-bottom: 0 !important;
+}
 
+.fn-key {
+    background: #cbd5e1 !important;
+}
+
+.dark .fn-key {
+    background: #324d67 !important;
+}
+
+/* Tuş Genişlik Oranları */
 [data-action="shift"], [data-action="delete"] { grid-column: span 2 !important; }
 [data-action="reset"], [data-action="enter"] { grid-column: span 3 !important; }
 [data-action="space"] { grid-column: span 6 !important; }
 
-/* --- 📱 MOBİL ÖZEL DÜZENLEME --- */
+/* --- 📱 MOBİL DÜZENLEME --- */
 @media (max-width: 768px) {
     .keyboard-container {
-        padding: 0 2% 10px 2% !important; /* Yatayda hafif daraltıldı */
+        padding: 0 2% 12px 2% !important;
     }
 
     .keyboard {
-        gap: 5px;
-        padding: 8px;
-        border-radius: 1rem;
+        gap: 6px;
+        padding: 10px;
+        border-radius: 1.25rem;
     }
 
-    .key { 
-        height: 44px; 
-        font-size: 0.9rem; 
+    .row {
+        gap: 6px;
+    }
+
+    .key {
+        height: 44px; /* Mobilde dikey yükseklik daha az */
+        font-size: 0.95rem;
         border-bottom-width: 2px;
+        border-radius: 6px;
     }
 
-    /* Mobilde textarea kutularının oranını korumak için */
+    /* Textarea alanlarının mobilde sığması için */
     main {
         padding: 10px 2% !important;
     }
