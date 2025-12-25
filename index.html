@@ -1,16 +1,15 @@
 <!DOCTYPE html>
-
-<html class="dark" lang="tr"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Anatolya'ya Dönüş</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
+<html class="dark" lang="tr">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Çeviri ve Dönüştürme Merkezi</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
@@ -32,230 +31,153 @@
             },
         }
     </script>
-<style>
-        /* Custom scrollbar for textareas */
-        textarea::-webkit-scrollbar {
-            width: 8px;
-        }
-        textarea::-webkit-scrollbar-track {
-            background: #192633; 
-        }
-        textarea::-webkit-scrollbar-thumb {
-            background: #324d67; 
-            border-radius: 4px;
-        }
-        textarea::-webkit-scrollbar-thumb:hover {
-            background: #405f7c; 
-        }
-    </style>
-</head>
-<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display overflow-x-hidden min-h-screen flex flex-col">
-<!-- Header -->
-<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-[#233648] bg-white dark:bg-[#111a22] px-6 py-3 lg:px-10">
-<div class="flex items-center gap-4 text-slate-900 dark:text-white">
-<div class="size-8 flex items-center justify-center rounded-lg bg-primary/10 text-primary">
-<span class="material-symbols-outlined text-2xl">translate</span>
-</div>
-<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Anatolya'ya Dönüş</h2>
-</div>
-<div class="flex gap-2">
-<button class="flex items-center justify-center overflow-hidden rounded-lg size-10 bg-slate-100 dark:bg-[#233648] hover:bg-slate-200 dark:hover:bg-[#324d67] text-slate-600 dark:text-white transition-colors">
-<span class="material-symbols-outlined text-[20px]">settings</span>
-</button>
-<button class="flex items-center justify-center overflow-hidden rounded-lg size-10 bg-slate-100 dark:bg-[#233648] hover:bg-slate-200 dark:hover:bg-[#324d67] text-slate-600 dark:text-white transition-colors">
-<span class="material-symbols-outlined text-[20px]">person</span>
-</button>
-</div>
-</header>
-<!-- Main Content -->
-<main class="flex-1 w-full max-w-[1200px] mx-auto px-4 py-6 md:px-8 lg:px-12 flex flex-col gap-8">
-<!-- Translation Workspace -->
-<section class="flex flex-col gap-6">
-<!-- Input Areas Container -->
-<div class="flex flex-col lg:flex-row gap-4 h-auto lg:h-[400px]">
-<!-- Source Language Panel -->
-<div class="flex-1 flex flex-col bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] overflow-hidden shadow-sm">
-<!-- Language Toolbar -->
-<div class="flex items-center justify-between p-3 border-b border-slate-200 dark:border-[#324d67]">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-primary text-xl">input</span>
-<span class="text-sm font-semibold text-slate-500 dark:text-slate-400">Kaynak Dil</span>
-</div>
-<select class="bg-slate-100 dark:bg-[#233648] text-slate-900 dark:text-white text-sm font-medium rounded-lg px-3 py-1.5 border-none outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer">
-<option value="detect">Dili Algıla</option>
-<option selected="" value="tr">Türkçe</option>
-<option value="en">İngilizce</option>
-<option value="de">Almanca</option>
-<option value="fr">Fransızca</option>
-<option value="es">İspanyolca</option>
-</select>
-</div>
-<!-- Text Area -->
-<div class="flex-1 relative group">
-<textarea class="w-full h-full resize-none bg-transparent p-5 text-lg leading-relaxed text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-[#92adc9] focus:outline-none" placeholder="Metin girin veya yapıştırın..."></textarea>
-<!-- Quick Actions Overlay -->
-<div class="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-<button class="p-2 rounded-lg bg-slate-100 dark:bg-[#233648] text-slate-500 dark:text-slate-300 hover:text-primary hover:bg-slate-200 dark:hover:bg-[#324d67]" title="Temizle">
-<span class="material-symbols-outlined text-lg">close</span>
-</button>
-<button class="p-2 rounded-lg bg-slate-100 dark:bg-[#233648] text-slate-500 dark:text-slate-300 hover:text-primary hover:bg-slate-200 dark:hover:bg-[#324d67]" title="Kopyala">
-<span class="material-symbols-outlined text-lg">content_copy</span>
-</button>
-</div>
-</div>
-</div>
-<!-- Swap Button (Visible on desktop) -->
-<div class="hidden lg:flex flex-col justify-center">
-<button class="group flex items-center justify-center size-10 rounded-full bg-white dark:bg-[#233648] border border-slate-200 dark:border-[#324d67] text-slate-500 dark:text-slate-400 hover:text-primary hover:border-primary transition-all shadow-sm">
-<span class="material-symbols-outlined group-hover:rotate-180 transition-transform duration-300">swap_horiz</span>
-</button>
-</div>
-<!-- Target Language Panel -->
-<div class="flex-1 flex flex-col bg-slate-50 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] overflow-hidden shadow-inner">
-<!-- Language Toolbar -->
-<div class="flex items-center justify-between p-3 border-b border-slate-200 dark:border-[#324d67]">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-green-500 text-xl">output</span>
-<span class="text-sm font-semibold text-slate-500 dark:text-slate-400">Hedef Dil</span>
-</div>
-<select class="bg-slate-200 dark:bg-[#192633] text-slate-900 dark:text-white text-sm font-medium rounded-lg px-3 py-1.5 border-none outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer">
-<option selected="" value="en">İngilizce</option>
-<option value="tr">Türkçe</option>
-<option value="de">Almanca</option>
-<option value="fr">Fransızca</option>
-<option value="es">İspanyolca</option>
-</select>
-</div>
-<!-- Text Area (Read Only style) -->
-<div class="flex-1 relative group">
-<textarea class="w-full h-full resize-none bg-transparent p-5 text-lg leading-relaxed text-slate-700 dark:text-slate-200 focus:outline-none cursor-default" placeholder="Çeviri burada görünecek" readonly=""></textarea>
-<!-- Quick Actions Overlay -->
-<div class="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-<button class="p-2 rounded-lg bg-slate-200 dark:bg-[#192633] text-slate-500 dark:text-slate-300 hover:text-primary hover:bg-slate-300 dark:hover:bg-[#233648]" title="Dinle">
-<span class="material-symbols-outlined text-lg">volume_up</span>
-</button>
-<button class="p-2 rounded-lg bg-slate-200 dark:bg-[#192633] text-slate-500 dark:text-slate-300 hover:text-primary hover:bg-slate-300 dark:hover:bg-[#233648]" title="Kopyala">
-<span class="material-symbols-outlined text-lg">content_copy</span>
-</button>
-</div>
-</div>
-</div>
-</div>
-<!-- Main Action Button -->
-<div class="flex justify-center">
-<button class="flex items-center justify-center gap-3 bg-primary hover:bg-blue-600 active:bg-blue-700 text-white text-lg font-bold py-3 px-12 rounded-full shadow-lg shadow-primary/30 transition-all transform hover:scale-105 active:scale-95 w-full md:w-auto min-w-[200px]">
-<span class="material-symbols-outlined">translate</span>
-                    Çevir
-                </button>
-</div>
-</section>
-<!-- Tools & Keyboard Section -->
-<section class="flex flex-col gap-4 mt-4">
-<!-- Mode Switchers (Utility Dock) -->
-<div class="flex flex-wrap items-center justify-center gap-3 md:gap-4 px-4">
-<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary font-medium transition-colors">
-<span class="material-symbols-outlined text-[20px]">keyboard</span>
-<span>Sanal Klavye</span>
-</button>
-<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-[#233648] hover:bg-slate-50 dark:hover:bg-[#324d67] text-slate-600 dark:text-slate-300 font-medium transition-colors border border-transparent hover:border-slate-200 dark:hover:border-[#405f7c]">
-<span class="material-symbols-outlined text-[20px]">calendar_month</span>
-<span>Tarih Dönüştürücü</span>
-</button>
-<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-[#233648] hover:bg-slate-50 dark:hover:bg-[#324d67] text-slate-600 dark:text-slate-300 font-medium transition-colors border border-transparent hover:border-slate-200 dark:hover:border-[#405f7c]">
-<span class="material-symbols-outlined text-[20px]">straighten</span>
-<span>Uzunluk Dönüştürücü</span>
-</button>
-<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-[#233648] hover:bg-slate-50 dark:hover:bg-[#324d67] text-slate-600 dark:text-slate-300 font-medium transition-colors border border-transparent hover:border-slate-200 dark:hover:border-[#405f7c]">
-<span class="material-symbols-outlined text-[20px]">currency_exchange</span>
-<span>Para Birimi</span>
-</button>
-</div>
-<!-- Virtual Keyboard -->
-<div class="w-full bg-slate-200 dark:bg-[#111a22] rounded-2xl p-4 md:p-6 shadow-inner border-t border-slate-300 dark:border-[#233648] overflow-x-auto">
-<div class="flex flex-col gap-2 min-w-[700px] select-none">
-<!-- Row 1 -->
-<div class="flex justify-center gap-1.5">
-<div class="key-btn">"</div>
-<div class="key-btn">1</div>
-<div class="key-btn">2</div>
-<div class="key-btn">3</div>
-<div class="key-btn">4</div>
-<div class="key-btn">5</div>
-<div class="key-btn">6</div>
-<div class="key-btn">7</div>
-<div class="key-btn">8</div>
-<div class="key-btn">9</div>
-<div class="key-btn">0</div>
-<div class="key-btn">*</div>
-<div class="key-btn">-</div>
-<div class="key-btn flex-grow-[1.5] bg-slate-300 dark:bg-[#324d67]"><span class="material-symbols-outlined text-sm">backspace</span></div>
-</div>
-<!-- Row 2 -->
-<div class="flex justify-center gap-1.5">
-<div class="key-btn flex-grow-[1.5] bg-slate-300 dark:bg-[#324d67] text-xs uppercase tracking-wide">Tab</div>
-<div class="key-btn">Q</div>
-<div class="key-btn">W</div>
-<div class="key-btn">E</div>
-<div class="key-btn">R</div>
-<div class="key-btn">T</div>
-<div class="key-btn">Y</div>
-<div class="key-btn">U</div>
-<div class="key-btn">I</div>
-<div class="key-btn">O</div>
-<div class="key-btn">P</div>
-<div class="key-btn">Ğ</div>
-<div class="key-btn">Ü</div>
-<div class="key-btn">,</div>
-</div>
-<!-- Row 3 -->
-<div class="flex justify-center gap-1.5">
-<div class="key-btn flex-grow-[1.8] bg-slate-300 dark:bg-[#324d67] text-xs uppercase tracking-wide">Caps</div>
-<div class="key-btn">A</div>
-<div class="key-btn">S</div>
-<div class="key-btn">D</div>
-<div class="key-btn">F</div>
-<div class="key-btn">G</div>
-<div class="key-btn">H</div>
-<div class="key-btn">J</div>
-<div class="key-btn">K</div>
-<div class="key-btn">L</div>
-<div class="key-btn">Ş</div>
-<div class="key-btn">İ</div>
-<div class="key-btn flex-grow-[1.8] bg-primary text-white border-primary shadow-lg shadow-primary/20">Enter</div>
-</div>
-<!-- Row 4 -->
-<div class="flex justify-center gap-1.5">
-<div class="key-btn flex-grow-[2.2] bg-slate-300 dark:bg-[#324d67] text-xs uppercase tracking-wide">Shift</div>
-<div class="key-btn">&lt;</div>
-<div class="key-btn">Z</div>
-<div class="key-btn">X</div>
-<div class="key-btn">C</div>
-<div class="key-btn">V</div>
-<div class="key-btn">B</div>
-<div class="key-btn">N</div>
-<div class="key-btn">M</div>
-<div class="key-btn">Ö</div>
-<div class="key-btn">Ç</div>
-<div class="key-btn">.</div>
-<div class="key-btn flex-grow-[2.2] bg-slate-300 dark:bg-[#324d67] text-xs uppercase tracking-wide">Shift</div>
-</div>
-<!-- Row 5 -->
-<div class="flex justify-center gap-1.5">
-<div class="key-btn w-12 bg-slate-300 dark:bg-[#324d67] text-xs">Ctrl</div>
-<div class="key-btn w-12 bg-slate-300 dark:bg-[#324d67] text-xs">Win</div>
-<div class="key-btn w-12 bg-slate-300 dark:bg-[#324d67] text-xs">Alt</div>
-<div class="key-btn flex-grow max-w-[400px]"></div>
-<div class="key-btn w-12 bg-slate-300 dark:bg-[#324d67] text-xs">Alt Gr</div>
-<div class="key-btn w-12 bg-slate-300 dark:bg-[#324d67] text-xs">Ctrl</div>
-</div>
-</div>
-</div>
-<p class="text-center text-xs text-slate-400 mt-2">Kısayollar: Ctrl+Enter Çevir, Ctrl+Shift+C Kopyala</p>
-</section>
-</main>
-<style>
+    <style>
+        textarea::-webkit-scrollbar { width: 8px; }
+        textarea::-webkit-scrollbar-track { background: #192633; }
+        textarea::-webkit-scrollbar-thumb { background: #324d67; border-radius: 4px; }
+        textarea::-webkit-scrollbar-thumb:hover { background: #405f7c; }
         .key-btn {
             @apply flex items-center justify-center h-10 min-w-[36px] md:h-12 md:min-w-[44px] rounded-lg bg-white dark:bg-[#233648] text-slate-800 dark:text-white font-medium shadow-sm border-b-2 border-slate-300 dark:border-black/40 active:border-b-0 active:translate-y-[2px] cursor-pointer transition-all hover:bg-slate-50 dark:hover:bg-[#2d4358] text-sm md:text-base;
         }
     </style>
-</body></html>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display overflow-x-hidden min-h-screen flex flex-col">
+
+<header class="sticky top-0 z-50 flex items-center justify-between border-b border-slate-200 dark:border-[#233648] bg-white dark:bg-[#111a22] px-6 py-3 lg:px-10">
+    <div class="flex items-center gap-4 text-slate-900 dark:text-white">
+        <div class="size-8 flex items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <span class="material-symbols-outlined text-2xl">translate</span>
+        </div>
+        <h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Çeviri ve Dönüştürme Merkezi</h2>
+    </div>
+</header>
+
+<main class="flex-1 w-full max-w-[1200px] mx-auto px-4 py-6 md:px-8 lg:px-12 flex flex-col gap-8">
+    <section class="flex flex-col gap-6">
+        <div class="flex flex-col lg:flex-row gap-4 h-auto lg:h-[400px]">
+            <div class="flex-1 flex flex-col bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] overflow-hidden shadow-sm">
+                <div class="flex items-center justify-between p-3 border-b border-slate-200 dark:border-[#324d67]">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-xl">input</span>
+                        <span class="text-sm font-semibold text-slate-500 dark:text-slate-400">Latin Alfabesi</span>
+                    </div>
+                </div>
+                <div class="flex-1 relative group">
+                    <textarea id="latin" class="w-full h-full resize-none bg-transparent p-5 text-lg leading-relaxed text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-[#92adc9] focus:outline-none" placeholder="Metin girin..."></textarea>
+                    <div class="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onclick="clearAll()" class="p-2 rounded-lg bg-slate-100 dark:bg-[#233648] text-slate-500 dark:text-slate-300 hover:text-primary" title="Temizle">
+                            <span class="material-symbols-outlined text-lg">close</span>
+                        </button>
+                        <button onclick="copyToClipboard('latin')" class="p-2 rounded-lg bg-slate-100 dark:bg-[#233648] text-slate-500 dark:text-slate-300 hover:text-primary" title="Kopyala">
+                            <span class="material-symbols-outlined text-lg">content_copy</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hidden lg:flex flex-col justify-center">
+                <button class="group flex items-center justify-center size-10 rounded-full bg-white dark:bg-[#233648] border border-slate-200 dark:border-[#324d67] text-slate-500 shadow-sm">
+                    <span class="material-symbols-outlined">swap_horiz</span>
+                </button>
+            </div>
+
+            <div class="flex-1 flex flex-col bg-slate-50 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] overflow-hidden shadow-inner">
+                <div class="flex items-center justify-between p-3 border-b border-slate-200 dark:border-[#324d67]">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-green-500 text-xl">output</span>
+                        <span class="text-sm font-semibold text-slate-500 dark:text-slate-400">Grek Alfabesi</span>
+                    </div>
+                </div>
+                <div class="flex-1 relative group">
+                    <textarea id="greek" class="w-full h-full resize-none bg-transparent p-5 text-lg leading-relaxed text-slate-700 dark:text-slate-200 focus:outline-none" placeholder="Çeviri burada görünecek"></textarea>
+                    <div class="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onclick="copyToClipboard('greek')" class="p-2 rounded-lg bg-slate-200 dark:bg-[#192633] text-slate-500 dark:text-slate-300 hover:text-primary" title="Kopyala">
+                            <span class="material-symbols-outlined text-lg">content_copy</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="flex flex-col gap-4">
+        <div id="keyboard" class="w-full bg-slate-200 dark:bg-[#111a22] rounded-2xl p-4 md:p-6 shadow-inner border-t border-slate-300 dark:border-[#233648] overflow-x-auto">
+            <div class="flex flex-col gap-2 min-w-[700px] select-none">
+                <div class="flex justify-center gap-1.5">
+                    <div class="key-btn">1</div><div class="key-btn">2</div><div class="key-btn">3</div><div class="key-btn">4</div><div class="key-btn">5</div><div class="key-btn">6</div><div class="key-btn">7</div><div class="key-btn">8</div><div class="key-btn">9</div><div class="key-btn">0</div>
+                    <div class="key-btn flex-grow-[1.5] bg-slate-300 dark:bg-[#324d67]" data-action="delete"><span class="material-symbols-outlined text-sm">backspace</span></div>
+                </div>
+                <div class="flex justify-center gap-1.5">
+                    <div class="key-btn">Q</div><div class="key-btn">W</div><div class="key-btn">E</div><div class="key-btn">R</div><div class="key-btn">T</div><div class="key-btn">Y</div><div class="key-btn">U</div><div class="key-btn">I</div><div class="key-btn">O</div><div class="key-btn">P</div><div class="key-btn">Ğ</div><div class="key-btn">Ü</div>
+                </div>
+                <div class="flex justify-center gap-1.5">
+                    <div class="key-btn">A</div><div class="key-btn">S</div><div class="key-btn">D</div><div class="key-btn">F</div><div class="key-btn">G</div><div class="key-btn">H</div><div class="key-btn">J</div><div class="key-btn">K</div><div class="key-btn">L</div><div class="key-btn">Ş</div><div class="key-btn">İ</div>
+                    <div class="key-btn flex-grow-[1.8] bg-primary text-white" data-action="enter">Enter</div>
+                </div>
+                <div class="flex justify-center gap-1.5">
+                    <div class="key-btn flex-grow-[1] max-w-[400px]" data-action="space">Boşluk</div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    const latin = document.getElementById('latin');
+    const greek = document.getElementById('greek');
+    let activeInput = latin;
+
+    const toGreek = {
+        "a":"Α","A":"Α","e":"Ε","E":"Ε","i":"Ͱ","İ":"Ͱ","n":"Ν","N":"Ν","r":"Ρ","R":"Ρ","l":"L","L":"L","ı":"Ь","I":"Ь","k":"Κ","K":"Κ","d":"D","D":"D","m":"Μ","M":"Μ","t":"Τ","T":"Τ","y":"R","Y":"R","s":"S","S":"S","u":"U","U":"U","o":"Q","O":"Q","b":"Β","B":"Β","ş":"Ш","Ş":"Ш","ü":"Υ","Ü":"Υ","z":"Ζ","Z":"Ζ","g":"G","G":"G","ç":"C","Ç":"C","ğ":"Γ","Ğ":"Γ","v":"V","V":"V","c":"J","C":"J","h":"Η","H":"Η","p":"Π","P":"Π","ö":"Ω","Ö":"Ω","f":"F","F":"F","x":"Ψ","X":"Ψ","j":"Σ","J":"Σ","0":"θ"
+    };
+
+    const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
+
+    function translateText(text, dir){
+        const map = dir === "toGreek" ? toGreek : toLatin;
+        return text.split('').map(ch => map[ch] || ch).join('');
+    }
+
+    latin.addEventListener('input', () => { greek.value = translateText(latin.value, "toGreek"); });
+    greek.addEventListener('input', () => { latin.value = translateText(greek.value, "toLatin"); });
+
+    latin.addEventListener('focus', () => activeInput = latin);
+    greek.addEventListener('focus', () => activeInput = greek);
+
+    // Klavye Tuşları
+    document.querySelectorAll('.key-btn').forEach(key => {
+        key.addEventListener('click', () => {
+            const action = key.getAttribute('data-action');
+            const val = key.innerText;
+
+            if(action === 'delete') {
+                activeInput.value = activeInput.value.slice(0, -1);
+            } else if(action === 'enter') {
+                activeInput.value += '\n';
+            } else if(action === 'space') {
+                activeInput.value += ' ';
+            } else if(val.length === 1) {
+                activeInput.value += val;
+            }
+
+            // Çeviriyi anlık tetikle
+            if(activeInput === latin) {
+                greek.value = translateText(latin.value, "toGreek");
+            } else {
+                latin.value = translateText(greek.value, "toLatin");
+            }
+        });
+    });
+
+    function copyToClipboard(id) {
+        const text = document.getElementById(id).value;
+        navigator.clipboard.writeText(text).then(() => alert('Kopyalandı!'));
+    }
+
+    function clearAll() {
+        latin.value = "";
+        greek.value = "";
+    }
+</script>
+</body>
+</html>
