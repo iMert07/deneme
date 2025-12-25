@@ -60,7 +60,7 @@
                 <div class="key fn-key">,</div><div class="key">A</div><div class="key">S</div><div class="key">D</div><div class="key">F</div><div class="key">G</div><div class="key">H</div><div class="key">J</div><div class="key">K</div><div class="key">L</div><div class="key">Ь</div><div class="key fn-key">.</div>
             </div>
             <div class="row">
-                <div class="key wide fn-key" data-action="none">Shift</div>
+                <div class="key wide fn-key" data-action="shift">Shift</div>
                 <div class="key">Z</div><div class="key">Ψ</div><div class="key">C</div><div class="key">V</div><div class="key">B</div><div class="key">N</div><div class="key">M</div><div class="key">Π</div>
                 <div class="key wide fn-key" data-action="delete">
                     <span class="material-symbols-outlined">backspace</span>
@@ -69,7 +69,7 @@
             <div class="row">
                 <div class="key wide fn-key" data-action="reset">Sıfırla</div>
                 <div class="key extra-wide" data-action="space">Boşluk</div>
-                <div class="key wide bg-primary text-white" data-action="enter">Enter</div>
+                <div class="key wide fn-key" data-action="enter">Enter</div>
             </div>
         </div>
     </section>
@@ -110,9 +110,10 @@
                 activeInput.value += ' '; 
             } else if (action === 'enter') { 
                 activeInput.value += '\n'; 
-            } else if (action === 'none') {
-                // Shift tuşu etkisiz, hiçbir şey yapma
+            } else if (action === 'shift') {
+                // Shift sadece görsel, işlevsiz.
             } else if (!action) { 
+                // Doğrudan tuşun üzerindeki karakteri (Büyük) ekle
                 activeInput.value += content; 
             }
 
