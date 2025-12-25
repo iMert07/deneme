@@ -2,7 +2,7 @@
 <html class="dark" lang="tr">
 <head>
     <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
     <title>Anatolya</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
@@ -24,9 +24,9 @@
         }
     </script>
 </head>
-<body class="bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white font-sans min-h-screen flex flex-col">
+<body class="bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white font-sans h-screen overflow-hidden flex flex-col">
 
-<header class="sticky top-0 z-50 border-b border-slate-200 dark:border-[#233648] bg-white dark:bg-[#111a22] px-4 py-3">
+<header class="flex-none border-b border-slate-200 dark:border-[#233648] bg-white dark:bg-[#111a22] px-4 py-3">
     <div class="max-w-[1200px] mx-auto flex flex-col gap-3">
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-4">
@@ -40,7 +40,7 @@
             </button>
         </div>
 
-        <nav id="categoryNav" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+        <nav class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
             <button class="nav-item active"><span class="material-symbols-outlined text-sm">keyboard</span><span>Alfabe</span></button>
             <button class="nav-item"><span class="material-symbols-outlined text-sm">calendar_month</span><span>Takvim</span></button>
             <button class="nav-item"><span class="material-symbols-outlined text-sm">schedule</span><span>Zaman</span></button>
@@ -64,28 +64,24 @@
                 <span class="font-medium">Tema</span>
                 <button id="themeToggle" class="toggle-btn">Aydınlık</button>
             </div>
-            <div class="flex justify-between items-center">
-                <span class="font-medium">Menü</span>
-                <button id="menuToggle" class="toggle-btn">Açık</button>
-            </div>
         </div>
     </div>
 </div>
 
-<main class="flex-1 w-full max-w-[1200px] mx-auto px-4 py-6 flex flex-col gap-8">
-    <section class="flex flex-col lg:flex-row gap-4 h-auto lg:h-[350px]">
+<main class="flex-1 overflow-hidden w-full max-w-[1200px] mx-auto px-4 py-4 flex flex-col gap-4">
+    <section class="flex-1 flex flex-col lg:flex-row gap-4 min-h-0">
         <div class="flex-1 flex flex-col bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] overflow-hidden shadow-sm">
-            <div class="p-3 border-b border-slate-200 dark:border-[#324d67] text-sm font-semibold text-slate-500">Eski Alfabe</div>
-            <textarea id="latin" class="flex-1 p-5 text-lg bg-transparent border-none focus:ring-0 resize-none outline-none" placeholder="Buraya yazın..."></textarea>
+            <div class="p-2 border-b border-slate-200 dark:border-[#324d67] text-xs font-semibold text-slate-500 uppercase tracking-tight">Eski Alfabe</div>
+            <textarea id="latin" class="flex-1 p-4 text-lg bg-transparent border-none focus:ring-0 resize-none outline-none overflow-y-auto" placeholder="Buraya yazın..."></textarea>
         </div>
 
         <div class="flex-1 flex flex-col bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] overflow-hidden shadow-inner">
-            <div class="p-3 border-b border-slate-200 dark:border-[#324d67] text-sm font-semibold text-slate-500">Yeni Alfabe</div>
-            <textarea id="greek" class="flex-1 p-5 text-lg bg-transparent border-none focus:ring-0 resize-none outline-none" placeholder="Sonuç burada görünecek..."></textarea>
+            <div class="p-2 border-b border-slate-200 dark:border-[#324d67] text-xs font-semibold text-slate-500 uppercase tracking-tight">Yeni Alfabe</div>
+            <textarea id="greek" class="flex-1 p-4 text-lg bg-transparent border-none focus:ring-0 resize-none outline-none overflow-y-auto" placeholder="Sonuç burada görünecek..."></textarea>
         </div>
     </section>
 
-    <section class="keyboard-container">
+    <section class="keyboard-container flex-none pb-2">
         <div class="keyboard" id="mainKeyboard">
             <div class="row">
                 <div class="key">θ</div><div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">Φ</div><div class="key">Λ</div>
@@ -119,43 +115,25 @@
     const settingsModal = document.getElementById('settingsModal');
     const closeSettings = document.getElementById('closeSettings');
     const themeToggle = document.getElementById('themeToggle');
-    const menuToggle = document.getElementById('menuToggle');
-    const categoryNav = document.getElementById('categoryNav');
     let activeInput = latin;
 
-    // --- AYARLAR VE TEMA MANTIĞI ---
-    
-    // Modal Aç/Kapat
     settingsBtn.onclick = () => settingsModal.classList.remove('hidden');
     closeSettings.onclick = () => settingsModal.classList.add('hidden');
     
-    // Tema Değiştirme (Tema Açık -> Aydınlık, Tema Kapalı -> Karanlık)
     themeToggle.onclick = () => {
         const isDark = document.documentElement.classList.toggle('dark');
         themeToggle.innerText = isDark ? "Aydınlık" : "Karanlık";
         themeToggle.classList.toggle('off', !isDark);
     };
 
-    // Menü Barı Gizleme/Gösterme
-    menuToggle.onclick = () => {
-        const isHidden = categoryNav.classList.toggle('hidden');
-        menuToggle.innerText = isHidden ? "Kapalı" : "Açık";
-        menuToggle.classList.toggle('off', isHidden);
-    };
-
-    // --- KLAVYE VE ÇEVİRİ MANTIĞI ---
-
     const toGreek = {
         "a":"Α","A":"Α","e":"Ε","E":"Ε","i":"Ͱ","İ":"Ͱ","n":"Ν","N":"Ν","r":"Ρ","R":"Ρ","l":"L","L":"L","ı":"Ь","I":"Ь","k":"Κ","K":"Κ","d":"D","D":"D","m":"Μ","M":"Μ","t":"Τ","T":"Τ","y":"R","Y":"R","s":"S","S":"S","u":"U","U":"U","o":"Q","O":"Q","b":"Β","B":"Β","ş":"Ш","Ş":"Ш","ü":"Υ","Ü":"Υ","z":"Ζ","Z":"Ζ","g":"G","G":"G","ç":"C","Ç":"C","ğ":"Γ","Ğ":"Γ","v":"V","V":"V","c":"J","h":"Η","H":"Η","p":"Π","P":"Π","ö":"Ω","Ö":"Ω","f":"F","F":"F","x":"Ψ","X":"Ψ","j":"Σ","J":"Σ","0":"θ"
     };
-
     const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
-
     function translateText(text, dir){
         const map = dir === "toGreek" ? toGreek : toLatin;
         return text.split('').map(ch => map[ch] || ch).join('');
     }
-
     latin.addEventListener('input', () => { greek.value = translateText(latin.value, "toGreek"); });
     greek.addEventListener('input', () => { latin.value = translateText(greek.value, "toLatin"); });
     latin.addEventListener('focus', () => activeInput = latin);
@@ -164,13 +142,11 @@
     document.querySelectorAll('.key').forEach(key => {
         key.addEventListener('click', () => {
             const action = key.dataset.action;
-            let content = key.innerText.trim();
             if (action === 'delete') { activeInput.value = activeInput.value.slice(0, -1); }
             else if (action === 'reset') { latin.value = ""; greek.value = ""; }
             else if (action === 'space') { activeInput.value += ' '; }
             else if (action === 'enter') { activeInput.value += '\n'; }
-            else if (!action) { activeInput.value += content; }
-            
+            else if (!action) { activeInput.value += key.innerText.trim(); }
             if (activeInput === latin) { greek.value = translateText(latin.value, "toGreek"); }
             else { latin.value = translateText(greek.value, "toLatin"); }
         });
