@@ -5,7 +5,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px; /* Satırlar arası boşluk (y) */
+    gap: 8px; 
     margin: 20px auto;
     width: 100%;
     max-width: 850px;
@@ -20,19 +20,20 @@
     border: 1px solid #233648;
 }
 
-/* SATIR YAPISI - GRID SİSTEMİNE GEÇİŞ */
+/* SATIR YAPISI - 12 SÜTUNLU KESİN HİZALAMA */
 .row {
     display: grid;
-    /* Klavyeyi toplam 12 eşit sütuna bölüyoruz (En kalabalık satır baz alınarak) */
+    /* Her satırı 12 eşit parçaya bölüyoruz */
     grid-template-columns: repeat(12, 1fr); 
-    gap: 6px; /* Senin 'y' değerin */
+    gap: 6px; 
     width: 100%;
     max-width: 800px;
+    margin-bottom: 2px;
 }
 
 /* --- TUŞ TASARIMI (1x) --- */
 .key {
-    grid-column: span 1; /* Her harf tam 1 sütun kaplar */
+    grid-column: span 1; /* Varsayılan: Her tuş 1 birim (1x) */
     height: 52px;
     display: flex;
     justify-content: center;
@@ -60,44 +61,58 @@
     background: #137fec !important;
 }
 
-/* --- ÖZEL SATIR DÜZENLEMELERİ (Sütun Sayıları) --- */
+/* --- FONKSİYON TUŞLARI (Açık Renkli Olanlar) --- */
 
-/* 1. ve 2. Satırlar 12 tuş olduğu için otomatik hizalanır */
-
-/* 3. Satır (A-L arası): 11 tuş olduğu için ortalamak adına boşluk bırakabiliriz */
-.row:nth-child(3) {
-    padding: 0 4%; 
-}
-
-/* 4. Satır (Z satırı): Matematiksel Oranlar (2x + 1y) */
-.row:nth-child(4) {
-    /* 2 (Shift) + 8 (Harf) + 2 (Delete) = 12 Sütun tam sığar! */
-    grid-template-columns: repeat(12, 1fr);
-}
-
+/* Shift, Backspace, Virgül ve Nokta */
 [data-action="shift"], 
-[data-action="delete"] {
-    grid-column: span 2 !important; /* Tam 2 harf (2x) ve 1 boşluk (1y) kaplar */
+[data-action="delete"],
+.key:contains(","), /* Virgül */
+.key:contains(".")  /* Nokta */ {
     background: #cbd5e1 !important;
 }
 
-/* 5. Satır (Boşluk satırı): Matematiksel Oranlar (3x + 6x + 3x) */
-.row:nth-child(5) {
-    grid-template-columns: repeat(12, 1fr);
+/* Alternatif olarak içeriğe göre seçemezse diye virgül ve nokta için özel kural */
+.row:nth-child(3) .key:first-child, /* Virgül (3. satırın başı) */
+.row:nth-child(3) .key:last-child   /* Nokta (3. satırın sonu) */ {
+    background: #cbd5e1 !important;
 }
 
+.dark [data-action="shift"], 
+.dark [data-action="delete"], 
+.dark .row:nth-child(3) .key:first-child, 
+.dark .row:nth-child(3) .key:last-child {
+    background: #324d67 !important;
+}
+
+/* --- MATEMATİKSEL GENİŞLİKLER (2x, 3x, 6x) --- */
+
+/* Shift ve Backspace (2x + 1y) */
+[data-action="shift"], 
+[data-action="delete"] {
+    grid-column: span 2 !important;
+}
+
+/* Sıfırla ve Enter (3x + 2y) */
 [data-action="reset"], 
 [data-action="enter"] {
-    grid-column: span 3 !important; /* 3x + 2y */
+    grid-column: span 3 !important;
+    background: #cbd5e1 !important;
 }
 
-[data-action="space"] {
-    grid-column: span 6 !important; /* 6x + 5y */
-}
-
-.dark [data-action="shift"], .dark [data-action="delete"], 
 .dark [data-action="reset"], .dark [data-action="enter"] {
     background: #324d67 !important;
+}
+
+/* Enter Butonuna Özel Renk (İsteğe Bağlı) */
+[data-action="enter"] {
+    background: #137fec !important;
+    color: white !important;
+    border-bottom: 3px solid #0a56a3 !important;
+}
+
+/* Boşluk (6x + 5y) */
+[data-action="space"] {
+    grid-column: span 6 !important;
 }
 
 /* --- MOBİL OPTİMİZASYON --- */
@@ -108,10 +123,9 @@
         left: 2%;
         width: 96%;
         padding: 8px 4px;
-        border-radius: 12px;
     }
 
-    .row { gap: 4px; } /* Mobilde 'y' 4px */
+    .row { gap: 4px; }
 
     .key {
         height: 45px;
