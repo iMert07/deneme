@@ -12,42 +12,43 @@ const toGreek = {
 
 const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
 
-function translate(text, dir){
+function translateText(text, dir){
     const map = dir === "toGreek" ? toGreek : toLatin;
     return text.split('').map(ch => map[ch] || ch).join('');
 }
 
 function updateTranslation() {
     if (activeInput === latin) {
-        greek.value = translate(latin.value, "toGreek");
+        greek.value = translateText(latin.value, "toGreek");
     } else {
-        latin.value = translate(greek.value, "toLatin");
+        latin.value = translateText(greek.value, "toLatin");
     }
 }
 
 function deleteChar() {
-    activeInput.value = activeInput.value.slice(0, -1);
-    updateTranslation();
+    if (activeInput.value.length > 0) {
+        activeInput.value = activeInput.value.slice(0, -1);
+        updateTranslation();
+    }
 }
 
 // KLAVYE OLAYLARI
 document.querySelectorAll('.key').forEach(key => {
-    // 1. DOKUNMATİK BAŞLANGICI (Mobile & Desktop)
     const handleStart = (e) => {
-        // Mobilde sağ tık menüsünü ve seçimi engelle
+        // Mobilde varsayılan seçme/menü olaylarını engelle
         if (e.type === 'touchstart') e.preventDefault(); 
         
         const action = key.dataset.action;
         const content = key.innerText.trim();
 
-        // Görsel efekt (Harf Büyümesi)
+        // Görsel efekt (Harf Popup) - Sadece harflerde
         if (!action) {
             key.classList.add('key-active-effect');
         }
 
         if (action === 'delete') {
             deleteChar();
-            // 500ms basılı tutunca hızlı silmeye başla
+            // Basılı tutulursa hızlı silme başlasın
             deleteTimeout = setTimeout(() => {
                 deleteInterval = setInterval(deleteChar, 70);
             }, 500);
@@ -57,29 +58,29 @@ document.querySelectorAll('.key').forEach(key => {
             activeInput.value += ' '; updateTranslation();
         } else if (action === 'reset') {
             latin.value = ""; greek.value = "";
-        } else if (action !== 'shift') { // Shift ve diğer aksiyon olmayanlar (Harfler)
+        } else if (action !== 'shift') {
             activeInput.value += content;
             updateTranslation();
         }
     };
 
-    // 2. DOKUNMATİK BİTİŞİ
     const handleEnd = () => {
         clearTimeout(deleteTimeout);
         clearInterval(deleteInterval);
         key.classList.remove('key-active-effect');
     };
 
-    // Event Listenerları Ekle
+    // Olay Dinleyicileri
     key.addEventListener('mousedown', handleStart);
     key.addEventListener('touchstart', handleStart, {passive: false});
     
     window.addEventListener('mouseup', handleEnd);
     window.addEventListener('touchend', handleEnd);
+    window.addEventListener('mouseleave', handleEnd);
 });
 
-// Input odak takibi
+// Odak ve Input Takibi
 latin.addEventListener('focus', () => activeInput = latin);
 greek.addEventListener('focus', () => activeInput = greek);
-latin.addEventListener('input', () => { greek.value = translate(latin.value, "toGreek"); });
-greek.addEventListener('input', () => { latin.value = translate(greek.value, "toLatin"); });
+latin.addEventListener('input', () => { greek.value = translateText(latin.value, "toGreek"); });
+greek.addEventListener('input', () => { latin.value = translateText(greek.value, "toLatin"); });
