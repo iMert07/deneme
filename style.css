@@ -1,14 +1,20 @@
 /* style.css */
 
+/* --- MATEMATİKSEL DEĞİŞKENLER (x ve y) --- */
+:root {
+    --x: 50px;              /* Harf tuşu genişliği (1x) */
+    --y: 6px;               /* Tuşlar arası boşluk (gap) */
+    --h: 52px;              /* Tuş yüksekliği */
+}
+
 /* --- KLAVYE ANA KUTUSU --- */
 .keyboard {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: var(--y);
     margin: 20px auto;
-    width: 100%;
-    max-width: 800px;
+    width: fit-content;
     padding: 15px;
     background: #e2e8f0;
     border-radius: 1.25rem;
@@ -25,16 +31,14 @@
 .row {
     display: flex;
     justify-content: center;
-    gap: 6px;
+    gap: var(--y);
     width: 100%;
-    box-sizing: border-box;
 }
 
-/* --- TUŞ TASARIMI (TÜM HARFLERİ EŞİTLEYEN AYAR) --- */
+/* --- TUŞ TASARIMI (1x) --- */
 .key {
-    /* flex: 1 1 0px; sayesinde her tuş satırdaki boşluğu eşit oranda paylaşır */
-    flex: 1 1 0px; 
-    height: 52px;
+    width: var(--x); 
+    height: var(--h);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -47,7 +51,7 @@
     user-select: none;
     border-bottom: 3px solid #cbd5e1;
     transition: all 0.05s ease;
-    min-width: 0; /* İçeriğin genişliği zorlamasını engeller */
+    box-sizing: border-box;
 }
 
 .dark .key {
@@ -63,59 +67,60 @@
     color: white !important;
 }
 
-/* --- ÖZEL TUŞLAR (Shift, Enter, Sıfırla) --- */
-.key.wide {
-    /* Normal bir tuşun yaklaşık 1.8 katı yer kaplar */
-    flex: 1.8 1 0px; 
-    background: #cbd5e1;
+/* --- ÖZEL BOYUTLANDIRILMIŞ TUŞLAR --- */
+
+/* Shift ve Backspace (2x + 1y) */
+[data-action="shift"], 
+[data-action="delete"] {
+    width: calc((var(--x) * 2) + var(--y)) !important;
+    background: #cbd5e1 !important;
+}
+
+/* Sıfırla ve Enter (3x + 2y) */
+.key.wide[onclick*="location.reload"], 
+[data-action="enter"] {
+    width: calc((var(--x) * 3) + (var(--y) * 2)) !important;
+}
+
+/* Boşluk (6x + 5y) */
+[data-action="space"] {
+    width: calc((var(--x) * 6) + (var(--y) * 5)) !important;
+}
+
+/* Ortak Stil Ayarları */
+.key.wide, [data-action="space"], [data-action="enter"], [data-action="delete"] {
     font-size: 13px;
     text-transform: uppercase;
 }
 
-.dark .key.wide {
-    background: #324d67;
+.dark .key.wide, .dark [data-action="delete"], .dark [data-action="enter"] {
+    background: #324d67 !important;
 }
 
-/* BOŞLUK TUŞU (Masaüstü ve Mobil Dengesi) --- */
-.key.extra-wide {
-    /* Alt satırı diğer satırlarla aynı genişliğe ulaştırmak için yüksek değer */
-    flex: 8 1 0px; 
-}
-
-/* --- 📱 MOBİL OPTİMİZASYON --- */
+/* --- 📱 MOBİL OPTİMİZASYON (Oranları Koru, Boyutu Küçült) --- */
 @media (max-width: 768px) {
+    :root {
+        --x: 7.2vw; /* Ekran genişliğine göre dinamik x */
+        --y: 4px;   /* Mobilde daha dar gap */
+        --h: 46px;
+    }
+
     .keyboard {
         position: fixed;
         bottom: 8px; 
-        left: 8px;
-        right: 8px;
-        width: calc(100% - 16px);
-        max-width: calc(100% - 16px);
-        border-radius: 1rem; 
-        padding: 8px 5px 12px 5px; 
-        gap: 4px; 
-        z-index: 1000;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-        background: #f1f5f9;
-        border: 1px solid rgba(0,0,0,0.08);
-    }
-
-    .dark .keyboard {
-        background: #1a2633;
-    }
-
-    .row {
-        gap: 4px;
+        left: 6px;
+        right: 6px;
+        width: calc(100% - 12px);
+        max-width: calc(100% - 12px);
+        padding: 8px 4px 12px 4px; 
+        border-radius: 1rem;
     }
 
     .key {
-        height: 44px;
         font-size: 15px;
         border-radius: 5px;
         border-bottom-width: 2px;
     }
 
-    main { 
-        padding-bottom: 260px !important; 
-    }
+    main { padding-bottom: 260px !important; }
 }
