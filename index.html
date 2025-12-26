@@ -31,36 +31,26 @@
 </head>
 <body class="bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white font-sans min-h-screen flex flex-col">
 
-<header class="sticky top-0 z-50 flex items-center justify-between border-b border-slate-200 dark:border-[#233648] bg-white dark:bg-[#111a22] px-6 py-3">
-    <div class="flex items-center gap-4">
+<header class="sticky top-0 z-50 bg-white dark:bg-[#111a22] border-b border-slate-200 dark:border-[#233648]">
+    <div class="flex items-center justify-between px-6 py-3">
         <h2 class="text-base sm:text-lg font-bold truncate">Anatolya'ya Dönüş</h2>
-    </div>
-
-    <div class="flex items-center gap-1 sm:gap-2">
-        <div class="relative" id="dropdownContainer">
-            <button id="dropdownBtn" class="flex items-center gap-2 px-3 py-2 rounded-full bg-slate-100 dark:bg-[#192633] border border-slate-200 dark:border-[#324d67] hover:bg-slate-200 dark:hover:bg-[#233648] transition-all">
-                <span id="selectedIcon" class="material-symbols-outlined text-[20px] text-slate-900 dark:text-white">translate</span>
-                <span id="selectedText" class="text-sm font-medium">Alfabe</span>
-            </button>
-
-            <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-[#192633] border border-slate-200 dark:border-[#324d67] rounded-xl shadow-xl overflow-hidden z-[60]">
-                <div class="dropdown-item flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-[#233648] text-slate-400 dark:text-slate-500 transition-colors" data-value="Alfabe" data-icon="translate">
-                    <span class="material-symbols-outlined">translate</span>
-                    <span class="text-sm">Alfabe</span>
-                </div>
-                <div class="dropdown-item flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-[#233648] text-slate-400 dark:text-slate-500 transition-colors" data-value="Uzunluk" data-icon="straighten">
-                    <span class="material-symbols-outlined">straighten</span>
-                    <span class="text-sm">Uzunluk</span>
-                </div>
-                <div class="dropdown-item flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-[#233648] text-slate-400 dark:text-slate-500 transition-colors" data-value="Sıcaklık" data-icon="thermostat">
-                    <span class="material-symbols-outlined">thermostat</span>
-                    <span class="text-sm">Sıcaklık</span>
-                </div>
-            </div>
-        </div>
-
         <button id="themeToggle" class="p-2 flex items-center justify-center bg-transparent border-none text-slate-500 dark:text-slate-400 hover:opacity-70 transition-all focus:outline-none">
             <span class="material-symbols-outlined text-[28px]">globe_book</span>
+        </button>
+    </div>
+
+    <div class="flex items-center gap-2 px-4 pb-3 overflow-x-auto no-scrollbar scroll-smooth">
+        <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all active-tab" data-value="Alfabe" data-icon="translate">
+            <span class="material-symbols-outlined text-[20px]">translate</span>
+            <span class="text-sm font-medium">Alfabe</span>
+        </button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Uzunluk" data-icon="straighten">
+            <span class="material-symbols-outlined text-[20px]">straighten</span>
+            <span class="text-sm font-medium">Uzunluk</span>
+        </button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Sıcaklık" data-icon="thermostat">
+            <span class="material-symbols-outlined text-[20px]">thermostat</span>
+            <span class="text-sm font-medium">Sıcaklık</span>
         </button>
     </div>
 </header>
@@ -69,12 +59,12 @@
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="flex flex-col gap-2">
             <div class="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Eski Alfabe</div>
-            <textarea id="latin" class="w-full h-[200px] lg:h-[300px] p-5 text-lg bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all resize-none text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
+            <textarea id="latin" class="w-full h-[180px] lg:h-[250px] p-5 text-lg bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all resize-none text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
         </div>
 
         <div class="flex flex-col gap-2">
             <div class="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Yeni Alfabe</div>
-            <textarea id="greek" class="w-full h-[200px] lg:h-[300px] p-5 text-lg bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner focus:ring-0 resize-none text-slate-900 dark:text-white" placeholder="Sonuç burada görünecek..."></textarea>
+            <textarea id="greek" class="w-full h-[180px] lg:h-[250px] p-5 text-lg bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner focus:ring-0 resize-none text-slate-900 dark:text-white" placeholder="Sonuç burada görünecek..."></textarea>
         </div>
     </section>
 
@@ -104,6 +94,26 @@
         </div>
     </section>
 </main>
+
+<style>
+    /* Kaydırma çubuğunu gizle */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Aktif Sekme Stili */
+    .active-tab {
+        background-color: #137fec;
+        color: white !important;
+    }
+    .active-tab span { color: white !important; }
+
+    /* Pasif Sekme Stili */
+    .inactive-tab {
+        background-color: transparent;
+        color: #94a3b8; /* slate-400 */
+    }
+    .dark .inactive-tab { color: #64748b; } /* slate-500 */
+</style>
 
 <script src="script.js"></script>
 </body>
