@@ -1,4 +1,4 @@
-/* GENEL */
+/* GENEL AYARLAR */
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { min-height: 100%; margin: 0; padding: 0; overflow-x: hidden; overflow-y: auto; }
 
@@ -10,7 +10,7 @@ header h2, .material-symbols-outlined, .nav-tab, .key {
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 .active-tab { background-color: #137fec !important; color: white !important; }
 
-/* KLAVYE TEMEL */
+/* KLAVYE TEMEL (MASAÜSTÜ) */
 .keyboard {
     display: flex; flex-direction: column; align-items: center; gap: 8px; 
     margin: 20px auto; width: 100%; max-width: 850px; padding: 15px;
@@ -35,7 +35,7 @@ header h2, .material-symbols-outlined, .nav-tab, .key {
 [data-action="reset"], [data-action="enter"] { grid-column: span 3 !important; }
 [data-action="space"] { grid-column: span 6 !important; }
 
-/* MOBİL KESİN ÇÖZÜM */
+/* MOBİL KESİN ÇÖZÜM: TAM YASLAMA VE DİKEY DARALTMA */
 @media (max-width: 768px) {
     .keyboard {
         position: fixed !important; 
@@ -45,7 +45,7 @@ header h2, .material-symbols-outlined, .nav-tab, .key {
         width: 100% !important; 
         max-width: 100% !important; 
         margin: 0 !important;
-        padding: 8px 4px 32px 4px !important; /* Alt navigasyon payı */
+        padding: 8px 4px 32px 4px !important; 
         border-radius: 0 !important;
         border: none !important;
         z-index: 9999 !important;
