@@ -44,24 +44,26 @@
 
         /* MOBİL ÖZEL AYARLAR */
         @media (max-width: 768px) {
-            /* Klavye genişliği %94 ile her iki yana eşit ve yakın */
+            /* Klavyeyi sağa ve aşağı doğru genişlettik */
             .keyboard { 
-                width: 94% !important; 
-                max-width: 500px !important; 
-                margin: 0 auto !important; 
+                width: 97% !important; /* Sağa doğru biraz daha genişlettik */
+                max-width: 550px !important; 
+                margin: 0 0 0 auto !important; /* Sola yaslamayı azaltıp sağa alan açtık */
                 padding: 8px !important;
                 border-radius: 1rem !important;
             }
-            /* Tuşların dikey genişliğini (yüksekliğini) daralttık */
+            /* Konteynırı en alta ve sağa yasladık */
+            #kb-container { 
+                padding-top: 5px !important;
+                padding-bottom: 0px !important; /* Aşağıya tam dayandı */
+                padding-right: 0px !important;
+                display: flex;
+                justify-content: flex-end; /* Sağ tarafa odakladık */
+            }
             .key { 
                 height: 38px !important; 
                 font-size: 1rem !important; 
                 border-bottom-width: 2px !important;
-            }
-            /* Klavyeyi daha aşağı kaydırdık */
-            #kb-container { 
-                padding-top: 5px !important;
-                padding-bottom: 2px !important; 
             }
             textarea { 
                 font-size: 1.1rem !important; 
@@ -122,7 +124,7 @@
         </div>
     </section>
 
-    <section id="kb-container" class="flex justify-center">
+    <section id="kb-container">
         <div class="keyboard !my-0" id="mainKeyboard">
             <div class="row">
                 <div class="key">θ</div><div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">Φ</div><div class="key">Λ</div>
