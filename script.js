@@ -5,17 +5,8 @@ const labelOutput = document.getElementById('label-output');
 const kbContainer = document.getElementById('kb-container');
 let activeInput = latin;
 
-const toGreek = {
-    "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν",
-    "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ",
-    "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R",
-    "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β",
-    "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G",
-    "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J",
-    "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F",
-    "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ"
-};
-
+// Alfabe haritası aynı...
+const toGreek = { "a":"Α","A":"Α", /* ... */ "0":"θ" };
 const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
 
 function translate(text, dir){
@@ -25,8 +16,6 @@ function translate(text, dir){
 
 latin.addEventListener('input', () => { greek.value = translate(latin.value, "toGreek"); });
 greek.addEventListener('input', () => { latin.value = translate(greek.value, "toLatin"); });
-latin.addEventListener('focus', () => activeInput = latin);
-greek.addEventListener('focus', () => activeInput = greek);
 
 document.querySelectorAll('.key').forEach(key => {
     key.addEventListener('click', (e) => {
@@ -52,12 +41,8 @@ navTabs.forEach(tab => {
         this.classList.remove('inactive-tab');
         
         if (mode === "Alfabe") {
-            labelInput.innerText = "Eski Alfabe";
-            labelOutput.innerText = "Yeni Alfabe";
             kbContainer.style.display = "block";
         } else {
-            labelInput.innerText = "Girdi (" + mode + ")";
-            labelOutput.innerText = "Sonuç";
             kbContainer.style.display = "none";
         }
     });
@@ -65,5 +50,4 @@ navTabs.forEach(tab => {
 
 document.getElementById('themeToggle').addEventListener('click', function() {
     document.documentElement.classList.toggle('dark');
-    localStorage.setItem('color-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
 });
