@@ -1,10 +1,8 @@
-/* style.css */
-
-/* --- GENEL SEÇİLEMEZLİK (Logo vb. için) --- */
-header h2, .material-symbols-outlined, header .size-8 {
+/* --- GENEL SEÇİLEMEZLİK --- */
+header h2, .material-symbols-outlined, .nav-tab {
     user-select: none;
-    -webkit-user-select: none; /* Safari desteği */
-    -webkit-touch-callout: none; /* Mobilde uzun basınca çıkan menüyü engeller */
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
 }
 
 /* --- KLAVYE ANA KUTUSU --- */
@@ -20,10 +18,8 @@ header h2, .material-symbols-outlined, header .size-8 {
     background: #e2e8f0;
     border-radius: 1.25rem;
     box-sizing: border-box;
-    /* Klavye alanının tamamında seçimi engelle */
     user-select: none;
     -webkit-user-select: none;
-    -webkit-touch-callout: none;
 }
 
 .dark .keyboard {
@@ -41,7 +37,7 @@ header h2, .material-symbols-outlined, header .size-8 {
     margin-bottom: 2px;
 }
 
-/* --- TUŞ TASARIMI (1x) --- */
+/* TUŞ TASARIMI */
 .key {
     grid-column: span 1; 
     height: 52px;
@@ -57,9 +53,6 @@ header h2, .material-symbols-outlined, header .size-8 {
     border-bottom: 3px solid #cbd5e1;
     transition: all 0.05s ease;
     min-width: 0;
-    /* Tuşlar özelinde de seçimi garantiye alalım */
-    user-select: none;
-    -webkit-user-select: none;
 }
 
 .dark .key {
@@ -73,39 +66,53 @@ header h2, .material-symbols-outlined, header .size-8 {
     border-bottom: 0;
 }
 
-/* --- FONKSİYON TUŞLARI --- */
-.fn-key {
-    background: #cbd5e1 !important;
-}
+/* FONKSİYON TUŞLARI */
+.fn-key { background: #cbd5e1 !important; }
+.dark .fn-key { background: #324d67 !important; }
 
-.dark .fn-key {
-    background: #324d67 !important;
-}
-
-/* --- MATEMATİKSEL GENİŞLİKLER --- */
+/* GENİŞLİKLER */
 [data-action="shift"], [data-action="delete"] { grid-column: span 2 !important; }
 [data-action="reset"], [data-action="enter"] { grid-column: span 3 !important; }
 [data-action="space"] { grid-column: span 6 !important; }
 
-/* --- MOBİL OPTİMİZASYON --- */
+/* --- MOBİL OPTİMİZASYON (KESİN ÇÖZÜM) --- */
 @media (max-width: 768px) {
     .keyboard {
-        position: fixed;
-        bottom: 8px;
-        left: 2%;
-        width: 96%;
-        padding: 8px 4px 12px 4px;
-        border-radius: 1rem;
-        box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
+        position: fixed !important;
+        bottom: 0 !important; /* En alta çivile */
+        left: 0 !important;   /* Sola tam dayalı */
+        right: 0 !important;  /* Sağa tam dayalı */
+        width: 100% !important;
+        max-width: 100% !important;
+        
+        /* Navigasyon barı için rezerve alan */
+        padding-bottom: 32px !important; 
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+        padding-top: 10px !important;
+        
+        border-radius: 0 !important; /* Yanlara yaslandığı için sıfır radius */
+        border-left: none !important;
+        border-right: none !important;
+        border-bottom: none !important;
+        box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
+        margin: 0 !important;
     }
 
-    .row { gap: 4px; }
+    .row { gap: 4px; margin-bottom: 4px; }
 
     .key {
-        height: 44px;
+        height: 40px !important; /* Dikey daraltma yapıldı */
         font-size: 1rem;
         border-bottom-width: 2px;
     }
 
-    main { padding-bottom: 260px !important; }
+    /* Sayfanın en altındaki içeriğin klavye altında kalmaması için */
+    main { padding-bottom: 300px !important; }
+}
+
+/* BİLGİSAYARDA YAZILARI BÜYÜTME */
+@media (min-width: 1024px) {
+    textarea { font-size: 1.5rem !important; }
+    header h2 { font-size: 1.5rem !important; }
 }
