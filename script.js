@@ -1,6 +1,3 @@
-/* ==========================================================================
-   1. TANIMLAMALAR
-   ========================================================================== */
 const latin = document.getElementById('latin');
 const greek = document.getElementById('greek');
 const labelInput = document.getElementById('label-input');
@@ -21,9 +18,6 @@ const toGreek = {
 
 const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
 
-/* ==========================================================================
-   2. ÇEVİRİ VE KLAVYE MANTIĞI
-   ========================================================================== */
 function translate(text, dir){
     const map = dir === "toGreek" ? toGreek : toLatin;
     return text.split('').map(ch => map[ch] || ch).join('');
@@ -49,11 +43,7 @@ document.querySelectorAll('.key').forEach(key => {
     });
 });
 
-/* ==========================================================================
-   3. TEMA VE SEKME YÖNETİMİ
-   ========================================================================== */
 const navTabs = document.querySelectorAll('.nav-tab');
-
 navTabs.forEach(tab => {
     tab.addEventListener('click', function() {
         const mode = this.dataset.value;
