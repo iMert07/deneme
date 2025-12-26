@@ -86,5 +86,5 @@ function updateTime() {
     document.getElementById('date').textContent = `${toBase12(dayB12)}.${toBase12(monthB12)}.${toBase12(yearB12, 4)}`;
 }
 
-setInterval(updateTime, 500);
+setInterval(updateTime, 100);
 updateTime();
