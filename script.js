@@ -88,25 +88,46 @@ themeToggleButton.addEventListener('click', function() {
 });
 
 /* ==========================================================================
-   4. DROPDOWN MANTIĞI (Vurgulu İkon Renkleri)
+   4. DROPDOWN MANTIĞI (Vurgulu ve Soluk İkonlar)
    ========================================================================== */
 const dropdownBtn = document.getElementById('dropdownBtn');
 const dropdownMenu = document.getElementById('dropdownMenu');
+const dropdownItems = document.querySelectorAll('.dropdown-item');
+
+// Paneldeki aktif/pasif renklerini güncelleyen fonksiyon
+function updateDropdownUI(currentValue) {
+    dropdownItems.forEach(item => {
+        if (item.getAttribute('data-value') === currentValue) {
+            // Seçili olan: Parlak/Beyaz
+            item.classList.remove('text-slate-400', 'dark:text-slate-500');
+            item.classList.add('text-slate-900', 'dark:text-white', 'font-bold');
+        } else {
+            // Seçili olmayan: Soluk/Gri
+            item.classList.remove('text-slate-900', 'dark:text-white', 'font-bold');
+            item.classList.add('text-slate-400', 'dark:text-slate-500');
+        }
+    });
+}
 
 if(dropdownBtn) {
     dropdownBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         dropdownMenu.classList.toggle('hidden');
+        // Menü her açıldığında mevcut seçime göre renkleri tazele
+        updateDropdownUI(document.getElementById('selectedText').innerText);
     });
 }
 
-document.querySelectorAll('.dropdown-item').forEach(item => {
+dropdownItems.forEach(item => {
     item.addEventListener('click', function() {
-        document.getElementById('selectedText').innerText = this.getAttribute('data-value');
-        const iconSpan = document.getElementById('selectedIcon');
-        iconSpan.innerText = this.getAttribute('data-icon');
-        // İkonun her zaman belirgin kalmasını sağlamak için sınıfları koruyoruz
-        iconSpan.className = "material-symbols-outlined text-[20px] text-slate-900 dark:text-white";
+        const value = this.getAttribute('data-value');
+        const icon = this.getAttribute('data-icon');
+        
+        document.getElementById('selectedText').innerText = value;
+        document.getElementById('selectedIcon').innerText = icon;
+        
+        // Menüyü kapat ve renkleri güncelle
+        updateDropdownUI(value);
         dropdownMenu.classList.add('hidden');
     });
 });
@@ -114,3 +135,6 @@ document.querySelectorAll('.dropdown-item').forEach(item => {
 window.addEventListener('click', () => {
     if(dropdownMenu) dropdownMenu.classList.add('hidden');
 });
+
+// İlk açılışta UI'ı ayarla
+updateDropdownUI("Alfabe");
