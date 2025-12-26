@@ -1,9 +1,18 @@
 /* style.css */
 
 /* --- GENEL SEÇİLEMEZLİK --- */
-header h2, .material-symbols-outlined, header .size-8 {
+header, 
+.nav-tab, 
+#kb-container, 
+.key, 
+#label-input, 
+#label-output,
+#clock,
+#date {
     user-select: none;
     -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
     -webkit-touch-callout: none;
 }
 
@@ -20,9 +29,6 @@ header h2, .material-symbols-outlined, header .size-8 {
     background: #e2e8f0;
     border-radius: 1.25rem;
     box-sizing: border-box;
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-touch-callout: none;
 }
 
 .dark .keyboard {
@@ -40,7 +46,7 @@ header h2, .material-symbols-outlined, header .size-8 {
     margin-bottom: 2px;
 }
 
-/* --- TUŞ TASARIMI (1x) --- */
+/* --- TUŞ TASARIMI --- */
 .key {
     grid-column: span 1; 
     height: 52px;
@@ -56,8 +62,6 @@ header h2, .material-symbols-outlined, header .size-8 {
     border-bottom: 3px solid #cbd5e1;
     transition: all 0.05s ease;
     min-width: 0;
-    user-select: none;
-    -webkit-user-select: none;
 }
 
 .dark .key {
@@ -71,7 +75,6 @@ header h2, .material-symbols-outlined, header .size-8 {
     border-bottom: 0;
 }
 
-/* --- FONKSİYON TUŞLARI --- */
 .fn-key {
     background: #cbd5e1 !important;
 }
@@ -80,7 +83,6 @@ header h2, .material-symbols-outlined, header .size-8 {
     background: #324d67 !important;
 }
 
-/* --- MATEMATİKSEL GENİŞLİKLER --- */
 [data-action="shift"], [data-action="delete"] { grid-column: span 2 !important; }
 [data-action="reset"], [data-action="enter"] { grid-column: span 3 !important; }
 [data-action="space"] { grid-column: span 6 !important; }
