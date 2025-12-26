@@ -88,7 +88,7 @@ themeToggleButton.addEventListener('click', function() {
 });
 
 /* ==========================================================================
-   4. DROPDOWN MANTIĞI (Soluk Gri Destekli)
+   4. DROPDOWN MANTIĞI
    ========================================================================== */
 const dropdownBtn = document.getElementById('dropdownBtn');
 const dropdownMenu = document.getElementById('dropdownMenu');
