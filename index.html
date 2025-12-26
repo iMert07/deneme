@@ -15,6 +15,11 @@
             darkMode: "class",
             theme: { extend: { colors: { "primary": "#137fec", "background-dark": "#101922" } } }
         }
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
     </script>
 </head>
 <body class="bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white font-sans flex flex-col min-h-screen">
@@ -24,12 +29,11 @@
         <div class="flex items-center gap-3 overflow-hidden">
             <h2 class="text-sm sm:text-lg font-extrabold truncate leading-tight border-r border-slate-200 dark:border-slate-700 pr-3">Anatolya'ya Dönüş</h2>
             <div class="flex items-center gap-2 sm:gap-4 font-mono font-bold leading-none shrink-0">
-                <span id="clock" class="text-[10px] sm:text-sm text-primary">θθ.θθ.θθ</span>
-                <span id="date" class="text-[10px] sm:text-sm text-slate-500 dark:text-slate-400">θθ.θθ.θθ</span>
+                <span id="clock" class="text-sm sm:text-lg text-primary">θθ.θθ.θθ</span>
+                <span id="date" class="text-sm sm:text-lg text-slate-500 dark:text-slate-400">θθ.θθ.θθ</span>
             </div>
         </div>
-        
-        <button id="themeToggle" class="p-1 flex items-center justify-center text-slate-500 dark:text-slate-400 focus:outline-none">
+        <button id="themeToggle" class="p-1 flex items-center justify-center text-slate-500 dark:text-slate-400 focus:outline-none shrink-0">
             <span class="material-symbols-outlined text-[24px]">globe_book</span>
         </button>
     </div>
