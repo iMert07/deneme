@@ -42,23 +42,22 @@
             h2 { font-size: 1.5rem !important; }
         }
 
-        /* MOBİL ÖZEL AYARLAR */
+        /* MOBİL ÖZEL AYARLAR - MİLİMETRİK SENKRONİZASYON */
         @media (max-width: 768px) {
-            /* Klavyeyi sağa ve aşağı doğru genişlettik */
             .keyboard { 
-                width: 97% !important; /* Sağa doğru biraz daha genişlettik */
-                max-width: 550px !important; 
-                margin: 0 0 0 auto !important; /* Sola yaslamayı azaltıp sağa alan açtık */
+                /* Genişliği %98 yaparak iki yana en yakın ve tam eşit mesafeye aldık */
+                width: 98% !important; 
+                max-width: 600px !important; 
+                /* margin auto her iki tarafı milimetrik olarak eşitler */
+                margin: 0 auto !important; 
                 padding: 8px !important;
                 border-radius: 1rem !important;
             }
-            /* Konteynırı en alta ve sağa yasladık */
             #kb-container { 
                 padding-top: 5px !important;
-                padding-bottom: 0px !important; /* Aşağıya tam dayandı */
-                padding-right: 0px !important;
+                padding-bottom: 0px !important; 
                 display: flex;
-                justify-content: flex-end; /* Sağ tarafa odakladık */
+                justify-content: center; /* Tam orta hizalama asimetriyi bitirir */
             }
             .key { 
                 height: 38px !important; 
