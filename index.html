@@ -42,22 +42,25 @@
             h2 { font-size: 1.5rem !important; }
         }
 
-        /* MOBİL ÖZEL AYARLAR - MİLİMETRİK SENKRONİZASYON */
+        /* MOBİL ÖZEL AYARLAR: TAM YASLAMA */
         @media (max-width: 768px) {
             .keyboard { 
-                /* Genişliği %98 yaparak iki yana en yakın ve tam eşit mesafeye aldık */
-                width: 98% !important; 
-                max-width: 600px !important; 
-                /* margin auto her iki tarafı milimetrik olarak eşitler */
-                margin: 0 auto !important; 
-                padding: 8px !important;
-                border-radius: 1rem !important;
+                /* Klavyeyi her iki duvara tam dayıyoruz */
+                width: 100% !important; 
+                max-width: 100% !important; 
+                margin: 0 !important; 
+                padding: 10px 5px !important; /* Tuşların ekrana değmemesi için sadece iç boşluk */
+                border-radius: 0 !important; /* Yanlara yaslandığı için köşeleri sıfırladık */
+                border-left: none !important;
+                border-right: none !important;
+                border-bottom: none !important;
             }
             #kb-container { 
                 padding-top: 5px !important;
                 padding-bottom: 0px !important; 
-                display: flex;
-                justify-content: center; /* Tam orta hizalama asimetriyi bitirir */
+                padding-left: 0px !important;
+                padding-right: 0px !important;
+                display: block !important; /* Hizalama karmaşasını bitirip tam alanı kaplamasını sağlar */
             }
             .key { 
                 height: 38px !important; 
