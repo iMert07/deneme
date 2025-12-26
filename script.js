@@ -1,10 +1,8 @@
-// --- ELEMENTLER ---
 const latin = document.getElementById('latin');
 const greek = document.getElementById('greek');
 const kbContainer = document.getElementById('kb-container');
 let activeInput = latin;
 
-// --- HARF ÇEVİRİ SİSTEMİ ---
 const toGreek = {
     "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν",
     "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ",
@@ -27,7 +25,6 @@ greek.addEventListener('input', () => { latin.value = translate(greek.value, "to
 latin.addEventListener('focus', () => activeInput = latin);
 greek.addEventListener('focus', () => activeInput = greek);
 
-// --- KLAVYE İŞLEVLERİ ---
 document.querySelectorAll('.key').forEach(key => {
     key.addEventListener('click', (e) => {
         e.preventDefault();
@@ -43,7 +40,6 @@ document.querySelectorAll('.key').forEach(key => {
     });
 });
 
-// --- SEKME YÖNETİMİ ---
 const navTabs = document.querySelectorAll('.nav-tab');
 navTabs.forEach(tab => {
     tab.addEventListener('click', function() {
@@ -54,12 +50,11 @@ navTabs.forEach(tab => {
     });
 });
 
-// --- TEMA ---
 document.getElementById('themeToggle').addEventListener('click', () => {
     document.documentElement.classList.toggle('dark');
 });
 
-// --- ÖZEL ZAMAN SİSTEMİ ---
+// ZAMAN SİSTEMİ
 function toBase12(n) {
     const digits = "θ123456789ΦΛ";
     if (n === 0) return "θθ";
