@@ -29,7 +29,6 @@
         }
     </script>
     <style>
-        /* Kaydırmayı (Scroll) Geri Getirdik */
         html, body { min-height: 100%; overflow-y: auto; margin: 0; padding: 0; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -43,12 +42,18 @@
             h2 { font-size: 1.5rem !important; }
         }
 
+        /* MOBİL TAM YASLANMIŞ KLAVYE AYARI */
         @media (max-width: 768px) {
+            #kb-container { padding-bottom: 0 !important; } /* Alt boşluğu sıfırla */
             .keyboard { 
-                width: 95% !important; 
-                margin: 0 auto 20px auto !important; 
-                padding: 12px !important;
-                border-radius: 1.25rem !important;
+                width: 100% !important; 
+                max-width: 100% !important; 
+                margin: 0 !important; 
+                padding: 10px 5px !important; /* Tuşlar yanlara çok değmesin diye iç boşluk */
+                border-radius: 0 !important; /* Köşeleri sıfırla */
+                border-left: none !important;
+                border-right: none !important;
+                border-bottom: none !important; /* En alta dayandığı için alt çizgiyi kaldır */
             }
             textarea { font-size: 1.1rem !important; min-height: 150px; }
         }
@@ -105,8 +110,8 @@
         </div>
     </section>
 
-    <section id="kb-container" class="pb-10">
-        <div class="keyboard" id="mainKeyboard">
+    <section id="kb-container" class="flex-none">
+        <div class="keyboard !my-0" id="mainKeyboard">
             <div class="row">
                 <div class="key">θ</div><div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">Φ</div><div class="key">Λ</div>
             </div>
