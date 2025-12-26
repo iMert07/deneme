@@ -65,18 +65,15 @@ function toBase12(n, pad = 2) {
 
 function updateTime() {
     const now = new Date();
-    
-    // Tarih Hesaplama
     const gregBase = new Date(1071, 2, 21);
     const diff = now - gregBase;
     const daysPassed = Math.floor(diff / 86400000);
     
-    let estYear = Math.floor(daysPassed / 365.2425); // Daha hassas yıl
-    const yearBase12 = estYear + 1 + 10368;
-    const monthBase12 = (now.getMonth() + 1);
-    const dayBase12 = now.getDate();
+    let estYear = Math.floor(daysPassed / 365.2425);
+    const yearB12 = estYear + 1 + 10368;
+    const monthB12 = now.getMonth() + 1;
+    const dayB12 = now.getDate();
 
-    // Saat Hesaplama (4:30 Başlangıçlı)
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 30, 0);
     if (now < todayStart) todayStart.setDate(todayStart.getDate() - 1);
     const totalSecs = Math.floor(((now - todayStart) / 1000) * 2);
@@ -86,7 +83,7 @@ function updateTime() {
     const s = totalSecs % 120;
 
     document.getElementById('clock').textContent = `${toBase12(h)}.${toBase12(m)}.${toBase12(s)}`;
-    document.getElementById('date').textContent = `${toBase12(dayBase12)}.${toBase12(monthBase12)}.${toBase12(yearBase12, 4)}`;
+    document.getElementById('date').textContent = `${toBase12(dayB12)}.${toBase12(monthB12)}.${toBase12(yearB12, 4)}`;
 }
 
 setInterval(updateTime, 500);
