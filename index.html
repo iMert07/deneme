@@ -29,7 +29,6 @@
         }
     </script>
     <style>
-        /* Kaydırmayı tamamen engelle ve tam ekran yap */
         html, body { height: 100%; overflow: hidden; margin: 0; padding: 0; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -37,61 +36,72 @@
         .active-tab span { color: white !important; }
         .inactive-tab { background-color: transparent; color: #94a3b8; }
         .dark .inactive-tab { color: #64748b; }
+        
+        /* Klavyeyi yanlara tam yaslamak için özel ayar */
+        @media (max-width: 768px) {
+            .keyboard { 
+                width: 100% !important; 
+                max-width: 100% !important; 
+                border-radius: 0 !important; /* Yanlara yaslanınca köşe radiusu kalkar */
+                border-left: none !important;
+                border-right: none !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white font-sans flex flex-col h-screen">
 
 <header class="flex-none bg-white dark:bg-[#111a22] border-b border-slate-200 dark:border-[#233648] z-50">
-    <div class="flex items-center justify-between px-6 py-3">
-        <h2 class="text-base sm:text-lg font-bold truncate">Anatolya'ya Dönüş</h2>
-        <button id="themeToggle" class="p-2 flex items-center justify-center bg-transparent border-none text-slate-500 dark:text-slate-400 hover:opacity-70 transition-all focus:outline-none">
-            <span class="material-symbols-outlined text-[28px]">globe_book</span>
+    <div class="flex items-center justify-between px-6 py-2">
+        <h2 class="text-sm sm:text-lg font-bold truncate text-slate-700 dark:text-slate-200">Anatolya'ya Dönüş</h2>
+        <button id="themeToggle" class="p-1 flex items-center justify-center bg-transparent border-none text-slate-500 dark:text-slate-400 hover:opacity-70 transition-all focus:outline-none">
+            <span class="material-symbols-outlined text-[24px]">globe_book</span>
         </button>
     </div>
 
-    <div class="flex items-center gap-2 px-4 pb-3 overflow-x-auto no-scrollbar scroll-smooth">
-        <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all active-tab" data-value="Alfabe" data-icon="translate">
-            <span class="material-symbols-outlined text-[20px]">translate</span>
-            <span class="text-sm font-medium">Alfabe</span>
+    <div class="flex items-center gap-2 px-4 pb-2 overflow-x-auto no-scrollbar scroll-smooth">
+        <button class="nav-tab flex items-center gap-2 px-3 py-1.5 rounded-full whitespace-nowrap transition-all active-tab" data-value="Alfabe">
+            <span class="material-symbols-outlined text-[18px]">translate</span>
+            <span class="text-xs font-medium">Alfabe</span>
         </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Uzunluk" data-icon="straighten">
-            <span class="material-symbols-outlined text-[20px]">straighten</span>
-            <span class="text-sm font-medium">Uzunluk</span>
+        <button class="nav-tab flex items-center gap-2 px-3 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Uzunluk">
+            <span class="material-symbols-outlined text-[18px]">straighten</span>
+            <span class="text-xs font-medium">Uzunluk</span>
         </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Sıcaklık" data-icon="thermostat">
-            <span class="material-symbols-outlined text-[20px]">thermostat</span>
-            <span class="text-sm font-medium">Sıcaklık</span>
+        <button class="nav-tab flex items-center gap-2 px-3 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Sıcaklık">
+            <span class="material-symbols-outlined text-[18px]">thermostat</span>
+            <span class="text-xs font-medium">Sıcaklık</span>
         </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Hacim" data-icon="opacity">
-            <span class="material-symbols-outlined text-[20px]">opacity</span>
-            <span class="text-sm font-medium">Hacim</span>
+        <button class="nav-tab flex items-center gap-2 px-3 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Hacim">
+            <span class="material-symbols-outlined text-[18px]">opacity</span>
+            <span class="text-xs font-medium">Hacim</span>
         </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Ağırlık" data-icon="fitness_center">
-            <span class="material-symbols-outlined text-[20px]">fitness_center</span>
-            <span class="text-sm font-medium">Ağırlık</span>
+        <button class="nav-tab flex items-center gap-2 px-3 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Ağırlık">
+            <span class="material-symbols-outlined text-[18px]">fitness_center</span>
+            <span class="text-xs font-medium">Ağırlık</span>
         </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Zaman" data-icon="schedule">
-            <span class="material-symbols-outlined text-[20px]">schedule</span>
-            <span class="text-sm font-medium">Zaman</span>
+        <button class="nav-tab flex items-center gap-2 px-3 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Zaman">
+            <span class="material-symbols-outlined text-[18px]">schedule</span>
+            <span class="text-xs font-medium">Zaman</span>
         </button>
     </div>
 </header>
 
-<main class="flex-1 overflow-hidden flex flex-col p-4 gap-4">
-    <section class="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4 min-h-0">
+<main class="flex-1 overflow-hidden flex flex-col px-0 sm:px-4 py-2 gap-2">
+    <section class="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-2 px-2 sm:px-0 min-h-0">
         <div class="flex flex-col gap-1 min-h-0">
-            <div id="label-input" class="text-[10px] font-bold uppercase tracking-wider text-slate-500 ml-1">Eski Alfabe</div>
-            <textarea id="latin" class="flex-1 w-full p-4 text-base bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all resize-none text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
+            <div id="label-input" class="text-[9px] font-bold uppercase tracking-wider text-slate-500 ml-1">Eski Alfabe</div>
+            <textarea id="latin" class="flex-1 w-full p-3 text-base bg-white dark:bg-[#192633] rounded-lg border border-slate-200 dark:border-[#324d67] shadow-sm focus:ring-1 focus:ring-primary/50 focus:border-primary transition-all resize-none text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
         </div>
 
         <div class="flex flex-col gap-1 min-h-0">
-            <div id="label-output" class="text-[10px] font-bold uppercase tracking-wider text-slate-500 ml-1">Yeni Alfabe</div>
-            <textarea id="greek" class="flex-1 w-full p-4 text-base bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner focus:ring-0 resize-none text-slate-900 dark:text-white" placeholder="Sonuç burada görünecek..."></textarea>
+            <div id="label-output" class="text-[9px] font-bold uppercase tracking-wider text-slate-500 ml-1">Yeni Alfabe</div>
+            <textarea id="greek" class="flex-1 w-full p-3 text-base bg-slate-100 dark:bg-[#111a22] rounded-lg border border-slate-200 dark:border-[#324d67] shadow-inner focus:ring-0 resize-none text-slate-900 dark:text-white" placeholder="Sonuç burada görünecek..."></textarea>
         </div>
     </section>
 
-    <section id="kb-container" class="flex-none pt-2 pb-1">
-        <div class="keyboard !my-0 !p-2 !gap-1.5" id="mainKeyboard">
+    <section id="kb-container" class="flex-none px-0 pb-0">
+        <div class="keyboard !my-0 !p-1.5 !gap-1" id="mainKeyboard">
             <div class="row !gap-1">
                 <div class="key">θ</div><div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">Φ</div><div class="key">Λ</div>
             </div>
