@@ -22,59 +22,55 @@
                 }
             }
         }
-        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark')
-        }
     </script>
     <style>
-        html, body { min-height: 100%; overflow-y: auto; margin: 0; padding: 0; }
+        html, body { min-height: 100%; overflow-x: hidden; margin: 0; padding: 0; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .active-tab { background-color: #137fec; color: white !important; }
         .active-tab span { color: white !important; }
         .inactive-tab { background-color: transparent; color: #94a3b8; }
         .dark .inactive-tab { color: #64748b; }
-        
-        @media (min-width: 1024px) {
-            textarea { font-size: 1.5rem !important; }
-            h2 { font-size: 1.5rem !important; }
-        }
 
-        /* MOBİL ÖZEL AYARLAR */
+        /* MOBİL ÖZEL AYARLAR: ALT SINIR VE KONUM */
         @media (max-width: 768px) {
-            /* Klavye kapsayıcısını aşağıya sabitleyen yapı */
             #kb-container {
-                position: fixed; /* Akıştan kopar, ekrana sabitle */
-                bottom: 0; /* En alta yapıştır */
-                left: 0; /* En sola yapıştır */
-                width: 100vw; /* Tam ekran genişliği */
+                position: fixed !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                /* Klavyenin altına navigasyon çubuğu varmış gibi 20px sabit boşluk */
+                padding-bottom: 20px !important; 
+                background: white;
                 z-index: 100;
-                background: inherit; /* Arkaplan rengini bozma */
-                padding-bottom: env(safe-area-inset-bottom, 12px); /* Navigasyon tuşları varmış gibi boşluk bırak */
                 border-top: 1px solid rgba(148, 163, 184, 0.2);
             }
+            .dark #kb-container { background: #111a22; }
+
             .keyboard { 
-                width: 100% !important; 
+                width: 100% !important;
+                padding: 5px !important;
                 margin: 0 !important;
-                padding: 10px 4px !important;
                 border: none !important;
                 border-radius: 0 !important;
-                background: transparent !important;
-                box-shadow: none !important;
             }
             .key { 
                 height: 38px !important; 
-                font-size: 1rem !important;
+                font-size: 1rem !important; 
             }
-            /* Main kısmını klavyenin altında kalmasın diye alttan itiyoruz */
+            /* Main içeriğini klavye kapatmasın diye alttan itiyoruz */
             main { 
-                padding-bottom: 250px !important; 
+                padding-bottom: 260px !important; 
             }
             textarea { 
                 height: 130px !important; 
             }
+        }
+
+        /* BİLGİSAYAR: HİÇ DEĞİŞMEDİ */
+        @media (min-width: 1024px) {
+            textarea { font-size: 1.5rem !important; }
+            h2 { font-size: 1.5rem !important; }
         }
     </style>
 </head>
@@ -89,43 +85,30 @@
     </div>
 
     <div class="flex items-center gap-2 px-4 pb-1.5 overflow-x-auto no-scrollbar scroll-smooth">
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all active-tab" data-value="Alfabe">
+        <button class="nav-tab active-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all" data-value="Alfabe">
             <span class="material-symbols-outlined text-[18px]">translate</span>
             <span class="text-sm font-medium">Alfabe</span>
         </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Uzunluk">
+        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all" data-value="Uzunluk">
             <span class="material-symbols-outlined text-[18px]">straighten</span>
             <span class="text-sm font-medium">Uzunluk</span>
         </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Sıcaklık">
+        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all" data-value="Sıcaklık">
             <span class="material-symbols-outlined text-[18px]">thermostat</span>
             <span class="text-sm font-medium">Sıcaklık</span>
         </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Hacim">
-            <span class="material-symbols-outlined text-[18px]">opacity</span>
-            <span class="text-sm font-medium">Hacim</span>
-        </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Ağırlık">
-            <span class="material-symbols-outlined text-[18px]">fitness_center</span>
-            <span class="text-sm font-medium">Ağırlık</span>
-        </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Zaman">
-            <span class="material-symbols-outlined text-[18px]">schedule</span>
-            <span class="text-sm font-medium">Zaman</span>
-        </button>
-    </div>
+        </div>
 </header>
 
-<main class="flex-1 flex flex-col p-3 gap-4 lg:gap-8">
-    <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
+<main class="flex-1 flex flex-col p-3 gap-4">
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div class="flex flex-col gap-2">
             <div id="label-input" class="text-[10px] lg:text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Eski Alfabe</div>
-            <textarea id="latin" class="w-full h-[200px] lg:h-[300px] p-5 bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all resize-none text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
+            <textarea id="latin" class="w-full h-[180px] p-4 bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm resize-none text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
         </div>
-
         <div class="flex flex-col gap-2">
             <div id="label-output" class="text-[10px] lg:text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Yeni Alfabe</div>
-            <textarea id="greek" class="w-full h-[200px] lg:h-[300px] p-5 bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner focus:ring-0 resize-none text-slate-900 dark:text-white" placeholder="Sonuç burada görünecek..."></textarea>
+            <textarea id="greek" class="w-full h-[180px] p-4 bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner resize-none text-slate-900 dark:text-white" placeholder="Sonuç..."></textarea>
         </div>
     </section>
 
@@ -134,25 +117,7 @@
             <div class="row">
                 <div class="key">θ</div><div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">Φ</div><div class="key">Λ</div>
             </div>
-            <div class="row">
-                <div class="key">Ϙ</div><div class="key">Ш</div><div class="key">E</div><div class="key">R</div><div class="key">T</div><div class="key">Y</div><div class="key">U</div><div class="key">Ͱ</div><div class="key">Ω</div><div class="key">P</div><div class="key">Γ</div><div class="key">Σ</div>
             </div>
-            <div class="row">
-                <div class="key fn-key">,</div><div class="key">A</div><div class="key">S</div><div class="key">D</div><div class="key">F</div><div class="key">G</div><div class="key">H</div><div class="key">J</div><div class="key">K</div><div class="key">L</div><div class="key">Ь</div><div class="key fn-key">.</div>
-            </div>
-            <div class="row">
-                <div class="key wide fn-key" data-action="shift">Shift</div>
-                <div class="key">Z</div><div class="key">Ψ</div><div class="key">C</div><div class="key">V</div><div class="key">B</div><div class="key">N</div><div class="key">M</div><div class="key">Π</div>
-                <div class="key wide fn-key" data-action="delete">
-                    <span class="material-symbols-outlined">backspace</span>
-                </div>
-            </div>
-            <div class="row">
-                <div class="key wide fn-key" data-action="reset">Sıfırla</div>
-                <div class="key extra-wide" data-action="space">Boşluk</div>
-                <div class="key wide fn-key" data-action="enter">Enter</div>
-            </div>
-        </div>
     </section>
 </main>
 
