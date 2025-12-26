@@ -1,12 +1,81 @@
 /* ==========================================================================
-   1. TEMA YÖNETİMİ (LocalStorage Destekli)
+   1. TANIMLAMALAR VE DEĞİŞKENLER
+   ========================================================================== */
+const latin = document.getElementById('latin');
+const greek = document.getElementById('greek');
+let activeInput = latin;
+
+// Senin harf haritan
+const toGreek = {
+    "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν",
+    "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ",
+    "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R",
+    "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β",
+    "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G",
+    "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J",
+    "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F",
+    "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ"
+};
+
+// Tersten harf haritası (Otomatik oluşturulur)
+const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
+
+/* ==========================================================================
+   2. ÇEVİRİ VE KLAVYE MANTIĞI (Senin Orijinal Kodun)
+   ========================================================================== */
+function translate(text, dir){
+    const map = dir === "toGreek" ? toGreek : toLatin;
+    return text.split('').map(ch => map[ch] || ch).join('');
+}
+
+// Input olayları
+latin.addEventListener('input', () => { 
+    greek.value = translate(latin.value, "toGreek"); 
+});
+
+greek.addEventListener('input', () => { 
+    latin.value = translate(greek.value, "toLatin"); 
+});
+
+// Fokus takibi
+latin.addEventListener('focus', () => activeInput = latin);
+greek.addEventListener('focus', () => activeInput = greek);
+
+// Sanal Klavye Etkileşimi
+document.querySelectorAll('.key').forEach(key => {
+    key.addEventListener('click', () => {
+        const action = key.dataset.action;
+        
+        if(action === 'delete') {
+            activeInput.value = activeInput.value.slice(0,-1);
+        } else if(action === 'enter') {
+            activeInput.value += '\n';
+        } else if(action === 'space') {
+            activeInput.value += ' ';
+        } else if(action === 'reset') {
+            latin.value = '';
+            greek.value = '';
+        } else if(!key.classList.contains('fn-key')) {
+            activeInput.value += key.innerText;
+        }
+
+        // Çeviriyi tetikle
+        if(activeInput === latin){
+            greek.value = translate(latin.value, "toGreek");
+        } else {
+            latin.value = translate(greek.value, "toLatin");
+        }
+    });
+});
+
+/* ==========================================================================
+   3. TEMA YÖNETİMİ (Örnek Koddan Uyarlanan Modern Sistem)
    ========================================================================== */
 const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
 const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
 const themeToggleButton = document.getElementById('themeToggle');
 
-// Sayfa yüklendiğinde ikonların durumunu ayarla
-function initTheme() {
+function setupThemeIcons() {
     if (document.documentElement.classList.contains('dark')) {
         themeToggleLightIcon.classList.remove('hidden');
         themeToggleDarkIcon.classList.add('hidden');
@@ -16,12 +85,15 @@ function initTheme() {
     }
 }
 
+// İlk açılışta ikonları ayarla
+setupThemeIcons();
+
 themeToggleButton.addEventListener('click', function() {
-    // İkon görünümlerini değiştir
+    // İkonları değiştir
     themeToggleDarkIcon.classList.toggle('hidden');
     themeToggleLightIcon.classList.toggle('hidden');
 
-    // Temayı değiştir ve tercihi tarayıcıya kaydet
+    // Temayı değiştir ve LocalStorage'a kaydet
     if (localStorage.getItem('color-theme')) {
         if (localStorage.getItem('color-theme') === 'light') {
             document.documentElement.classList.add('dark');
@@ -42,69 +114,26 @@ themeToggleButton.addEventListener('click', function() {
 });
 
 /* ==========================================================================
-   2. DROPDOWN MENÜ MANTIĞI
+   4. DROPDOWN MANTIĞI
    ========================================================================== */
 const dropdownBtn = document.getElementById('dropdownBtn');
 const dropdownMenu = document.getElementById('dropdownMenu');
-const selectedText = document.getElementById('selectedText');
-const selectedIcon = document.getElementById('selectedIcon');
 
-dropdownBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    dropdownMenu.classList.toggle('hidden');
-});
+if(dropdownBtn) {
+    dropdownBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdownMenu.classList.toggle('hidden');
+    });
+}
 
 document.querySelectorAll('.dropdown-item').forEach(item => {
     item.addEventListener('click', function() {
-        const val = this.getAttribute('data-value');
-        const icon = this.getAttribute('data-icon');
-        
-        selectedText.innerText = val;
-        selectedIcon.innerText = icon;
+        document.getElementById('selectedText').innerText = this.getAttribute('data-value');
+        document.getElementById('selectedIcon').innerText = this.getAttribute('data-icon');
         dropdownMenu.classList.add('hidden');
-        
-        // Seçilen türe göre işlem yapmak istersen burayı kullanabilirsin
-        console.log("Seçilen mod:", val);
     });
 });
 
-// Dışarı tıklandığında menüyü kapat
-window.addEventListener('click', () => dropdownMenu.classList.add('hidden'));
-
-/* ==========================================================================
-   3. KLAVYE VE METİN ÇEVİRİ MANTIĞI
-   ========================================================================== */
-const latinArea = document.getElementById('latin');
-const greekArea = document.getElementById('greek');
-
-// Sanal klavye tuşlarına basma işlemi
-document.querySelectorAll('.key').forEach(key => {
-    key.addEventListener('click', function() {
-        const action = this.getAttribute('data-action');
-        const char = this.innerText;
-
-        if (action === 'delete') {
-            latinArea.value = latinArea.value.slice(0, -1);
-        } else if (action === 'space') {
-            latinArea.value += ' ';
-        } else if (action === 'reset') {
-            latinArea.value = '';
-            greekArea.value = '';
-        } else if (action === 'enter') {
-            latinArea.value += '\n';
-        } else if (action === 'shift') {
-            // Shift mantığı eklenebilir
-            this.classList.toggle('bg-primary');
-            this.classList.toggle('text-white');
-        } else if (!this.classList.contains('fn-key')) {
-            // Fonksiyon tuşu değilse karakteri ekle
-            latinArea.value += char;
-        }
-        
-        // Her tuş basımından sonra çeviriyi tetikle (opsiyonel)
-        // translateText(latinArea.value); 
-    });
+window.addEventListener('click', () => {
+    if(dropdownMenu) dropdownMenu.classList.add('hidden');
 });
-
-// Başlangıç fonksiyonlarını çalıştır
-initTheme();
