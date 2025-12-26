@@ -26,10 +26,23 @@
 
 <header class="sticky top-0 bg-white dark:bg-[#111a22] border-b border-slate-200 dark:border-[#233648] z-50">
     <div class="flex items-center justify-between px-6 py-2">
-        <h2 class="text-base font-bold truncate">Anatolya'ya Dönüş</h2>
-        <button id="themeToggle" class="p-1 flex items-center justify-center text-slate-500 dark:text-slate-400 focus:outline-none">
-            <span class="material-symbols-outlined text-[26px]">globe_book</span>
-        </button>
+        <div class="flex flex-col">
+            <h2 class="text-base font-bold truncate leading-tight">Anatolya'ya Dönüş</h2>
+            <div class="flex gap-3 text-[10px] font-mono text-primary font-bold">
+                <span id="clock">θθ.θθ.θθ</span>
+                <span id="date">θθ.θθ.θθ</span>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-3">
+            <div class="hidden sm:flex flex-col text-right text-[9px] text-slate-500 font-mono">
+                <span id="clockDecimal">00.000.000</span>
+                <span id="dateDecimal">00.00.00000</span>
+            </div>
+            <button id="themeToggle" class="p-1 flex items-center justify-center text-slate-500 dark:text-slate-400 focus:outline-none">
+                <span class="material-symbols-outlined text-[26px]">globe_book</span>
+            </button>
+        </div>
     </div>
 
     <div class="flex items-center gap-2 px-4 pb-2 overflow-x-auto no-scrollbar scroll-smooth">
@@ -66,12 +79,14 @@
             <div id="label-input" class="text-[10px] font-bold uppercase text-slate-500 ml-1">Eski Alfabe</div>
             <textarea id="latin" class="w-full h-[150px] lg:h-[300px] p-4 bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] resize-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
         </div>
-
         <div class="flex flex-col gap-1">
             <div id="label-output" class="text-[10px] font-bold uppercase text-slate-500 ml-1">Yeni Alfabe</div>
-            <textarea id="greek" class="w-full h-[150px] lg:h-[300px] p-4 bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] resize-none text-slate-900 dark:text-white" placeholder="Sonuç burada görünecek..."></textarea>
+            <textarea id="greek" class="w-full h-[150px] lg:h-[300px] p-4 bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] resize-none text-slate-900 dark:text-white" placeholder="Sonuç..." readonly></textarea>
         </div>
     </section>
+
+    <div id="clock2" class="hidden"></div><div id="date2" class="hidden"></div>
+    <div id="clockDecimal2" class="hidden"></div><div id="dateDecimal2" class="hidden"></div>
 
     <section id="kb-container">
         <div class="keyboard" id="mainKeyboard">
