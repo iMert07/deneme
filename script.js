@@ -3,6 +3,9 @@
    ========================================================================== */
 const latin = document.getElementById('latin');
 const greek = document.getElementById('greek');
+const labelInput = document.getElementById('label-input');
+const labelOutput = document.getElementById('label-output');
+const kbContainer = document.getElementById('kb-container');
 let activeInput = latin;
 
 const toGreek = {
@@ -19,7 +22,7 @@ const toGreek = {
 const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
 
 /* ==========================================================================
-   2. ÇEVİRİ VE KLAVYE
+   2. ÇEVİRİ VE KLAVYE MANTIĞI
    ========================================================================== */
 function translate(text, dir){
     const map = dir === "toGreek" ? toGreek : toLatin;
@@ -48,12 +51,13 @@ document.querySelectorAll('.key').forEach(key => {
 /* ==========================================================================
    3. TEMA VE SEKME YÖNETİMİ
    ========================================================================== */
-const themeToggleButton = document.getElementById('themeToggle');
 const navTabs = document.querySelectorAll('.nav-tab');
 
-// Sekme Değiştirme
 navTabs.forEach(tab => {
     tab.addEventListener('click', function() {
+        const mode = this.dataset.value;
+
+        // Sekme Değiştirme (Görsel)
         navTabs.forEach(t => {
             t.classList.remove('active-tab');
             t.classList.add('inactive-tab');
@@ -61,12 +65,20 @@ navTabs.forEach(tab => {
         this.classList.add('active-tab');
         this.classList.remove('inactive-tab');
         
-        console.log("Seçilen Mod:", this.dataset.value);
+        // Etiketleri Güncelle
+        if (mode === "Alfabe") {
+            labelInput.innerText = "Eski Alfabe";
+            labelOutput.innerText = "Yeni Alfabe";
+            kbContainer.style.display = "block"; // Alfabede klavyeyi göster
+        } else {
+            labelInput.innerText = "Girdi (" + mode + ")";
+            labelOutput.innerText = "Sonuç";
+            kbContainer.style.display = "none"; // Diğerlerinde klavyeyi gizle (isteğe bağlı)
+        }
     });
 });
 
-// Tema Değiştirme
-themeToggleButton.addEventListener('click', function() {
+document.getElementById('themeToggle').addEventListener('click', function() {
     if (document.documentElement.classList.contains('dark')) {
         document.documentElement.classList.remove('dark');
         localStorage.setItem('color-theme', 'light');
