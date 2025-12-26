@@ -1,46 +1,26 @@
-/* ==========================================================================
-   1. GENEL AYARLAR VE SIFIRLAMA
-   ========================================================================== */
-* {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
-
-html, body {
-    min-height: 100%;
-    margin: 0;
-    padding: 0;
-    /* Mobilde içeriğin klavye altında kalıp kaybolmaması için kaydırmayı açıyoruz */
-    overflow-x: hidden;
-    overflow-y: auto;
-}
-
-/* Metin seçilmemesi gereken yerler (İkonlar, Logolar, Tuşlar) */
-header h2, .material-symbols-outlined, .nav-tab, .key {
+/* --- GENEL SEÇİLEMEZLİK (Logo vb. için) --- */
+header h2, .material-symbols-outlined, header .size-8 {
     user-select: none;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
 }
 
-/* Kaydırma çubuğunu gizle (Sekme paneli için) */
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-/* ==========================================================================
-   2. KLAVYE TEMEL TASARIMI (MASAÜSTÜ ODAKLI)
-   ========================================================================== */
+/* --- KLAVYE ANA KUTUSU --- */
 .keyboard {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 8px; 
     margin: 20px auto;
     width: 100%;
     max-width: 850px;
     padding: 15px;
     background: #e2e8f0;
     border-radius: 1.25rem;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
 }
 
 .dark .keyboard {
@@ -48,17 +28,19 @@ header h2, .material-symbols-outlined, .nav-tab, .key {
     border: 1px solid #233648;
 }
 
-/* SATIR VE TUŞ YAPISI */
+/* SATIR YAPISI */
 .row {
     display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 6px;
+    grid-template-columns: repeat(12, 1fr); 
+    gap: 6px; 
     width: 100%;
     max-width: 800px;
+    margin-bottom: 2px;
 }
 
+/* --- TUŞ TASARIMI (1x) --- */
 .key {
-    grid-column: span 1;
+    grid-column: span 1; 
     height: 52px;
     display: flex;
     justify-content: center;
@@ -71,6 +53,9 @@ header h2, .material-symbols-outlined, .nav-tab, .key {
     border-radius: 8px;
     border-bottom: 3px solid #cbd5e1;
     transition: all 0.05s ease;
+    min-width: 0;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .dark .key {
@@ -84,71 +69,50 @@ header h2, .material-symbols-outlined, .nav-tab, .key {
     border-bottom: 0;
 }
 
-/* FONKSİYON TUŞLARI RENKLERİ */
-.fn-key { background: #cbd5e1 !important; }
-.dark .fn-key { background: #324d67 !important; }
+/* --- FONKSİYON TUŞLARI --- */
+.fn-key {
+    background: #cbd5e1 !important;
+}
 
-/* TUŞ GENİŞLİKLERİ */
+.dark .fn-key {
+    background: #324d67 !important;
+}
+
+/* --- MATEMATİKSEL GENİŞLİKLER --- */
 [data-action="shift"], [data-action="delete"] { grid-column: span 2 !important; }
 [data-action="reset"], [data-action="enter"] { grid-column: span 3 !important; }
 [data-action="space"] { grid-column: span 6 !important; }
 
-/* ==========================================================================
-   3. BİLGİSAYAR (BÜYÜK EKRAN) ÖZEL AYARLARI
-   ========================================================================== */
-@media (min-width: 1024px) {
-    textarea {
-        font-size: 1.5rem !important; /* Yazıları büyüttük */
-        line-height: 2rem !important;
-    }
-    header h2 { font-size: 1.5rem !important; }
-    .nav-tab span { font-size: 1rem !important; }
-}
-
-/* ==========================================================================
-   4. MOBİL ÖZEL AYARLAR (İSTEDİĞİN DÜZENLEME)
-   ========================================================================== */
+/* --- MOBİL OPTİMİZASYON (DÜZENLENDİ) --- */
 @media (max-width: 768px) {
-    /* Klavyeyi en alta çivile ve yanları sıfırla */
     .keyboard {
         position: fixed !important;
-        bottom: 0 !important;
+        /* Klavyeyi en aşağıya çiviler */
+        bottom: 0 !important; 
+        /* Sağ-Sol duvara tam yaslar (Boşlukları bitirir) */
         left: 0 !important;
-        right: 0 !important;
         width: 100% !important;
-        max-width: 100% !important;
+        /* Navigasyon barı için sabit 'güvenli alan' */
+        padding: 8px 4px 20px 4px !important; 
+        border-radius: 0 !important; /* Yaslandığı için köşeleri sıfırladık */
+        box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
         margin: 0 !important;
-        
-        /* Navigasyona bakmaksızın en alta yaslanma */
-        padding: 8px 4px 4px 4px !important; 
-        border-radius: 0 !important;
+        border-bottom: none !important;
         border-left: none !important;
         border-right: none !important;
-        border-bottom: none !important;
-        z-index: 9999 !important;
     }
 
-    .row {
-        gap: 4px !important;
-        margin-bottom: 4px !important;
+    .row { 
+        gap: 4px; 
+        margin-bottom: 4px; /* Satırlar arası boşluğu daralttık */
     }
 
-    /* Tuşları dikeyde daralttık (Gereksiz genişlik alındı) */
     .key {
+        /* Dikey genişlik daraltıldı */
         height: 38px !important; 
-        font-size: 1rem !important;
-        border-bottom-width: 2px !important;
+        font-size: 0.95rem;
+        border-bottom-width: 2px;
     }
 
-    /* Metin kutularının dikey yüksekliğini mobilde daralt */
-    textarea {
-        height: 130px !important;
-        font-size: 1.1rem !important;
-    }
-
-    /* İçeriğin klavye arkasında kalmaması için ana alanı it */
-    main {
-        padding-bottom: 240px !important;
-        gap: 10px !important;
-    }
+    main { padding-bottom: 250px !important; }
 }
