@@ -22,7 +22,7 @@ const toGreek = {
 const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
 
 /* ==========================================================================
-   2. ÇEVİRİ VE KLAVYE MANTIĞI
+   2. ÇEVİRİ VE KLAVYE
    ========================================================================== */
 function translate(text, dir){
     const map = dir === "toGreek" ? toGreek : toLatin;
@@ -36,7 +36,7 @@ greek.addEventListener('focus', () => activeInput = greek);
 
 document.querySelectorAll('.key').forEach(key => {
     key.addEventListener('click', (e) => {
-        e.preventDefault(); // Fokus kaybını engelle
+        e.preventDefault();
         const action = key.dataset.action;
         if(action === 'delete') activeInput.value = activeInput.value.slice(0,-1);
         else if(action === 'enter') activeInput.value += '\n';
