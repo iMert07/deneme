@@ -1,15 +1,74 @@
+/* ==========================================================================
+   1. TANIMLAMALAR VE BİRİMLER
+   ========================================================================== */
 const latin = document.getElementById('latin');
 const greek = document.getElementById('greek');
-const labelInput = document.getElementById('label-input');
-const labelOutput = document.getElementById('label-output');
+const selectInput = document.getElementById('select-input');
+const selectOutput = document.getElementById('select-output');
 const kbContainer = document.getElementById('kb-container');
 let activeInput = latin;
 
-const toGreek = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
-const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
+// Sekmelere göre birim seçenekleri
+const unitData = {
+    "Alfabe": ["Eski Alfabe", "Yeni Alfabe"],
+    "Sayı": ["Onluk (Standart)", "Onikilik (Anatolya)"],
+    "Para": ["Lira", "Kuruş", "Anatolya Sikkesi"],
+    "Takvim": ["Gregoryen", "Anatolya Takvimi"],
+    "Zaman": ["Standart Saat", "Anatolya Saati"],
+    "Uzunluk": ["Metre", "Kilometre", "Arşın", "Menzil"],
+    "Kütle": ["Kilogram", "Gram", "Batman", "Dirhem"],
+    "Sıcaklık": ["Celsius", "Fahrenheit", "Ilım", "Ayaz"],
+    "Hacim": ["Litre", "Mililitre", "Kile", "Katre"],
+    "Hız": ["km/saat", "mil/saat", "Anatolya Hızı"],
+    "Alan": ["Metrekare", "Dönüm", "Evlek"],
+    "Veri": ["Byte", "Bit", "Anatolya Verisi"],
+    "Meridyen": ["Standart Meridyen", "Anatolya Boylamı"],
+    "Paralel": ["Standart Paralel", "Anatolya Enlemi"]
+};
 
+const toGreekMap = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
+const toLatinMap = Object.fromEntries(Object.entries(toGreekMap).map(([k,v])=>[v,k.toUpperCase()]));
+
+/* ==========================================================================
+   2. DROPDOWN YÖNETİMİ
+   ========================================================================== */
+function updateDropdowns(mode) {
+    const options = unitData[mode] || [];
+    selectInput.innerHTML = "";
+    selectOutput.innerHTML = "";
+    
+    options.forEach((opt, index) => {
+        const op1 = new Option(opt, opt);
+        const op2 = new Option(opt, opt);
+        selectInput.add(op1);
+        selectOutput.add(op2);
+    });
+
+    // İlk seçimler çakışmasın
+    if (options.length > 1) {
+        selectInput.selectedIndex = 0;
+        selectOutput.selectedIndex = 1;
+    }
+}
+
+// Çakışma Kontrolü (Smart Swap)
+function handleDropdownChange(changedSelect) {
+    const otherSelect = (changedSelect === selectInput) ? selectOutput : selectInput;
+    if (changedSelect.value === otherSelect.value) {
+        // Çakışma var! Diğerini bir önceki veya bir sonraki yap.
+        const newIndex = (changedSelect.selectedIndex + 1) % changedSelect.length;
+        otherSelect.selectedIndex = newIndex;
+    }
+}
+
+selectInput.addEventListener('change', () => handleDropdownChange(selectInput));
+selectOutput.addEventListener('change', () => handleDropdownChange(selectOutput));
+
+/* ==========================================================================
+   3. ÇEVİRİ VE KLAVYE
+   ========================================================================== */
 function translate(text, dir){
-    const map = dir === "toGreek" ? toGreek : toLatin;
+    const map = dir === "toGreek" ? toGreekMap : toLatinMap;
     return text.split('').map(ch => map[ch] || ch).join('');
 }
 
@@ -32,31 +91,26 @@ document.querySelectorAll('.key').forEach(key => {
     });
 });
 
+/* ==========================================================================
+   4. SEKME YÖNETİMİ
+   ========================================================================== */
 const navTabs = document.querySelectorAll('.nav-tab');
 navTabs.forEach(tab => {
     tab.addEventListener('click', function() {
         const mode = this.dataset.value;
         navTabs.forEach(t => { t.classList.remove('active-tab'); t.classList.add('inactive-tab'); });
         this.classList.add('active-tab'); this.classList.remove('inactive-tab');
-        
-        // Klavye her zaman açık kalsın
-        kbContainer.style.display = "block";
-
-        if (mode === "Alfabe") {
-            labelInput.innerText = "Eski Alfabe"; 
-            labelOutput.innerText = "Yeni Alfabe";
-        } else {
-            labelInput.innerText = "Girdi (" + mode + ")"; 
-            labelOutput.innerText = "Sonuç";
-        }
+        updateDropdowns(mode);
     });
 });
 
-document.getElementById('themeToggle').addEventListener('click', function() {
+document.getElementById('themeToggle').addEventListener('click', () => {
     document.documentElement.classList.toggle('dark');
-    localStorage.setItem('color-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
 });
 
+/* ==========================================================================
+   5. SAAT VE TARİH (Base-12)
+   ========================================================================== */
 function toBase12(n, pad = 2) {
     const digits = "θ123456789ΦΛ";
     if (n === 0) return "θ".repeat(pad);
@@ -98,3 +152,4 @@ function updateTime() {
 
 setInterval(updateTime, 100);
 updateTime();
+updateDropdowns("Alfabe"); // Başlangıç
