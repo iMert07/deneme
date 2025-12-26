@@ -38,10 +38,16 @@ navTabs.forEach(tab => {
         const mode = this.dataset.value;
         navTabs.forEach(t => { t.classList.remove('active-tab'); t.classList.add('inactive-tab'); });
         this.classList.add('active-tab'); this.classList.remove('inactive-tab');
+        
+        // Klavye her zaman açık kalsın
+        kbContainer.style.display = "block";
+
         if (mode === "Alfabe") {
-            labelInput.innerText = "Eski Alfabe"; labelOutput.innerText = "Yeni Alfabe"; kbContainer.style.display = "block";
+            labelInput.innerText = "Eski Alfabe"; 
+            labelOutput.innerText = "Yeni Alfabe";
         } else {
-            labelInput.innerText = "Girdi (" + mode + ")"; labelOutput.innerText = "Sonuç"; kbContainer.style.display = "none";
+            labelInput.innerText = "Girdi (" + mode + ")"; 
+            labelOutput.innerText = "Sonuç";
         }
     });
 });
