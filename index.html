@@ -24,8 +24,15 @@
         .active-tab span { color: white !important; }
         .inactive-tab { background-color: transparent; color: #94a3b8; }
         .dark .inactive-tab { color: #64748b; }
-        select { background-image: none !important; } /* Standart oku kaldır */
         
+        /* Modern Dropdown Temizliği */
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background: transparent;
+        }
+
         @media (min-width: 1024px) {
             textarea { font-size: 1.5rem !important; }
             h2 { font-size: 1.5rem !important; }
@@ -104,19 +111,17 @@
 <main class="flex-1 flex flex-col p-3 gap-4 lg:gap-8">
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
         <div class="flex flex-col gap-2">
-            <div class="flex items-center justify-between px-1">
-                <select id="select-input" class="bg-transparent border-none p-0 text-[10px] lg:text-xs font-bold uppercase tracking-wider text-slate-500 focus:ring-0 cursor-pointer outline-none">
+            <div class="relative w-max px-1">
+                <select id="select-input" class="relative z-10 w-full bg-transparent border-none p-0 text-[10px] lg:text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-primary dark:hover:text-white transition-colors focus:ring-0 cursor-pointer outline-none">
                     </select>
-                <span class="material-symbols-outlined text-slate-400 text-sm">expand_more</span>
             </div>
             <textarea id="latin" class="w-full h-[180px] lg:h-[300px] p-5 bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all resize-none text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
         </div>
 
         <div class="flex flex-col gap-2">
-            <div class="flex items-center justify-between px-1">
-                <select id="select-output" class="bg-transparent border-none p-0 text-[10px] lg:text-xs font-bold uppercase tracking-wider text-slate-500 focus:ring-0 cursor-pointer outline-none">
+            <div class="relative w-max px-1">
+                <select id="select-output" class="relative z-10 w-full bg-transparent border-none p-0 text-[10px] lg:text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-primary dark:hover:text-white transition-colors focus:ring-0 cursor-pointer outline-none">
                     </select>
-                <span class="material-symbols-outlined text-slate-400 text-sm">expand_more</span>
             </div>
             <textarea id="greek" class="w-full h-[180px] lg:h-[300px] p-5 bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner focus:ring-0 resize-none text-slate-900 dark:text-white" placeholder="Sonuç..." readonly></textarea>
         </div>
