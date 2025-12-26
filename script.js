@@ -63,7 +63,7 @@ document.querySelectorAll('.key').forEach(key => {
 });
 
 /* ==========================================================================
-   3. TEMA YÖNETİMİ (Globe Book İkonu İçin Sadeleşmiş)
+   3. TEMA YÖNETİMİ (Globe Book - Gri Tonlar)
    ========================================================================== */
 const themeToggleButton = document.getElementById('themeToggle');
 
@@ -103,7 +103,9 @@ if(dropdownBtn) {
 document.querySelectorAll('.dropdown-item').forEach(item => {
     item.addEventListener('click', function() {
         document.getElementById('selectedText').innerText = this.getAttribute('data-value');
-        document.getElementById('selectedIcon').innerText = this.getAttribute('data-icon');
+        // İkonun rengini burada da gri tutuyoruz
+        const iconSpan = document.getElementById('selectedIcon');
+        iconSpan.innerText = this.getAttribute('data-icon');
         dropdownMenu.classList.add('hidden');
     });
 });
