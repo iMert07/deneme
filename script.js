@@ -88,21 +88,18 @@ themeToggleButton.addEventListener('click', function() {
 });
 
 /* ==========================================================================
-   4. DROPDOWN MANTIĞI (Vurgulu ve Soluk İkonlar)
+   4. DROPDOWN MANTIĞI (Soluk Gri Destekli)
    ========================================================================== */
 const dropdownBtn = document.getElementById('dropdownBtn');
 const dropdownMenu = document.getElementById('dropdownMenu');
 const dropdownItems = document.querySelectorAll('.dropdown-item');
 
-// Paneldeki aktif/pasif renklerini güncelleyen fonksiyon
 function updateDropdownUI(currentValue) {
     dropdownItems.forEach(item => {
         if (item.getAttribute('data-value') === currentValue) {
-            // Seçili olan: Parlak/Beyaz
             item.classList.remove('text-slate-400', 'dark:text-slate-500');
             item.classList.add('text-slate-900', 'dark:text-white', 'font-bold');
         } else {
-            // Seçili olmayan: Soluk/Gri
             item.classList.remove('text-slate-900', 'dark:text-white', 'font-bold');
             item.classList.add('text-slate-400', 'dark:text-slate-500');
         }
@@ -113,7 +110,6 @@ if(dropdownBtn) {
     dropdownBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         dropdownMenu.classList.toggle('hidden');
-        // Menü her açıldığında mevcut seçime göre renkleri tazele
         updateDropdownUI(document.getElementById('selectedText').innerText);
     });
 }
@@ -126,7 +122,6 @@ dropdownItems.forEach(item => {
         document.getElementById('selectedText').innerText = value;
         document.getElementById('selectedIcon').innerText = icon;
         
-        // Menüyü kapat ve renkleri güncelle
         updateDropdownUI(value);
         dropdownMenu.classList.add('hidden');
     });
@@ -136,5 +131,4 @@ window.addEventListener('click', () => {
     if(dropdownMenu) dropdownMenu.classList.add('hidden');
 });
 
-// İlk açılışta UI'ı ayarla
 updateDropdownUI("Alfabe");
