@@ -55,38 +55,39 @@ document.getElementById('themeToggle').addEventListener('click', () => {
 });
 
 // ZAMAN SİSTEMİ
-function toBase12(n) {
+function toBase12(n, pad = 2) {
     const digits = "θ123456789ΦΛ";
-    if (n === 0) return "θθ";
+    if (n === 0) return "θ".repeat(pad);
     let res = ""; let num = Math.abs(Math.floor(n));
     while (num > 0) { res = digits[num % 12] + res; num = Math.floor(num / 12); }
-    return res.padStart(2, 'θ');
-}
-
-function calculateCustomDate(now) {
-    const gregBase = new Date(1071, 2, 21);
-    const daysPassed = Math.floor((now - gregBase) / 86400000);
-    let estYear = Math.floor(daysPassed / 365);
-    let extra = 0;
-    for(let i=1; i<=estYear; i++) { if(i%20===0 && i%640!==0) extra += 5; }
-    let total = estYear * 365 + extra;
-    const dayOfYear = daysPassed - total;
-    const month = Math.floor(dayOfYear / 30) + 1;
-    const day = (dayOfYear % 30) + 1;
-    const year = estYear + 1 + 10368;
-    return { base12: `${toBase12(day)}.${toBase12(month)}.${toBase12(year)}` };
+    return res.padStart(pad, 'θ');
 }
 
 function updateTime() {
     const now = new Date();
+    
+    // Tarih Hesaplama
+    const gregBase = new Date(1071, 2, 21);
+    const diff = now - gregBase;
+    const daysPassed = Math.floor(diff / 86400000);
+    
+    let estYear = Math.floor(daysPassed / 365.2425); // Daha hassas yıl
+    const yearBase12 = estYear + 1 + 10368;
+    const monthBase12 = (now.getMonth() + 1);
+    const dayBase12 = now.getDate();
+
+    // Saat Hesaplama (4:30 Başlangıçlı)
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 30, 0);
     if (now < todayStart) todayStart.setDate(todayStart.getDate() - 1);
     const totalSecs = Math.floor(((now - todayStart) / 1000) * 2);
+    
     const h = Math.floor(totalSecs / 14400) % 12;
     const m = Math.floor((totalSecs / 120) % 120);
     const s = totalSecs % 120;
+
     document.getElementById('clock').textContent = `${toBase12(h)}.${toBase12(m)}.${toBase12(s)}`;
-    document.getElementById('date').textContent = calculateCustomDate(now).base12;
+    document.getElementById('date').textContent = `${toBase12(dayBase12)}.${toBase12(monthBase12)}.${toBase12(yearBase12, 4)}`;
 }
+
 setInterval(updateTime, 500);
 updateTime();
