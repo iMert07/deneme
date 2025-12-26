@@ -15,6 +15,11 @@
             darkMode: "class",
             theme: { extend: { colors: { "primary": "#137fec", "background-dark": "#101922" } } }
         }
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
     </script>
     <style>
         html, body { min-height: 100%; overflow-y: auto; margin: 0; padding: 0; }
@@ -70,6 +75,9 @@
         <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all active-tab cursor-pointer" data-value="Alfabe">
             <span class="material-symbols-outlined text-[18px]">translate</span><span class="text-sm font-medium">Alfabe</span>
         </button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Sayı">
+            <span class="material-symbols-outlined text-[18px]">123</span><span class="text-sm font-medium">Sayı</span>
+        </button>
         <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Para">
             <span class="material-symbols-outlined text-[18px]">payments</span><span class="text-sm font-medium">Para</span>
         </button>
@@ -99,6 +107,12 @@
         </button>
         <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Veri">
             <span class="material-symbols-outlined text-[18px]">database</span><span class="text-sm font-medium">Veri</span>
+        </button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Meridyen">
+            <span class="material-symbols-outlined text-[18px]">explore</span><span class="text-sm font-medium">Meridyen</span>
+        </button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Paralel">
+            <span class="material-symbols-outlined text-[18px]">language</span><span class="text-sm font-medium">Paralel</span>
         </button>
     </div>
 </header>
