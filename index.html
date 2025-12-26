@@ -4,7 +4,6 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
     <title>Anatolya'ya Dönüş</title>
-    <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
@@ -15,12 +14,8 @@
             darkMode: "class",
             theme: { extend: { colors: { "primary": "#137fec", "background-dark": "#101922" } } }
         }
-        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark')
-        }
     </script>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white font-sans flex flex-col min-h-screen">
 
