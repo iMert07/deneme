@@ -22,7 +22,7 @@ const toGreek = {
 const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
 
 /* ==========================================================================
-   2. ÇEVİRİ VE KLAVYE
+   2. ÇEVİRİ VE KLAVYE MANTIĞI
    ========================================================================== */
 function translate(text, dir){
     const map = dir === "toGreek" ? toGreek : toLatin;
