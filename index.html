@@ -72,42 +72,42 @@
 </head>
 <body class="bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white font-sans flex flex-col">
 
-<header class="sticky top-0 bg-white dark:bg-[#111a22] border-b border-slate-200 dark:border-[#233648] z-50">
+<header class="sticky top-0 bg-white dark:bg-[#111a22] border-b border-slate-200 dark:border-[#233648] z-50 select-none">
     <div class="flex items-center justify-between px-6 py-2">
         <div class="flex items-center gap-3">
             <h2 class="text-base sm:text-lg font-bold truncate leading-none">Anatolya'ya Dönüş</h2>
-            <div class="flex items-center gap-3 border-l border-slate-200 dark:border-slate-700 pl-3 leading-none font-mono font-bold select-none pointer-events-none">
+            <div class="flex items-center gap-3 border-l border-slate-200 dark:border-slate-700 pl-3 leading-none font-mono font-bold">
                 <span id="clock" class="text-sm sm:text-lg text-primary">θθ.θθ.θθ</span>
                 <span id="date" class="text-sm sm:text-lg text-slate-500 dark:text-slate-400">θθ.θθ.θθθθ</span>
             </div>
         </div>
-        <button id="themeToggle" class="p-1 flex items-center justify-center bg-transparent border-none text-slate-500 dark:text-slate-400 focus:outline-none">
+        <button id="themeToggle" class="p-1 flex items-center justify-center bg-transparent border-none text-slate-500 dark:text-slate-400 focus:outline-none cursor-pointer">
             <span class="material-symbols-outlined text-[26px]">globe_book</span>
         </button>
     </div>
 
-    <div class="flex items-center gap-2 px-4 pb-1.5 overflow-x-auto no-scrollbar scroll-smooth">
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all active-tab" data-value="Alfabe">
+    <div class="flex items-center gap-2 px-4 pb-1.5 overflow-x-auto no-scrollbar scroll-smooth select-none">
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all active-tab cursor-pointer" data-value="Alfabe">
             <span class="material-symbols-outlined text-[18px]">translate</span>
             <span class="text-sm font-medium">Alfabe</span>
         </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Uzunluk">
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Uzunluk">
             <span class="material-symbols-outlined text-[18px]">straighten</span>
             <span class="text-sm font-medium">Uzunluk</span>
         </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Sıcaklık">
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Sıcaklık">
             <span class="material-symbols-outlined text-[18px]">thermostat</span>
             <span class="text-sm font-medium">Sıcaklık</span>
         </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Hacim">
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Hacim">
             <span class="material-symbols-outlined text-[18px]">opacity</span>
             <span class="text-sm font-medium">Hacim</span>
         </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Ağırlık">
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Ağırlık">
             <span class="material-symbols-outlined text-[18px]">fitness_center</span>
             <span class="text-sm font-medium">Ağırlık</span>
         </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Zaman">
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Zaman">
             <span class="material-symbols-outlined text-[18px]">schedule</span>
             <span class="text-sm font-medium">Zaman</span>
         </button>
@@ -117,17 +117,17 @@
 <main class="flex-1 flex flex-col p-3 gap-4 lg:gap-8">
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
         <div class="flex flex-col gap-2">
-            <div id="label-input" class="text-[10px] lg:text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Eski Alfabe</div>
+            <div id="label-input" class="text-[10px] lg:text-xs font-bold uppercase tracking-wider text-slate-500 ml-1 select-none">Eski Alfabe</div>
             <textarea id="latin" class="w-full h-[200px] lg:h-[300px] p-5 bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all resize-none text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
         </div>
 
         <div class="flex flex-col gap-2">
-            <div id="label-output" class="text-[10px] lg:text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Yeni Alfabe</div>
+            <div id="label-output" class="text-[10px] lg:text-xs font-bold uppercase tracking-wider text-slate-500 ml-1 select-none">Yeni Alfabe</div>
             <textarea id="greek" class="w-full h-[200px] lg:h-[300px] p-5 bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner focus:ring-0 resize-none text-slate-900 dark:text-white" placeholder="Sonuç..." readonly></textarea>
         </div>
     </section>
 
-    <section id="kb-container">
+    <section id="kb-container" class="select-none">
         <div class="keyboard !my-0" id="mainKeyboard">
             <div class="row">
                 <div class="key">θ</div><div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">Φ</div><div class="key">Λ</div>
