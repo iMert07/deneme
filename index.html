@@ -37,65 +37,74 @@
         .inactive-tab { background-color: transparent; color: #94a3b8; }
         .dark .inactive-tab { color: #64748b; }
         
-        /* Klavye mobilde yanlara daha yakın ama hala kendi boyutunda */
+        /* MOBİL ÖZEL AYARLAR */
         @media (max-width: 768px) {
-            .keyboard { width: 98% !important; max-width: 98% !important; margin: 0 auto !important; }
+            /* Klavyeyi ekrana tam ortalayıp yanlardaki asimetriyi çözer */
+            .keyboard { 
+                width: 96% !important; 
+                max-width: 96% !important; 
+                margin: 0 auto !important; 
+                padding: 6px !important;
+            }
+            .key { height: 40px !important; font-size: 0.9rem !important; }
+            /* Metin kutularının klavyenin altında kalmaması için dikey sıkıştırma */
+            textarea { padding: 10px !important; font-size: 0.95rem !important; }
         }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white font-sans flex flex-col h-screen">
 
 <header class="flex-none bg-white dark:bg-[#111a22] border-b border-slate-200 dark:border-[#233648] z-50">
-    <div class="flex items-center justify-between px-5 py-1.5">
-        <h2 class="text-base font-bold truncate">Anatolya'ya Dönüş</h2>
+    <div class="flex items-center justify-between px-5 py-1">
+        <h2 class="text-sm font-bold truncate">Anatolya'ya Dönüş</h2>
         <button id="themeToggle" class="p-1 flex items-center justify-center bg-transparent border-none text-slate-500 dark:text-slate-400 focus:outline-none">
-            <span class="material-symbols-outlined text-[26px]">globe_book</span>
+            <span class="material-symbols-outlined text-[24px]">globe_book</span>
         </button>
     </div>
 
-    <div class="flex items-center gap-2 px-4 pb-1.5 overflow-x-auto no-scrollbar scroll-smooth">
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all active-tab" data-value="Alfabe">
-            <span class="material-symbols-outlined text-[18px]">translate</span>
-            <span class="text-sm font-medium">Alfabe</span>
+    <div class="flex items-center gap-2 px-4 pb-1 overflow-x-auto no-scrollbar scroll-smooth">
+        <button class="nav-tab flex items-center gap-2 px-3 py-1 rounded-full whitespace-nowrap transition-all active-tab" data-value="Alfabe">
+            <span class="material-symbols-outlined text-[16px]">translate</span>
+            <span class="text-xs font-medium">Alfabe</span>
         </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Uzunluk">
-            <span class="material-symbols-outlined text-[18px]">straighten</span>
-            <span class="text-sm font-medium">Uzunluk</span>
+        <button class="nav-tab flex items-center gap-2 px-3 py-1 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Uzunluk">
+            <span class="material-symbols-outlined text-[16px]">straighten</span>
+            <span class="text-xs font-medium">Uzunluk</span>
         </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Sıcaklık">
-            <span class="material-symbols-outlined text-[18px]">thermostat</span>
-            <span class="text-sm font-medium">Sıcaklık</span>
+        <button class="nav-tab flex items-center gap-2 px-3 py-1 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Sıcaklık">
+            <span class="material-symbols-outlined text-[16px]">thermostat</span>
+            <span class="text-xs font-medium">Sıcaklık</span>
         </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Hacim">
-            <span class="material-symbols-outlined text-[18px]">opacity</span>
-            <span class="text-sm font-medium">Hacim</span>
+        <button class="nav-tab flex items-center gap-2 px-3 py-1 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Hacim">
+            <span class="material-symbols-outlined text-[16px]">opacity</span>
+            <span class="text-xs font-medium">Hacim</span>
         </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Ağırlık">
-            <span class="material-symbols-outlined text-[18px]">fitness_center</span>
-            <span class="text-sm font-medium">Ağırlık</span>
+        <button class="nav-tab flex items-center gap-2 px-3 py-1 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Ağırlık">
+            <span class="material-symbols-outlined text-[16px]">fitness_center</span>
+            <span class="text-xs font-medium">Ağırlık</span>
         </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Zaman">
-            <span class="material-symbols-outlined text-[18px]">schedule</span>
-            <span class="text-sm font-medium">Zaman</span>
+        <button class="nav-tab flex items-center gap-2 px-3 py-1 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Zaman">
+            <span class="material-symbols-outlined text-[16px]">schedule</span>
+            <span class="text-xs font-medium">Zaman</span>
         </button>
     </div>
 </header>
 
-<main class="flex-1 overflow-hidden flex flex-col p-3 gap-3">
-    <section class="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-3 min-h-0">
+<main class="flex-1 overflow-hidden flex flex-col px-3 py-2 gap-2">
+    <section class="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-2 min-h-0">
         <div class="flex flex-col gap-1 min-h-0">
-            <div id="label-input" class="text-[10px] font-bold uppercase tracking-wider text-slate-500 ml-1">Eski Alfabe</div>
-            <textarea id="latin" class="flex-1 w-full p-4 text-base bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm focus:ring-1 focus:ring-primary/50 focus:border-primary transition-all resize-none text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
+            <div id="label-input" class="text-[9px] font-bold uppercase tracking-wider text-slate-500 ml-1">Eski Alfabe</div>
+            <textarea id="latin" class="flex-1 w-full bg-white dark:bg-[#192633] rounded-lg border border-slate-200 dark:border-[#324d67] shadow-sm focus:ring-1 focus:ring-primary/50 focus:border-primary transition-all resize-none text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
         </div>
 
         <div class="flex flex-col gap-1 min-h-0">
-            <div id="label-output" class="text-[10px] font-bold uppercase tracking-wider text-slate-500 ml-1">Yeni Alfabe</div>
-            <textarea id="greek" class="flex-1 w-full p-4 text-base bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner focus:ring-0 resize-none text-slate-900 dark:text-white" placeholder="Sonuç burada görünecek..."></textarea>
+            <div id="label-output" class="text-[9px] font-bold uppercase tracking-wider text-slate-500 ml-1">Yeni Alfabe</div>
+            <textarea id="greek" class="flex-1 w-full bg-slate-100 dark:bg-[#111a22] rounded-lg border border-slate-200 dark:border-[#324d67] shadow-inner focus:ring-0 resize-none text-slate-900 dark:text-white" placeholder="Sonuç burada görünecek..."></textarea>
         </div>
     </section>
 
-    <section id="kb-container" class="flex-none pb-1">
-        <div class="keyboard !my-0 !p-1.5 !gap-1" id="mainKeyboard">
+    <section id="kb-container" class="flex-none pb-2">
+        <div class="keyboard !my-0" id="mainKeyboard">
             <div class="row !gap-1">
                 <div class="key">θ</div><div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">Φ</div><div class="key">Λ</div>
             </div>
