@@ -1,5 +1,4 @@
-/* --- GENEL SEÇİLEMEZLİK --- */
-header, .nav-tab, #kb-container, .key, #label-input, #label-output, #clock, #date {
+header, .nav-tab, #kb-container, .key, #label-input, #label-output, #clock, #date, select {
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -7,7 +6,6 @@ header, .nav-tab, #kb-container, .key, #label-input, #label-output, #clock, #dat
     -webkit-touch-callout: none;
 }
 
-/* --- KLAVYE --- */
 .keyboard {
     display: flex; flex-direction: column; align-items: center; gap: 8px; 
     margin: 20px auto; width: 100%; max-width: 850px; padding: 15px;
@@ -32,7 +30,6 @@ header, .nav-tab, #kb-container, .key, #label-input, #label-output, #clock, #dat
 [data-action="reset"], [data-action="enter"] { grid-column: span 3 !important; }
 [data-action="space"] { grid-column: span 6 !important; }
 
-/* --- MOBİL --- */
 @media (max-width: 768px) {
     .keyboard { position: fixed; bottom: 8px; left: 2%; width: 96%; padding: 8px 4px 12px 4px; border-radius: 1rem; box-shadow: 0 -5px 20px rgba(0,0,0,0.3); }
     .row { gap: 4px; }
