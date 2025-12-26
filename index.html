@@ -15,11 +15,6 @@
             darkMode: "class",
             theme: { extend: { colors: { "primary": "#137fec", "background-dark": "#101922" } } }
         }
-        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark')
-        }
     </script>
 </head>
 <body class="bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white font-sans flex flex-col min-h-screen">
@@ -30,7 +25,7 @@
             <h2 class="text-sm sm:text-lg font-extrabold truncate leading-tight border-r border-slate-200 dark:border-slate-700 pr-3">Anatolya'ya Dönüş</h2>
             <div class="flex items-center gap-2 sm:gap-4 font-mono font-bold leading-none shrink-0">
                 <span id="clock" class="text-sm sm:text-lg text-primary">θθ.θθ.θθ</span>
-                <span id="date" class="text-sm sm:text-lg text-slate-500 dark:text-slate-400">θθ.θθ.θθ</span>
+                <span id="date" class="text-sm sm:text-lg text-slate-500 dark:text-slate-400">θθ.θθ.θθθθ</span>
             </div>
         </div>
         <button id="themeToggle" class="p-1 flex items-center justify-center text-slate-500 dark:text-slate-400 focus:outline-none shrink-0">
@@ -40,29 +35,13 @@
 
     <div class="flex items-center gap-2 px-4 pb-2 overflow-x-auto no-scrollbar scroll-smooth">
         <button class="nav-tab active-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all" data-value="Alfabe">
-            <span class="material-symbols-outlined text-[18px]">translate</span>
-            <span class="text-sm font-medium">Alfabe</span>
+            <span class="material-symbols-outlined text-[18px]">translate</span><span class="text-sm font-medium">Alfabe</span>
         </button>
-        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all" data-value="Uzunluk">
-            <span class="material-symbols-outlined text-[18px]">straighten</span>
-            <span class="text-sm font-medium">Uzunluk</span>
-        </button>
-        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all" data-value="Sıcaklık">
-            <span class="material-symbols-outlined text-[18px]">thermostat</span>
-            <span class="text-sm font-medium">Sıcaklık</span>
-        </button>
-        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all" data-value="Hacim">
-            <span class="material-symbols-outlined text-[18px]">opacity</span>
-            <span class="text-sm font-medium">Hacim</span>
-        </button>
-        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all" data-value="Ağırlık">
-            <span class="material-symbols-outlined text-[18px]">fitness_center</span>
-            <span class="text-sm font-medium">Ağırlık</span>
-        </button>
-        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all" data-value="Zaman">
-            <span class="material-symbols-outlined text-[18px]">schedule</span>
-            <span class="text-sm font-medium">Zaman</span>
-        </button>
+        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all" data-value="Uzunluk"><span class="material-symbols-outlined text-[18px]">straighten</span><span class="text-sm font-medium">Uzunluk</span></button>
+        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all" data-value="Sıcaklık"><span class="material-symbols-outlined text-[18px]">thermostat</span><span class="text-sm font-medium">Sıcaklık</span></button>
+        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all" data-value="Hacim"><span class="material-symbols-outlined text-[18px]">opacity</span><span class="text-sm font-medium">Hacim</span></button>
+        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all" data-value="Ağırlık"><span class="material-symbols-outlined text-[18px]">fitness_center</span><span class="text-sm font-medium">Ağırlık</span></button>
+        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all" data-value="Zaman"><span class="material-symbols-outlined text-[18px]">schedule</span><span class="text-sm font-medium">Zaman</span></button>
     </div>
 </header>
 
@@ -70,11 +49,11 @@
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-8">
         <div class="flex flex-col gap-1">
             <div id="label-input" class="text-[10px] font-bold uppercase text-slate-500 ml-1">Eski Alfabe</div>
-            <textarea id="latin" class="w-full h-[150px] lg:h-[300px] p-4 bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm resize-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
+            <textarea id="latin" class="w-full h-[150px] lg:h-[300px] p-4 bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] resize-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
         </div>
         <div class="flex flex-col gap-1">
             <div id="label-output" class="text-[10px] font-bold uppercase text-slate-500 ml-1">Yeni Alfabe</div>
-            <textarea id="greek" class="w-full h-[150px] lg:h-[300px] p-4 bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner resize-none text-slate-900 dark:text-white" placeholder="Sonuç..." readonly></textarea>
+            <textarea id="greek" class="w-full h-[150px] lg:h-[300px] p-4 bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] resize-none text-slate-900 dark:text-white" placeholder="Sonuç..." readonly></textarea>
         </div>
     </section>
 
