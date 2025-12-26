@@ -1,68 +1,109 @@
-/* GENEL AYARLAR */
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { min-height: 100%; margin: 0; padding: 0; overflow-x: hidden; overflow-y: auto; }
+/* style.css */
 
-header h2, .material-symbols-outlined, .nav-tab, .key {
-    user-select: none; -webkit-user-select: none;
+/* --- GENEL SEÇİLEMEZLİK --- */
+header h2, .material-symbols-outlined, header .size-8 {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
 }
 
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-.active-tab { background-color: #137fec !important; color: white !important; }
-
-/* KLAVYE TEMEL (MASAÜSTÜ) */
+/* --- KLAVYE ANA KUTUSU --- */
 .keyboard {
-    display: flex; flex-direction: column; align-items: center; gap: 8px; 
-    margin: 20px auto; width: 100%; max-width: 850px; padding: 15px;
-    background: #e2e8f0; border-radius: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px; 
+    margin: 20px auto;
+    width: 100%;
+    max-width: 850px;
+    padding: 15px;
+    background: #e2e8f0;
+    border-radius: 1.25rem;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
 }
-.dark .keyboard { background: #111a22; border: 1px solid #233648; }
 
-.row { display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px; width: 100%; max-width: 800px; }
+.dark .keyboard {
+    background: #111a22;
+    border: 1px solid #233648;
+}
 
+/* SATIR YAPISI */
+.row {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr); 
+    gap: 6px; 
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 2px;
+}
+
+/* --- TUŞ TASARIMI (1x) --- */
 .key {
-    grid-column: span 1; height: 52px; display: flex; justify-content: center; align-items: center;
-    background: #ffffff; color: #1e293b; cursor: pointer; font-size: 1.1rem; font-weight: 600;
-    border-radius: 8px; border-bottom: 3px solid #cbd5e1; transition: all 0.05s ease;
+    grid-column: span 1; 
+    height: 52px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #ffffff;
+    color: #1e293b;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    border-bottom: 3px solid #cbd5e1;
+    transition: all 0.05s ease;
+    min-width: 0;
+    user-select: none;
+    -webkit-user-select: none;
 }
-.dark .key { background: #233648; color: #f8fafc; border-bottom: 3px solid #000; }
-.key:active { transform: translateY(2px); border-bottom: 0; }
 
-.fn-key { background: #cbd5e1 !important; }
-.dark .fn-key { background: #324d67 !important; }
+.dark .key {
+    background: #233648;
+    color: #f8fafc;
+    border-bottom: 3px solid #000;
+}
 
+.key:active {
+    transform: translateY(2px);
+    border-bottom: 0;
+}
+
+/* --- FONKSİYON TUŞLARI --- */
+.fn-key {
+    background: #cbd5e1 !important;
+}
+
+.dark .fn-key {
+    background: #324d67 !important;
+}
+
+/* --- MATEMATİKSEL GENİŞLİKLER --- */
 [data-action="shift"], [data-action="delete"] { grid-column: span 2 !important; }
 [data-action="reset"], [data-action="enter"] { grid-column: span 3 !important; }
 [data-action="space"] { grid-column: span 6 !important; }
 
-/* MOBİL ÖZEL AYARLAR: HAFİF DARALTILMIŞ VE AŞAĞI DAYANMIŞ */
+/* --- MOBİL OPTİMİZASYON --- */
 @media (max-width: 768px) {
     .keyboard {
-        position: fixed !important; 
-        bottom: 0 !important; 
-        left: 3% !important; /* Yanlardan daraltma için %3 boşluk */
-        right: 3% !important; 
-        width: 94% !important; /* Toplam %94 genişlik */
-        max-width: 94% !important; 
-        margin: 0 auto !important;
-        padding: 8px 4px 12px 4px !important; /* Alt kısım navigasyon hizasında */
-        border-radius: 1rem 1rem 0 0 !important; /* Sadece üst köşeler yuvarlak */
-        z-index: 9999 !important;
-        box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
-        background: #e2e8f0 !important;
+        position: fixed;
+        bottom: 8px;
+        left: 2%;
+        width: 96%;
+        padding: 8px 4px 12px 4px;
+        border-radius: 1rem;
+        box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
     }
-    .dark .keyboard { background: #111a22 !important; }
 
-    .key { 
-        height: 38px !important; 
-        font-size: 1rem !important; 
-        border-bottom-width: 2px !important; 
+    .row { gap: 4px; }
+
+    .key {
+        height: 38px !important;
+        font-size: 1rem;
+        border-bottom-width: 2px;
     }
-    .row { gap: 4px !important; }
-    main { padding-bottom: 240px !important; }
-    textarea { height: 130px !important; }
-}
 
-@media (min-width: 1024px) {
-    textarea { font-size: 1.5rem !important; }
+    main { padding-bottom: 260px !important; }
 }
