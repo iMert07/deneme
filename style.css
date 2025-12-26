@@ -35,27 +35,31 @@ header h2, .material-symbols-outlined, .nav-tab, .key {
 [data-action="reset"], [data-action="enter"] { grid-column: span 3 !important; }
 [data-action="space"] { grid-column: span 6 !important; }
 
-/* MOBİL KESİN ÇÖZÜM: TAM YASLAMA VE DİKEY DARALTMA */
+/* MOBİL ÖZEL AYARLAR: HAFİF DARALTILMIŞ VE AŞAĞI DAYANMIŞ */
 @media (max-width: 768px) {
     .keyboard {
         position: fixed !important; 
         bottom: 0 !important; 
-        left: 0 !important; 
-        right: 0 !important;
-        width: 100% !important; 
-        max-width: 100% !important; 
-        margin: 0 !important;
-        padding: 8px 4px 32px 4px !important; 
-        border-radius: 0 !important;
-        border: none !important;
+        left: 3% !important; /* Yanlardan daraltma için %3 boşluk */
+        right: 3% !important; 
+        width: 94% !important; /* Toplam %94 genişlik */
+        max-width: 94% !important; 
+        margin: 0 auto !important;
+        padding: 8px 4px 12px 4px !important; /* Alt kısım navigasyon hizasında */
+        border-radius: 1rem 1rem 0 0 !important; /* Sadece üst köşeler yuvarlak */
         z-index: 9999 !important;
         box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
         background: #e2e8f0 !important;
     }
     .dark .keyboard { background: #111a22 !important; }
-    .key { height: 38px !important; font-size: 1rem !important; border-bottom-width: 2px !important; }
+
+    .key { 
+        height: 38px !important; 
+        font-size: 1rem !important; 
+        border-bottom-width: 2px !important; 
+    }
     .row { gap: 4px !important; }
-    main { padding-bottom: 260px !important; }
+    main { padding-bottom: 240px !important; }
     textarea { height: 130px !important; }
 }
 
