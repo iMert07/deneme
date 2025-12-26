@@ -42,28 +42,32 @@
             h2 { font-size: 1.5rem !important; }
         }
 
-        /* MOBİL OPTİMİZASYON */
+        /* MOBİL ÖZEL AYARLAR */
         @media (max-width: 768px) {
-            /* Klavyeyi yanlardan daraltıp daha aşağı indiriyoruz */
+            /* Klavye genişliği %94 ile her iki yana eşit ve yakın */
             .keyboard { 
-                width: 90% !important; /* Yanlardan daraltma */
-                max-width: 400px !important; 
+                width: 94% !important; 
+                max-width: 500px !important; 
                 margin: 0 auto !important; 
-                padding: 10px !important;
+                padding: 8px !important;
                 border-radius: 1rem !important;
-                border: 1px solid rgba(148, 163, 184, 0.2) !important;
             }
+            /* Tuşların dikey genişliğini (yüksekliğini) daralttık */
+            .key { 
+                height: 38px !important; 
+                font-size: 1rem !important; 
+                border-bottom-width: 2px !important;
+            }
+            /* Klavyeyi daha aşağı kaydırdık */
             #kb-container { 
                 padding-top: 5px !important;
-                padding-bottom: 5px !important; /* Alta daha yakın */
+                padding-bottom: 2px !important; 
             }
-            /* Metin kutularını dikeyde daraltma */
             textarea { 
                 font-size: 1.1rem !important; 
-                height: 140px !important; /* Yüksekliği azalttık */
+                height: 140px !important; 
                 padding: 10px !important;
             }
-            main { gap: 10px !important; padding: 10px !important; }
         }
     </style>
 </head>
