@@ -33,34 +33,6 @@
         </div>
         <h2 class="text-lg font-bold">Anatolya'ya Dönüş</h2>
     </div>
-
-    <div class="relative">
-        <button id="menuButton" class="size-10 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-[#233648] transition-all active:scale-95 border border-transparent hover:border-slate-200 dark:hover:border-[#324d67]">
-            <span class="material-symbols-outlined text-2xl">more_vert</span>
-        </button>
-        
-        <div id="dropdownMenu" class="hidden absolute top-full right-0 mt-2 w-64 bg-white dark:bg-[#192633] border border-slate-200 dark:border-[#324d67] rounded-xl shadow-2xl z-50 overflow-hidden">
-            <div class="p-2 flex flex-col gap-1">
-                <div class="px-3 py-2 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Araçlar</div>
-                
-                <button class="flex items-center gap-3 p-3 hover:bg-slate-50 dark:hover:bg-[#233648] rounded-lg transition-colors text-left group">
-                    <span class="material-symbols-outlined text-primary">translate</span>
-                    <div>
-                        <p class="text-sm font-semibold">Alfabe Çevirici</p>
-                        <p class="text-[11px] text-slate-500">Metin Dönüştürme</p>
-                    </div>
-                </button>
-
-                <button class="flex items-center gap-3 p-3 hover:bg-slate-50 dark:hover:bg-[#233648] rounded-lg transition-colors text-left group">
-                    <span class="material-symbols-outlined text-primary">straighten</span>
-                    <div>
-                        <p class="text-sm font-semibold">Uzunluk Ölçümü</p>
-                        <p class="text-[11px] text-slate-500">Birim Dönüştürücü</p>
-                    </div>
-                </button>
-            </div>
-        </div>
-    </div>
 </header>
 
 <main class="flex-1 w-full max-w-[1200px] mx-auto px-4 py-6 flex flex-col gap-8">
@@ -78,9 +50,77 @@
 
     <section class="keyboard-container">
         <div class="keyboard" id="mainKeyboard">
+            <div class="row">
+                <div class="key">θ</div><div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">Φ</div><div class="key">Λ</div>
             </div>
+            <div class="row">
+                <div class="key">Ϙ</div><div class="key">Ш</div><div class="key">E</div><div class="key">R</div><div class="key">T</div><div class="key">Y</div><div class="key">U</div><div class="key">Ͱ</div><div class="key">Ω</div><div class="key">P</div><div class="key">Γ</div><div class="key">Σ</div>
+            </div>
+            <div class="row">
+                <div class="key fn-key">,</div><div class="key">A</div><div class="key">S</div><div class="key">D</div><div class="key">F</div><div class="key">G</div><div class="key">H</div><div class="key">J</div><div class="key">K</div><div class="key">L</div><div class="key">Ь</div><div class="key fn-key">.</div>
+            </div>
+            <div class="row">
+                <div class="key wide fn-key" data-action="shift">Shift</div>
+                <div class="key">Z</div><div class="key">Ψ</div><div class="key">C</div><div class="key">V</div><div class="key">B</div><div class="key">N</div><div class="key">M</div><div class="key">Π</div>
+                <div class="key wide fn-key" data-action="delete">
+                    <span class="material-symbols-outlined">backspace</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="key wide fn-key" data-action="reset">Sıfırla</div>
+                <div class="key extra-wide" data-action="space">Boşluk</div>
+                <div class="key wide fn-key" data-action="enter">Enter</div>
+            </div>
+        </div>
     </section>
 </main>
 
+<script>
+    const latin = document.getElementById('latin');
+    const greek = document.getElementById('greek');
+    let activeInput = latin;
+
+    const toGreek = {
+        "a":"Α","A":"Α","e":"Ε","E":"Ε","i":"Ͱ","İ":"Ͱ","n":"Ν","N":"Ν","r":"Ρ","R":"Ρ","l":"L","L":"L","ı":"Ь","I":"Ь","k":"Κ","K":"Κ","d":"D","D":"D","m":"Μ","M":"Μ","t":"Τ","T":"Τ","y":"R","Y":"R","s":"S","S":"S","u":"U","U":"U","o":"Q","O":"Q","b":"Β","B":"Β","ş":"Ш","Ş":"Ш","ü":"Υ","Ü":"Υ","z":"Ζ","Z":"Ζ","g":"G","G":"G","ç":"C","Ç":"C","ğ":"Γ","Ğ":"Γ","v":"V","V":"V","c":"J","h":"Η","H":"Η","p":"Π","P":"Π","ö":"Ω","Ö":"Ω","f":"F","F":"F","x":"Ψ","X":"Ψ","j":"Σ","J":"Σ","0":"θ"
+    };
+
+    const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
+
+    function translateText(text, dir){
+        const map = dir === "toGreek" ? toGreek : toLatin;
+        return text.split('').map(ch => map[ch] || ch).join('');
+    }
+
+    latin.addEventListener('input', () => { greek.value = translateText(latin.value, "toGreek"); });
+    greek.addEventListener('input', () => { latin.value = translateText(greek.value, "toLatin"); });
+    latin.addEventListener('focus', () => activeInput = latin);
+    greek.addEventListener('focus', () => activeInput = greek);
+
+    document.querySelectorAll('.key').forEach(key => {
+        key.addEventListener('click', () => {
+            const action = key.dataset.action;
+            let content = key.innerText.trim();
+            
+            if (action === 'delete') { 
+                activeInput.value = activeInput.value.slice(0, -1); 
+            } else if (action === 'reset') {
+                latin.value = "";
+                greek.value = "";
+            } else if (action === 'space') { 
+                activeInput.value += ' '; 
+            } else if (action === 'enter') { 
+                activeInput.value += '\n'; 
+            } else if (action === 'shift') {
+                // Shift sadece görsel, işlevsiz.
+            } else if (!action) { 
+                // Doğrudan tuşun üzerindeki karakteri (Büyük) ekle
+                activeInput.value += content; 
+            }
+
+            if (activeInput === latin) { greek.value = translateText(latin.value, "toGreek"); }
+            else { latin.value = translateText(greek.value, "toLatin"); }
+        });
+    });
+</script>
 </body>
 </html>
