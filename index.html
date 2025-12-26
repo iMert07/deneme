@@ -14,6 +14,11 @@
             darkMode: "class",
             theme: { extend: { colors: { "primary": "#137fec", "background-dark": "#101922" } } }
         }
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
     </script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -28,16 +33,9 @@
                 <span id="date">θθ.θθ.θθ</span>
             </div>
         </div>
-        
-        <div class="flex items-center gap-3">
-            <div class="hidden sm:flex flex-col text-right text-[9px] text-slate-500 font-mono">
-                <span id="clockDecimal">00.000.000</span>
-                <span id="dateDecimal">00.00.00000</span>
-            </div>
-            <button id="themeToggle" class="p-1 flex items-center justify-center text-slate-500 dark:text-slate-400 focus:outline-none">
-                <span class="material-symbols-outlined text-[26px]">globe_book</span>
-            </button>
-        </div>
+        <button id="themeToggle" class="p-1 flex items-center justify-center text-slate-500 dark:text-slate-400 focus:outline-none">
+            <span class="material-symbols-outlined text-[26px]">globe_book</span>
+        </button>
     </div>
 
     <div class="flex items-center gap-2 px-4 pb-2 overflow-x-auto no-scrollbar scroll-smooth">
@@ -80,8 +78,7 @@
         </div>
     </section>
 
-    <div id="clock2" class="hidden"></div><div id="date2" class="hidden"></div>
-    <div id="clockDecimal2" class="hidden"></div><div id="dateDecimal2" class="hidden"></div>
+    <div class="hidden"><span id="clockDecimal"></span><span id="dateDecimal"></span><span id="clock2"></span><span id="date2"></span><span id="clockDecimal2"></span><span id="dateDecimal2"></span></div>
 
     <section id="kb-container">
         <div class="keyboard" id="mainKeyboard">
