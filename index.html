@@ -22,6 +22,12 @@
                 }
             }
         }
+        // Sayfa yüklenirken hafızadaki temayı kontrol et (Örnek koddan)
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
     </script>
 </head>
 <body class="bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white font-sans min-h-screen flex flex-col">
@@ -58,8 +64,15 @@
             </div>
         </div>
 
-        <button id="themeToggle" class="p-2 rounded-lg bg-slate-100 dark:bg-[#192633] text-slate-600 dark:text-yellow-400 border border-slate-200 dark:border-[#324d67] transition-all">
-            <span id="themeIcon" class="material-symbols-outlined">light_mode</span>
+        <button id="themeToggle" class="p-2 rounded-lg bg-slate-100 dark:bg-[#192633] border border-slate-200 dark:border-[#324d67] transition-all">
+            <svg class="w-6 h-6 hidden text-slate-600" id="theme-toggle-dark-icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+            <svg class="w-6 h-6 hidden text-yellow-400" id="theme-toggle-light-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" x2="12" y1="1" y2="3"></line><line x1="12" x2="12" y1="21" y2="23"></line>
+                <line x1="4.22" x2="5.64" y1="4.22" y2="5.64"></line><line x1="18.36" x2="19.78" y1="18.36" y2="19.78"></line>
+                <line x1="1" x2="3" y1="12" y2="12"></line><line x1="21" x2="23" y1="12" y2="12"></line>
+                <line x1="4.22" x2="5.64" y1="19.78" y2="18.36"></line><line x1="18.36" x2="19.78" y1="5.64" y2="4.22"></line>
+            </svg>
         </button>
     </div>
 </header>
