@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Anatolya'ya Dönüş - Dönüştürücü</title>
+    <title>Anatolya'ya Dönüş</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -23,23 +23,6 @@
             }
         }
     </script>
-    <style>
-        /* Kaydırma çubuğunu gizle ama işlevini koru */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Klavye tasarımı için basit ekleme */
-        .keyboard-container { width: 100%; max-width: 800px; margin: 0 auto; }
-        .keyboard { display: flex; flex-direction: column; gap: 8px; }
-        .row { display: flex; justify-content: center; gap: 6px; }
-        .key { 
-            @apply h-12 flex items-center justify-center rounded bg-white dark:bg-[#192633] border border-slate-200 dark:border-[#324d67] cursor-pointer select-none active:scale-95 transition-all;
-            min-width: 2.5rem; padding: 0 10px; font-weight: 600;
-        }
-        .fn-key { @apply bg-slate-100 dark:bg-[#233648] text-sm; }
-        .wide { min-width: 5rem; }
-        .extra-wide { min-width: 12rem; }
-    </style>
 </head>
 <body class="bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white font-sans min-h-screen flex flex-col">
 
@@ -52,38 +35,15 @@
     </div>
 </header>
 
-<nav class="bg-white dark:bg-[#111a22] border-b border-slate-200 dark:border-[#233648] overflow-x-auto no-scrollbar">
-    <div class="flex items-center gap-2 px-4 py-3 min-w-max">
-        <button class="flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-white text-sm font-medium transition whitespace-nowrap">
-            <span class="material-symbols-outlined text-sm">translate</span> Alfabe
-        </button>
-        <button class="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-[#192633] text-slate-600 dark:text-slate-300 text-sm font-medium hover:bg-slate-200 dark:hover:bg-[#233648] transition whitespace-nowrap">
-            <span class="material-symbols-outlined text-sm">schedule</span> Zaman
-        </button>
-        <button class="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-[#192633] text-slate-600 dark:text-slate-300 text-sm font-medium hover:bg-slate-200 dark:hover:bg-[#233648] transition whitespace-nowrap">
-            <span class="material-symbols-outlined text-sm">speed</span> Hız
-        </button>
-        <button class="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-[#192633] text-slate-600 dark:text-slate-300 text-sm font-medium hover:bg-slate-200 dark:hover:bg-[#233648] transition whitespace-nowrap">
-            <span class="material-symbols-outlined text-sm">thermostat</span> Sıcaklık
-        </button>
-        <button class="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-[#192633] text-slate-600 dark:text-slate-300 text-sm font-medium hover:bg-slate-200 dark:hover:bg-[#233648] transition whitespace-nowrap">
-            <span class="material-symbols-outlined text-sm">straighten</span> Uzunluk
-        </button>
-        <button class="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-[#192633] text-slate-600 dark:text-slate-300 text-sm font-medium hover:bg-slate-200 dark:hover:bg-[#233648] transition whitespace-nowrap">
-            <span class="material-symbols-outlined text-sm">fitness_center</span> Ağırlık
-        </button>
-    </div>
-</nav>
-
 <main class="flex-1 w-full max-w-[1200px] mx-auto px-4 py-6 flex flex-col gap-8">
     <section class="flex flex-col lg:flex-row gap-4 h-auto lg:h-[350px]">
         <div class="flex-1 flex flex-col bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] overflow-hidden shadow-sm">
-            <div class="p-3 border-b border-slate-200 dark:border-[#324d67] text-sm font-semibold text-slate-500 uppercase tracking-wider">Eski Birim / Alfabe</div>
+            <div class="p-3 border-b border-slate-200 dark:border-[#324d67] text-sm font-semibold text-slate-500">Eski Alfabe</div>
             <textarea id="latin" class="flex-1 p-5 text-lg bg-transparent border-none focus:ring-0 resize-none" placeholder="Buraya yazın..."></textarea>
         </div>
 
         <div class="flex-1 flex flex-col bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] overflow-hidden shadow-inner">
-            <div class="p-3 border-b border-slate-200 dark:border-[#324d67] text-sm font-semibold text-slate-500 uppercase tracking-wider">Yeni Birim / Alfabe</div>
+            <div class="p-3 border-b border-slate-200 dark:border-[#324d67] text-sm font-semibold text-slate-500">Yeni Alfabe</div>
             <textarea id="greek" class="flex-1 p-5 text-lg bg-transparent border-none focus:ring-0 resize-none" placeholder="Sonuç burada görünecek..."></textarea>
         </div>
     </section>
@@ -116,9 +76,51 @@
 </main>
 
 <script>
-    // Script dosyanı buraya ekleyebilirsin veya harici olarak çağırabilirsin.
-    // İstediğin script düzenlemelerini göndermen için hazırım!
-</script>
+    const latin = document.getElementById('latin');
+    const greek = document.getElementById('greek');
+    let activeInput = latin;
 
+    const toGreek = {
+        "a":"Α","A":"Α","e":"Ε","E":"Ε","i":"Ͱ","İ":"Ͱ","n":"Ν","N":"Ν","r":"Ρ","R":"Ρ","l":"L","L":"L","ı":"Ь","I":"Ь","k":"Κ","K":"Κ","d":"D","D":"D","m":"Μ","M":"Μ","t":"Τ","T":"Τ","y":"R","Y":"R","s":"S","S":"S","u":"U","U":"U","o":"Q","O":"Q","b":"Β","B":"Β","ş":"Ш","Ş":"Ш","ü":"Υ","Ü":"Υ","z":"Ζ","Z":"Ζ","g":"G","G":"G","ç":"C","Ç":"C","ğ":"Γ","Ğ":"Γ","v":"V","V":"V","c":"J","h":"Η","H":"Η","p":"Π","P":"Π","ö":"Ω","Ö":"Ω","f":"F","F":"F","x":"Ψ","X":"Ψ","j":"Σ","J":"Σ","0":"θ"
+    };
+
+    const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
+
+    function translateText(text, dir){
+        const map = dir === "toGreek" ? toGreek : toLatin;
+        return text.split('').map(ch => map[ch] || ch).join('');
+    }
+
+    latin.addEventListener('input', () => { greek.value = translateText(latin.value, "toGreek"); });
+    greek.addEventListener('input', () => { latin.value = translateText(greek.value, "toLatin"); });
+    latin.addEventListener('focus', () => activeInput = latin);
+    greek.addEventListener('focus', () => activeInput = greek);
+
+    document.querySelectorAll('.key').forEach(key => {
+        key.addEventListener('click', () => {
+            const action = key.dataset.action;
+            let content = key.innerText.trim();
+            
+            if (action === 'delete') { 
+                activeInput.value = activeInput.value.slice(0, -1); 
+            } else if (action === 'reset') {
+                latin.value = "";
+                greek.value = "";
+            } else if (action === 'space') { 
+                activeInput.value += ' '; 
+            } else if (action === 'enter') { 
+                activeInput.value += '\n'; 
+            } else if (action === 'shift') {
+                // Shift sadece görsel, işlevsiz.
+            } else if (!action) { 
+                // Doğrudan tuşun üzerindeki karakteri (Büyük) ekle
+                activeInput.value += content; 
+            }
+
+            if (activeInput === latin) { greek.value = translateText(latin.value, "toGreek"); }
+            else { latin.value = translateText(greek.value, "toLatin"); }
+        });
+    });
+</script>
 </body>
 </html>
