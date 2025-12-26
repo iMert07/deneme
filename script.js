@@ -63,7 +63,7 @@ document.querySelectorAll('.key').forEach(key => {
 });
 
 /* ==========================================================================
-   3. TEMA YÖNETİMİ (Globe Book - Gri Tonlar)
+   3. TEMA YÖNETİMİ
    ========================================================================== */
 const themeToggleButton = document.getElementById('themeToggle');
 
@@ -88,7 +88,7 @@ themeToggleButton.addEventListener('click', function() {
 });
 
 /* ==========================================================================
-   4. DROPDOWN MANTIĞI
+   4. DROPDOWN MANTIĞI (Vurgulu İkon Renkleri)
    ========================================================================== */
 const dropdownBtn = document.getElementById('dropdownBtn');
 const dropdownMenu = document.getElementById('dropdownMenu');
@@ -103,9 +103,10 @@ if(dropdownBtn) {
 document.querySelectorAll('.dropdown-item').forEach(item => {
     item.addEventListener('click', function() {
         document.getElementById('selectedText').innerText = this.getAttribute('data-value');
-        // İkonun rengini burada da gri tutuyoruz
         const iconSpan = document.getElementById('selectedIcon');
         iconSpan.innerText = this.getAttribute('data-icon');
+        // İkonun her zaman belirgin kalmasını sağlamak için sınıfları koruyoruz
+        iconSpan.className = "material-symbols-outlined text-[20px] text-slate-900 dark:text-white";
         dropdownMenu.classList.add('hidden');
     });
 });
