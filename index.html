@@ -42,35 +42,30 @@
             h2 { font-size: 1.5rem !important; }
         }
 
-        /* MOBİL ÖZEL AYARLAR: TAM YASLAMA */
+        /* MOBİL KESİN ÇÖZÜM: NEGATİF MARGİN İLE TAM YASLAMA */
         @media (max-width: 768px) {
-            .keyboard { 
-                /* Klavyeyi her iki duvara tam dayıyoruz */
-                width: 100% !important; 
-                max-width: 100% !important; 
-                margin: 0 !important; 
-                padding: 10px 5px !important; /* Tuşların ekrana değmemesi için sadece iç boşluk */
-                border-radius: 0 !important; /* Yanlara yaslandığı için köşeleri sıfırladık */
-                border-left: none !important;
-                border-right: none !important;
-                border-bottom: none !important;
+            #kb-container {
+                width: 100vw !important; /* Ekranın tam genişliği */
+                margin-left: -12px !important; /* Main paddingi kadar sola kaydır (3 birim padding = 12px) */
+                margin-right: -12px !important; /* Main paddingi kadar sağa kaydır */
+                padding: 0 !important;
+                overflow: hidden;
             }
-            #kb-container { 
-                padding-top: 5px !important;
-                padding-bottom: 0px !important; 
-                padding-left: 0px !important;
-                padding-right: 0px !important;
-                display: block !important; /* Hizalama karmaşasını bitirip tam alanı kaplamasını sağlar */
+            .keyboard { 
+                width: 100vw !important; /* Klavye ekranın tam genişliğinde */
+                max-width: 100vw !important;
+                margin: 0 !important;
+                padding: 10px 4px !important; 
+                border-radius: 0 !important;
+                border: none !important;
+                border-top: 1px solid rgba(148, 163, 184, 0.2) !important;
             }
             .key { 
                 height: 38px !important; 
-                font-size: 1rem !important; 
-                border-bottom-width: 2px !important;
+                font-size: 1rem !important;
             }
             textarea { 
-                font-size: 1.1rem !important; 
                 height: 140px !important; 
-                padding: 10px !important;
             }
         }
     </style>
