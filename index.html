@@ -2,7 +2,7 @@
 <html class="dark" lang="tr">
 <head>
     <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
     <title>Anatolya'ya Dönüş</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
@@ -28,10 +28,20 @@
             document.documentElement.classList.remove('dark')
         }
     </script>
+    <style>
+        /* Kaydırmayı tamamen engelle ve tam ekran yap */
+        html, body { height: 100%; overflow: hidden; margin: 0; padding: 0; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .active-tab { background-color: #137fec; color: white !important; }
+        .active-tab span { color: white !important; }
+        .inactive-tab { background-color: transparent; color: #94a3b8; }
+        .dark .inactive-tab { color: #64748b; }
+    </style>
 </head>
-<body class="bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white font-sans min-h-screen flex flex-col">
+<body class="bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white font-sans flex flex-col h-screen">
 
-<header class="sticky top-0 z-50 bg-white dark:bg-[#111a22] border-b border-slate-200 dark:border-[#233648]">
+<header class="flex-none bg-white dark:bg-[#111a22] border-b border-slate-200 dark:border-[#233648] z-50">
     <div class="flex items-center justify-between px-6 py-3">
         <h2 class="text-base sm:text-lg font-bold truncate">Anatolya'ya Dönüş</h2>
         <button id="themeToggle" class="p-2 flex items-center justify-center bg-transparent border-none text-slate-500 dark:text-slate-400 hover:opacity-70 transition-all focus:outline-none">
@@ -67,38 +77,38 @@
     </div>
 </header>
 
-<main class="flex-1 w-full max-w-[1200px] mx-auto px-4 py-6 flex flex-col gap-6">
-    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="flex flex-col gap-2">
-            <div id="label-input" class="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Eski Alfabe</div>
-            <textarea id="latin" class="w-full h-[180px] lg:h-[250px] p-5 text-lg bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all resize-none text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
+<main class="flex-1 overflow-hidden flex flex-col p-4 gap-4">
+    <section class="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4 min-h-0">
+        <div class="flex flex-col gap-1 min-h-0">
+            <div id="label-input" class="text-[10px] font-bold uppercase tracking-wider text-slate-500 ml-1">Eski Alfabe</div>
+            <textarea id="latin" class="flex-1 w-full p-4 text-base bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all resize-none text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
         </div>
 
-        <div class="flex flex-col gap-2">
-            <div id="label-output" class="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Yeni Alfabe</div>
-            <textarea id="greek" class="w-full h-[180px] lg:h-[250px] p-5 text-lg bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner focus:ring-0 resize-none text-slate-900 dark:text-white" placeholder="Sonuç burada görünecek..."></textarea>
+        <div class="flex flex-col gap-1 min-h-0">
+            <div id="label-output" class="text-[10px] font-bold uppercase tracking-wider text-slate-500 ml-1">Yeni Alfabe</div>
+            <textarea id="greek" class="flex-1 w-full p-4 text-base bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner focus:ring-0 resize-none text-slate-900 dark:text-white" placeholder="Sonuç burada görünecek..."></textarea>
         </div>
     </section>
 
-    <section class="keyboard-container" id="kb-container">
-        <div class="keyboard" id="mainKeyboard">
-            <div class="row">
+    <section id="kb-container" class="flex-none pt-2 pb-1">
+        <div class="keyboard !my-0 !p-2 !gap-1.5" id="mainKeyboard">
+            <div class="row !gap-1">
                 <div class="key">θ</div><div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">Φ</div><div class="key">Λ</div>
             </div>
-            <div class="row">
+            <div class="row !gap-1">
                 <div class="key">Ϙ</div><div class="key">Ш</div><div class="key">E</div><div class="key">R</div><div class="key">T</div><div class="key">Y</div><div class="key">U</div><div class="key">Ͱ</div><div class="key">Ω</div><div class="key">P</div><div class="key">Γ</div><div class="key">Σ</div>
             </div>
-            <div class="row">
+            <div class="row !gap-1">
                 <div class="key fn-key">,</div><div class="key">A</div><div class="key">S</div><div class="key">D</div><div class="key">F</div><div class="key">G</div><div class="key">H</div><div class="key">J</div><div class="key">K</div><div class="key">L</div><div class="key">Ь</div><div class="key fn-key">.</div>
             </div>
-            <div class="row">
+            <div class="row !gap-1">
                 <div class="key wide fn-key" data-action="shift">Shift</div>
                 <div class="key">Z</div><div class="key">Ψ</div><div class="key">C</div><div class="key">V</div><div class="key">B</div><div class="key">N</div><div class="key">M</div><div class="key">Π</div>
                 <div class="key wide fn-key" data-action="delete">
-                    <span class="material-symbols-outlined">backspace</span>
+                    <span class="material-symbols-outlined text-sm">backspace</span>
                 </div>
             </div>
-            <div class="row">
+            <div class="row !gap-1">
                 <div class="key wide fn-key" data-action="reset">Sıfırla</div>
                 <div class="key extra-wide" data-action="space">Boşluk</div>
                 <div class="key wide fn-key" data-action="enter">Enter</div>
@@ -106,15 +116,6 @@
         </div>
     </section>
 </main>
-
-<style>
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    .active-tab { background-color: #137fec; color: white !important; }
-    .active-tab span { color: white !important; }
-    .inactive-tab { background-color: transparent; color: #94a3b8; }
-    .dark .inactive-tab { color: #64748b; }
-</style>
 
 <script src="script.js"></script>
 </body>
