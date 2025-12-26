@@ -52,23 +52,35 @@
             <span class="material-symbols-outlined text-[20px]">thermostat</span>
             <span class="text-sm font-medium">Sıcaklık</span>
         </button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Hacim" data-icon="opacity">
+            <span class="material-symbols-outlined text-[20px]">opacity</span>
+            <span class="text-sm font-medium">Hacim</span>
+        </button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Ağırlık" data-icon="fitness_center">
+            <span class="material-symbols-outlined text-[20px]">fitness_center</span>
+            <span class="text-sm font-medium">Ağırlık</span>
+        </button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all inactive-tab" data-value="Zaman" data-icon="schedule">
+            <span class="material-symbols-outlined text-[20px]">schedule</span>
+            <span class="text-sm font-medium">Zaman</span>
+        </button>
     </div>
 </header>
 
 <main class="flex-1 w-full max-w-[1200px] mx-auto px-4 py-6 flex flex-col gap-6">
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="flex flex-col gap-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Eski Alfabe</div>
+            <div id="label-input" class="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Eski Alfabe</div>
             <textarea id="latin" class="w-full h-[180px] lg:h-[250px] p-5 text-lg bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all resize-none text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
         </div>
 
         <div class="flex flex-col gap-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Yeni Alfabe</div>
+            <div id="label-output" class="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Yeni Alfabe</div>
             <textarea id="greek" class="w-full h-[180px] lg:h-[250px] p-5 text-lg bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner focus:ring-0 resize-none text-slate-900 dark:text-white" placeholder="Sonuç burada görünecek..."></textarea>
         </div>
     </section>
 
-    <section class="keyboard-container">
+    <section class="keyboard-container" id="kb-container">
         <div class="keyboard" id="mainKeyboard">
             <div class="row">
                 <div class="key">θ</div><div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">Φ</div><div class="key">Λ</div>
@@ -96,23 +108,12 @@
 </main>
 
 <style>
-    /* Kaydırma çubuğunu gizle */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-    /* Aktif Sekme Stili */
-    .active-tab {
-        background-color: #137fec;
-        color: white !important;
-    }
+    .active-tab { background-color: #137fec; color: white !important; }
     .active-tab span { color: white !important; }
-
-    /* Pasif Sekme Stili */
-    .inactive-tab {
-        background-color: transparent;
-        color: #94a3b8; /* slate-400 */
-    }
-    .dark .inactive-tab { color: #64748b; } /* slate-500 */
+    .inactive-tab { background-color: transparent; color: #94a3b8; }
+    .dark .inactive-tab { color: #64748b; }
 </style>
 
 <script src="script.js"></script>
