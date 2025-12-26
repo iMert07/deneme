@@ -1,4 +1,4 @@
-/* GENEL */
+/* GENEL AYARLAR */
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { min-height: 100%; margin: 0; padding: 0; overflow-x: hidden; overflow-y: auto; }
 
@@ -10,9 +10,8 @@ header h2, .material-symbols-outlined, .nav-tab, .key {
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 .active-tab { background-color: #137fec !important; color: white !important; }
-.inactive-tab { background-color: transparent !important; color: #94a3b8 !important; }
 
-/* KLAVYE TEMEL */
+/* KLAVYE TASARIMI (MASAÜSTÜ) */
 .keyboard {
     display: flex; flex-direction: column; align-items: center; gap: 8px; 
     margin: 20px auto; width: 100%; max-width: 850px; padding: 15px;
@@ -37,37 +36,36 @@ header h2, .material-symbols-outlined, .nav-tab, .key {
 [data-action="reset"], [data-action="enter"] { grid-column: span 3 !important; }
 [data-action="space"] { grid-column: span 6 !important; }
 
-/* BİLGİSAYAR */
-@media (min-width: 1024px) {
-    textarea { font-size: 1.5rem !important; }
-    header h2 { font-size: 1.5rem !important; }
-}
-
-/* MOBİL KESİN ÇÖZÜM */
+/* MOBİL ÖZEL AYARLAR (KESİN ÇÖZÜM) */
 @media (max-width: 768px) {
     .keyboard {
-        position: fixed !important; 
+        position: fixed !important;
         bottom: 0 !important; 
-        left: 0 !important; 
+        left: 0 !important;
         right: 0 !important;
-        width: 100% !important; 
-        max-width: 100% !important; 
+        width: 100% !important;
+        max-width: 100% !important;
         margin: 0 !important;
-        padding: 10px 4px 35px 4px !important; /* Alt navigasyon boşluğu */
+        padding: 10px 4px 30px 4px !important; /* Alt navigasyon çubuğu boşluğu */
         border-radius: 0 !important;
         border: none !important;
         z-index: 9999 !important;
-        box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
+        box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
         background: #e2e8f0 !important;
     }
     .dark .keyboard { background: #111a22 !important; }
 
     .key { 
-        height: 36px !important; /* DİKEY DARALTMA */
-        font-size: 0.95rem !important; 
-        border-bottom-width: 2px !important; 
+        height: 38px !important; 
+        font-size: 1rem !important;
+        border-bottom-width: 2px !important;
     }
-    .row { gap: 4px !important; margin-bottom: 4px !important; }
+    .row { gap: 4px !important; }
     main { padding-bottom: 260px !important; }
     textarea { height: 130px !important; }
+}
+
+@media (min-width: 1024px) {
+    textarea { font-size: 1.5rem !important; }
+    header h2 { font-size: 1.5rem !important; }
 }
