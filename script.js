@@ -35,7 +35,8 @@ latin.addEventListener('focus', () => activeInput = latin);
 greek.addEventListener('focus', () => activeInput = greek);
 
 document.querySelectorAll('.key').forEach(key => {
-    key.addEventListener('click', () => {
+    key.addEventListener('click', (e) => {
+        e.preventDefault(); // Fokus kaybını engelle
         const action = key.dataset.action;
         if(action === 'delete') activeInput.value = activeInput.value.slice(0,-1);
         else if(action === 'enter') activeInput.value += '\n';
@@ -56,34 +57,23 @@ const navTabs = document.querySelectorAll('.nav-tab');
 navTabs.forEach(tab => {
     tab.addEventListener('click', function() {
         const mode = this.dataset.value;
-
-        // Sekme Değiştirme (Görsel)
-        navTabs.forEach(t => {
-            t.classList.remove('active-tab');
-            t.classList.add('inactive-tab');
-        });
+        navTabs.forEach(t => { t.classList.remove('active-tab'); t.classList.add('inactive-tab'); });
         this.classList.add('active-tab');
         this.classList.remove('inactive-tab');
         
-        // Etiketleri Güncelle
         if (mode === "Alfabe") {
             labelInput.innerText = "Eski Alfabe";
             labelOutput.innerText = "Yeni Alfabe";
-            kbContainer.style.display = "block"; // Alfabede klavyeyi göster
+            kbContainer.style.display = "block";
         } else {
             labelInput.innerText = "Girdi (" + mode + ")";
             labelOutput.innerText = "Sonuç";
-            kbContainer.style.display = "none"; // Diğerlerinde klavyeyi gizle (isteğe bağlı)
+            kbContainer.style.display = "none";
         }
     });
 });
 
 document.getElementById('themeToggle').addEventListener('click', function() {
-    if (document.documentElement.classList.contains('dark')) {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('color-theme', 'light');
-    } else {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('color-theme', 'dark');
-    }
+    document.documentElement.classList.toggle('dark');
+    localStorage.setItem('color-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
 });
