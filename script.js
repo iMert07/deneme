@@ -50,7 +50,7 @@ function getGregorianDays(years) {
         if ((i % 4 === 0 && i % 100 !== 0) || (i % 400 === 0)) totalDays += 366;
         else totalDays += 365;
     }
-    totalDays += (years % 1) * 365.2425; // Kesirli kısımlar için ortalama
+    totalDays += (years % 1) * 365.2425;
     return totalDays;
 }
 
@@ -64,7 +64,8 @@ function getAnatolyaDays(years) {
     return totalDays;
 }
 
-function toBase12(n, isAnatolya = true) {
+// --- TABAN DÖNÜŞTÜRÜCÜ (Header ile uyumlu) ---
+function toBase12(n, pad = 1, isAnatolya = true) {
     const digits = isAnatolya ? "θ123456789ΦΛ" : "0123456789AB";
     let num = Math.abs(n);
     let integerPart = Math.floor(num);
@@ -72,6 +73,7 @@ function toBase12(n, isAnatolya = true) {
     let res = "";
     if (integerPart === 0) res = digits[0];
     else { while (integerPart > 0) { res = digits[integerPart % 12] + res; integerPart = Math.floor(integerPart / 12); } }
+    res = res.padStart(pad, digits[0]);
     if (fractionPart > 0.001) {
         res += ",";
         for (let i = 0; i < 3; i++) { fractionPart *= 12; let d = Math.floor(fractionPart); res += digits[d]; fractionPart -= d; if (fractionPart < 0.001) break; }
@@ -79,8 +81,10 @@ function toBase12(n, isAnatolya = true) {
     return res;
 }
 
+// --- SAYI / TABAN DÖNÜŞÜMÜ ---
 function universalNumberConvert(text, fromUnit, toUnit) {
     const stdDigits = "0123456789ABCDEF";
+    const anaDigits = "θ123456789ΦΛ";
     const getBase = (unit) => {
         if (unit.includes("(2)")) return 2;
         if (unit.includes("Anatolya") || unit.includes("(12)")) return 12;
@@ -101,13 +105,14 @@ function universalNumberConvert(text, fromUnit, toUnit) {
     }
     if (isNaN(dec)) return "Hata";
     if (toUnit.includes("Anatolya")) {
-        const anaVal = toBase12(dec, true);
-        const stdVal = toBase12(dec, false);
+        const anaVal = toBase12(dec, 1, true);
+        const stdVal = toBase12(dec, 1, false);
         return (anaVal === stdVal) ? anaVal : `${anaVal} (${stdVal})`;
     }
     return dec.toString(toBase).toUpperCase().replace('.', ',');
 }
 
+// --- MERKEZİ DÖNÜŞÜM MOTORU ---
 function performConversion() {
     const activeTab = document.querySelector('.active-tab');
     if (!activeTab) return;
@@ -116,7 +121,7 @@ function performConversion() {
     if (!text) { outputArea.value = ""; return; }
 
     if (mode === "Alfabe") {
-        outputArea.value = (currentInputUnit === "Eski Alfabe") ? text.split('').map(ch => toGreek[ch] || ch).join('') : text.split('').map(ch => toGreek[ch] || ch).join(''); // Basitleştirildi
+        outputArea.value = (currentInputUnit === "Eski Alfabe") ? text.split('').map(ch => toGreek[ch] || ch).join('') : text.split('').map(ch => toGreek[ch] || ch).join('');
     } 
     else if (mode === "Sayı") {
         outputArea.value = universalNumberConvert(text, currentInputUnit, currentOutputUnit);
@@ -138,26 +143,20 @@ function performConversion() {
 
         if (isNaN(numericValue)) { outputArea.value = "Hata"; return; }
 
-        // --- YIL MANTIĞI ---
         let baseSeconds;
         if (currentInputUnit === "Yıl (Gregoryen)") baseSeconds = getGregorianDays(numericValue) * 86400;
         else if (currentInputUnit === "Yıl (Anatolya)") baseSeconds = getAnatolyaDays(numericValue) * 86400;
         else baseSeconds = numericValue * (conversionRates["Zaman"][currentInputUnit] || 1);
 
         let result;
-        if (currentOutputUnit === "Yıl (Gregoryen)") {
-            // Basitçe ortalama yıla bölerek (Geri dönüşümde takvim simülasyonu çok karmaşık olduğundan)
-            result = baseSeconds / (365.2425 * 86400);
-        } else if (currentOutputUnit === "Yıl (Anatolya)") {
-            result = baseSeconds / (365.25 * 86400);
-        } else {
-            result = baseSeconds / (conversionRates["Zaman"][currentOutputUnit] || 1);
-        }
+        if (currentOutputUnit === "Yıl (Gregoryen)") result = baseSeconds / (365.2425 * 86400);
+        else if (currentOutputUnit === "Yıl (Anatolya)") result = baseSeconds / (365.25 * 86400);
+        else result = baseSeconds / (conversionRates["Zaman"][currentOutputUnit] || 1);
 
         const isOutputSpecial = currentOutputUnit.includes("Anatolya") || ["Gün", "Ay"].includes(currentOutputUnit);
         if (isOutputSpecial) {
-            const anaVal = toBase12(result, true);
-            const stdVal = toBase12(result, false);
+            const anaVal = toBase12(result, 1, true);
+            const stdVal = toBase12(result, 1, false);
             const decStr = Number(result.toFixed(2)).toLocaleString('tr-TR');
             let resStr = anaVal;
             if (anaVal !== stdVal) resStr += ` (${stdVal})`;
@@ -202,6 +201,7 @@ document.querySelectorAll('.nav-tab').forEach(tab => { tab.addEventListener('cli
 }); });
 document.getElementById('themeToggle').addEventListener('click', () => document.documentElement.classList.toggle('dark'));
 
+// --- HEADER TAKVİM (HASSAS DÜZELTME) ---
 function updateTime() {
     const now = new Date();
     const gregBase = new Date(1071, 2, 21);
@@ -209,14 +209,20 @@ function updateTime() {
     const daysPassed = Math.floor(diff / 86400000);
     let year = 0; let daysCounter = 0;
     while (true) {
-        let yearDays = ( (year+1) % 20 === 0 && (year+1) % 640 !== 0) ? 370 : 365;
+        let yearDays = ((year + 1) % 20 === 0 && (year + 1) % 640 !== 0) ? 370 : 365;
         if (daysCounter + yearDays > daysPassed) break;
         daysCounter += yearDays; year++;
     }
     const day = (daysPassed - daysCounter) % 30 + 1;
     const month = Math.floor((daysPassed - daysCounter) / 30) + 1;
-    document.getElementById('clock').textContent = toBase12(now.getHours(),true).padStart(2,'θ') + "." + toBase12(now.getMinutes(),true).padStart(2,'θ');
-    document.getElementById('date').textContent = `${toBase12(day,true)}.${toBase12(month,true)}.${toBase12(year + 10369, true)}`;
+    
+    // Header Saati (Padding θθ korundu)
+    const clockStr = `${toBase12(now.getHours(), 2, true)}.${toBase12(now.getMinutes(), 2, true)}.${toBase12(now.getSeconds(), 2, true)}`;
+    document.getElementById('clock').textContent = clockStr;
+    
+    // Header Tarihi (Orijinal katsayı 10368 korundu)
+    const dateStr = `${toBase12(day, 2, true)}.${toBase12(month, 2, true)}.${toBase12(year + 10368, 4, true)}`;
+    document.getElementById('date').textContent = dateStr;
 }
 
 setInterval(updateTime, 1000);
