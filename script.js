@@ -6,7 +6,6 @@ const pillOutputLabel = document.getElementById('pill-output-label');
 const dropdownInput = document.getElementById('dropdown-input');
 const dropdownOutput = document.getElementById('dropdown-output');
 
-let activeInput = inputArea;
 let currentInputUnit = "Eski Alfabe";
 let currentOutputUnit = "Yeni Alfabe";
 
@@ -16,12 +15,9 @@ const unitData = {
     "Sayı": ["İkilik (2)", "Onluk (10)", "Anatolya (12)", "On Altılık (16)"],
     "Para": ["Lira", "Kuruş", "Anatolya Sikkesi"],
     "Zaman": [
-        "Salise", "Salise (Anatolya)", 
-        "Saniye", "Saniye (Anatolya)", 
-        "Dakika", "Dakika (Anatolya)", 
-        "Saat", "Saat (Anatolya)", 
-        "Gün", "Hafta (Anatolya)", 
-        "Ay (Anatolya)", "Yıl (Anatolya)"
+        "Salise", "Salise (Anatolya)", "Saniye", "Saniye (Anatolya)", 
+        "Dakika", "Dakika (Anatolya)", "Saat", "Saat (Anatolya)", 
+        "Gün", "Hafta (Anatolya)", "Ay (Anatolya)", "Yıl (Anatolya)"
     ],
     "Uzunluk": ["Metre", "Kilometre", "Mil", "İnç", "Ayak (ft)", "Arşın", "Menzil"],
     "Kütle": ["Kilogram", "Gram", "Libre (lb)", "Ons (oz)", "Batman", "Dirhem"],
@@ -29,23 +25,37 @@ const unitData = {
     "Veri": ["Byte", "Kilobyte", "Megabyte", "Gigabyte", "Terabyte", "Anatolya Verisi"]
 };
 
-// --- KATSAYILAR ---
 const conversionRates = {
     "Uzunluk": { "Metre": 1, "Kilometre": 1000, "Mil": 1609.34, "İnç": 0.0254, "Ayak (ft)": 0.3048, "Arşın": 0.68, "Menzil": 5000 },
     "Kütle": { "Kilogram": 1, "Gram": 0.001, "Libre (lb)": 0.4535, "Ons (oz)": 0.0283, "Batman": 7.697, "Dirhem": 0.0032 },
     "Veri": { "Byte": 1, "Kilobyte": 1024, "Megabyte": 1048576, "Gigabyte": 1073741824, "Terabyte": 1099511627776, "Anatolya Verisi": 1200 },
     "Zaman": { 
-        "Salise": 1/60, "Salise (Anatolya)": 1/240, 
-        "Saniye": 1, "Saniye (Anatolya)": 0.5,
-        "Dakika": 60, "Dakika (Anatolya)": 60, 
-        "Saat": 3600, "Saat (Anatolya)": 7200, 
-        "Gün": 86400, "Hafta (Anatolya)": 432000, 
-        "Ay (Anatolya)": 2592000, "Yıl (Anatolya)": 31536000 
+        "Salise": 1/60, "Salise (Anatolya)": 1/240, "Saniye": 1, "Saniye (Anatolya)": 0.5,
+        "Dakika": 60, "Dakika (Anatolya)": 60, "Saat": 3600, "Saat (Anatolya)": 7200, 
+        "Gün": 86400, "Hafta (Anatolya)": 432000, "Ay (Anatolya)": 2592000, "Yıl (Anatolya)": 31536000 
     }
 };
 
 const toGreek = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Ğ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
 const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
+
+// --- VALIDATION (DOGRULAMA) MANTIĞI ---
+function isValidInput(text, unit) {
+    const stdDigits = "0123456789ABCDEF";
+    const anaDigits = "θ123456789ΦΛ";
+    
+    let allowedChars = "";
+    if (unit.includes("(2)")) allowedChars = "01,.";
+    else if (unit.includes("(10)")) allowedChars = "0123456789,.";
+    else if (unit.includes("Anatolya")) allowedChars = anaDigits + ",.";
+    else if (unit.includes("(16)")) allowedChars = "0123456789ABCDEF,.";
+    else return true; // Diğer birimler için serbest
+
+    for (let char of text.toUpperCase()) {
+        if (!allowedChars.includes(char)) return false;
+    }
+    return true;
+}
 
 // --- ÖZEL YARDIMCI FONKSİYONLAR ---
 function toBase12(n, isAnatolya = true) {
@@ -54,7 +64,7 @@ function toBase12(n, isAnatolya = true) {
     let integerPart = Math.floor(num);
     let fractionPart = num - integerPart;
     let res = "";
-    if (integerPart === 0) { res = digits[0]; } 
+    if (integerPart === 0) res = digits[0];
     else { while (integerPart > 0) { res = digits[integerPart % 12] + res; integerPart = Math.floor(integerPart / 12); } }
     if (fractionPart > 0.0001) {
         res += ",";
@@ -65,20 +75,37 @@ function toBase12(n, isAnatolya = true) {
 
 // --- SAYI / TABAN DÖNÜŞÜMÜ ---
 function universalNumberConvert(text, fromUnit, toUnit) {
+    if (!isValidInput(text, fromUnit)) return "Geçersiz Karakter";
+
     const stdDigits = "0123456789ABCDEF";
     const anaDigits = "θ123456789ΦΛ";
     const getBase = (unit) => {
-        if (unit.includes("Anatolya")) return 12;
-        if (unit.includes("(2)")) return 2; if (unit.includes("(10)")) return 10;
+        if (unit.includes("(2)")) return 2;
+        if (unit.includes("Anatolya") || unit.includes("(12)")) return 12;
         if (unit.includes("(16)")) return 16;
         return 10;
     };
+
     let input = text.toUpperCase().replace(',', '.');
-    if (fromUnit.includes("Anatolya")) input = input.split('').map(c => stdDigits[anaDigits.indexOf(c)] || c).join('');
-    const fromBase = getBase(fromUnit); const toBase = getBase(toUnit);
+    if (fromUnit.includes("Anatolya")) {
+        input = input.split('').map(c => stdDigits[anaDigits.indexOf(c)] || c).join('');
+    }
+
+    const fromBase = getBase(fromUnit);
+    const toBase = getBase(toUnit);
     const parts = input.split('.');
-    let dec = parseFloat(input); // Standart decimal parse
-    if (fromBase !== 10) dec = parseInt(parts[0], fromBase) + (parts[1] ? parts[1].split('').reduce((acc, c, i) => acc + stdDigits.indexOf(c) * Math.pow(fromBase, -(i+1)), 0) : 0);
+    
+    let dec = 0;
+    try {
+        dec = parseInt(parts[0], fromBase);
+        if (parts[1]) {
+            for (let i = 0; i < parts[1].length; i++) {
+                let digitVal = stdDigits.indexOf(parts[1][i]);
+                if (digitVal >= fromBase || digitVal === -1) throw new Error();
+                dec += digitVal * Math.pow(fromBase, -(i + 1));
+            }
+        }
+    } catch(e) { return "Hata"; }
 
     if (isNaN(dec)) return "Hata";
     
@@ -112,13 +139,21 @@ function performConversion() {
         outputArea.value = Number(res.toFixed(2)).toLocaleString('tr-TR');
     } 
     else if (conversionRates[mode]) {
+        if (!isValidInput(text, currentInputUnit)) { outputArea.value = "Geçersiz Karakter"; return; }
         const isInputAna = currentInputUnit.includes("Anatolya");
         const isOutputAna = currentOutputUnit.includes("Anatolya");
+        
         let numericValue;
         if (isInputAna) {
             const digits = "θ123456789ΦΛ";
-            numericValue = text.toUpperCase().split('').reduce((acc, curr) => (acc * 12) + digits.indexOf(curr), 0);
-        } else { numericValue = parseFloat(text.replace(',', '.')); }
+            const parts = text.toUpperCase().replace(',','.').split('.');
+            numericValue = parts[0].split('').reduce((acc, curr) => (acc * 12) + digits.indexOf(curr), 0);
+            if (parts[1]) {
+                for (let i = 0; i < parts[1].length; i++) numericValue += digits.indexOf(parts[1][i]) * Math.pow(12, -(i+1));
+            }
+        } else {
+            numericValue = parseFloat(text.replace(',', '.'));
+        }
 
         if (isNaN(numericValue)) { outputArea.value = "Hata"; return; }
         
@@ -131,14 +166,9 @@ function performConversion() {
             const anaValue = toBase12(rawResult, true);
             const std12Value = toBase12(rawResult, false);
             const decStr = Number(rawResult.toFixed(2)).toLocaleString('tr-TR');
-            
             let resultStr = anaValue;
-            if (anaValue !== std12Value) {
-                resultStr += ` (${std12Value})`;
-            }
-            if (rateIn !== rateOut) {
-                resultStr += ` [${decStr}]`;
-            }
+            if (anaValue !== std12Value) resultStr += ` (${std12Value})`;
+            if (rateIn !== rateOut) resultStr += ` [${decStr}]`;
             outputArea.value = resultStr;
         } else {
             outputArea.value = Number(rawResult.toFixed(5)).toLocaleString('tr-TR', { maximumFractionDigits: 5 });
@@ -222,8 +252,7 @@ function calculateCustomDate(now) {
     }
     const day = (daysPassed - daysCounter) % 30 + 1;
     const month = Math.floor((daysPassed - daysCounter) / 30) + 1;
-    const base12Year = year + 1 + 10368;
-    return { base12: `${toBase12(day, true).padStart(2,'θ')}.${toBase12(month, true).padStart(2,'θ')}.${toBase12(base12Year, true).padStart(4,'θ')}` };
+    return { base12: `${toBase12(day, true).padStart(2,'θ')}.${toBase12(month, true).padStart(2,'θ')}.${toBase12(year + 1 + 10368, true).padStart(4,'θ')}` };
 }
 
 function updateTime() {
