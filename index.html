@@ -15,11 +15,6 @@
             darkMode: "class",
             theme: { extend: { colors: { "primary": "#137fec", "background-dark": "#101922" } } }
         }
-        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark')
-        }
     </script>
     <style>
         html, body { min-height: 100%; overflow-y: auto; margin: 0; padding: 0; }
@@ -85,6 +80,34 @@
             user-select: none; -webkit-user-select: none;
             pointer-events: none; opacity: 0.7; margin: 0 0.5px;
         }
+
+        header, .nav-tab, #kb-container, .key, #clock, #date, .unit-pill, .dropdown-item {
+            user-select: none; -webkit-user-select: none;
+        }
+
+        .keyboard {
+            display: flex; flex-direction: column; align-items: center; gap: 8px; 
+            margin: 20px auto; width: 100%; max-width: 850px; padding: 15px;
+            background: #e2e8f0; border-radius: 1.25rem; box-sizing: border-box;
+        }
+        .dark .keyboard { background: #111a22; border: 1px solid #233648; }
+
+        .row { display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px; width: 100%; max-width: 800px; margin-bottom: 2px; }
+
+        .key {
+            grid-column: span 1; height: 52px; display: flex; justify-content: center; align-items: center;
+            background: #ffffff; color: #1e293b; cursor: pointer; font-size: 1.1rem; font-weight: 600;
+            border-radius: 8px; border-bottom: 3px solid #cbd5e1; transition: all 0.05s ease;
+        }
+        .dark .key { background: #233648; color: #f8fafc; border-bottom: 3px solid #000; }
+        .key:active { transform: translateY(2px); border-bottom: 0; }
+
+        .fn-key { background: #cbd5e1 !important; }
+        .dark .fn-key { background: #324d67 !important; }
+
+        [data-action="shift"], [data-action="delete"] { grid-column: span 2 !important; }
+        [data-action="reset"], [data-action="enter"] { grid-column: span 3 !important; }
+        [data-action="space"] { grid-column: span 6 !important; }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white font-sans flex flex-col min-h-screen">
@@ -104,20 +127,12 @@
     </div>
 
     <div class="flex items-center gap-2 px-4 pb-1.5 overflow-x-auto no-scrollbar scroll-smooth select-none">
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all active-tab cursor-pointer" data-value="Alfabe"><span class="material-symbols-outlined text-[18px]">translate</span><span class="text-sm font-medium">Alfabe</span></button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Sayı"><span class="material-symbols-outlined text-[18px]">123</span><span class="text-sm font-medium">Sayı</span></button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Takvim"><span class="material-symbols-outlined text-[18px]">calendar_month</span><span class="text-sm font-medium">Takvim</span></button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Zaman"><span class="material-symbols-outlined text-[18px]">schedule</span><span class="text-sm font-medium">Zaman</span></button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Uzunluk"><span class="material-symbols-outlined text-[18px]">straighten</span><span class="text-sm font-medium">Uzunluk</span></button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Kütle"><span class="material-symbols-outlined text-[18px]">fitness_center</span><span class="text-sm font-medium">Kütle</span></button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Sıcaklık"><span class="material-symbols-outlined text-[18px]">thermostat</span><span class="text-sm font-medium">Sıcaklık</span></button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Hacim"><span class="material-symbols-outlined text-[18px]">opacity</span><span class="text-sm font-medium">Hacim</span></button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Hız"><span class="material-symbols-outlined text-[18px]">speed</span><span class="text-sm font-medium">Hız</span></button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Alan"><span class="material-symbols-outlined text-[18px]">texture</span><span class="text-sm font-medium">Alan</span></button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Veri"><span class="material-symbols-outlined text-[18px]">database</span><span class="text-sm font-medium">Veri</span></button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Meridyen"><span class="material-symbols-outlined text-[18px]">explore</span><span class="text-sm font-medium">Meridyen</span></button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Paralel"><span class="material-symbols-outlined text-[18px]">language</span><span class="text-sm font-medium">Paralel</span></button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Para"><span class="material-symbols-outlined text-[18px]">payments</span><span class="text-sm font-medium">Para</span></button>
+        <button class="nav-tab active-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all" data-value="Alfabe">Alfabe</button>
+        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all" data-value="Sayı">Sayı</button>
+        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all" data-value="Uzunluk">Uzunluk</button>
+        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all" data-value="Kütle">Kütle</button>
+        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all" data-value="Sıcaklık">Sıcaklık</button>
+        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all" data-value="Para">Para</button>
     </div>
 </header>
 
@@ -136,27 +151,17 @@
                 <div class="unit-pill" id="pill-output-label" onclick="toggleDropdown('output')">Yeni Alfabe</div>
                 <div id="dropdown-output" class="dropdown-panel select-none"></div>
             </div>
-            <div id="output-area" contenteditable="true" class="w-full h-[180px] lg:h-[300px] p-5 bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner overflow-auto text-slate-900 dark:text-white break-all" style="white-space: pre-wrap;"></div>
+            <div id="output-area" contenteditable="true" class="w-full h-[180px] lg:h-[300px] p-5 bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner overflow-auto text-slate-900 dark:text-white break-all font-mono" style="white-space: pre-wrap;"></div>
         </div>
     </section>
 
     <section id="kb-container" class="select-none">
         <div class="keyboard !my-0" id="mainKeyboard">
-            <div class="row flex justify-center gap-1 mb-1">
-                <div class="key">θ</div><div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">Φ</div><div class="key">Λ</div>
-            </div>
-            <div class="row flex justify-center gap-1 mb-1">
-                <div class="key">Ϙ</div><div class="key">Ш</div><div class="key">E</div><div class="key">R</div><div class="key">T</div><div class="key">Y</div><div class="key">U</div><div class="key">Ͱ</div><div class="key">Ω</div><div class="key">P</div><div class="key">Γ</div><div class="key">Σ</div>
-            </div>
-            <div class="row flex justify-center gap-1 mb-1">
-                <div class="key">A</div><div class="key">S</div><div class="key">D</div><div class="key">F</div><div class="key">G</div><div class="key">H</div><div class="key">J</div><div class="key">K</div><div class="key">L</div><div class="key">Ь</div><div class="key">Z</div><div class="key">Ψ</div>
-            </div>
-            <div class="row flex justify-center gap-1">
-                <div class="key">C</div><div class="key">V</div><div class="key">B</div><div class="key">N</div><div class="key">M</div><div class="key">Π</div>
-                <div class="key fn-key px-4 bg-slate-300 dark:bg-slate-700 rounded" data-action="reset">Sıfırla</div>
-                <div class="key flex-1 bg-white dark:bg-slate-800 rounded text-center" data-action="space">Boşluk</div>
-                <div class="key fn-key px-4 bg-slate-300 dark:bg-slate-700 rounded" data-action="delete">⌫</div>
-            </div>
+            <div class="row"><div class="key">θ</div><div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">Φ</div><div class="key">Λ</div></div>
+            <div class="row"><div class="key">Ϙ</div><div class="key">Ш</div><div class="key">E</div><div class="key">R</div><div class="key">T</div><div class="key">Y</div><div class="key">U</div><div class="key">Ͱ</div><div class="key">Ω</div><div class="key">P</div><div class="key">Γ</div><div class="key">Σ</div></div>
+            <div class="row"><div class="key fn-key">,</div><div class="key">A</div><div class="key">S</div><div class="key">D</div><div class="key">F</div><div class="key">G</div><div class="key">H</div><div class="key">J</div><div class="key">K</div><div class="key">L</div><div class="key">Ь</div><div class="key fn-key">.</div></div>
+            <div class="row"><div class="key wide fn-key" data-action="shift">Shift</div><div class="key">Z</div><div class="key">Ψ</div><div class="key">C</div><div class="key">V</div><div class="key">B</div><div class="key">N</div><div class="key">M</div><div class="key">Π</div><div class="key wide fn-key" data-action="delete"><span class="material-symbols-outlined">backspace</span></div></div>
+            <div class="row"><div class="key wide fn-key" data-action="reset">Sıfırla</div><div class="key extra-wide" data-action="space">Boşluk</div><div class="key wide fn-key" data-action="enter">Enter</div></div>
         </div>
     </section>
 </main>
