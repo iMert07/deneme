@@ -1,9 +1,10 @@
-const latin = document.getElementById('latin'); // Sol Kutu
-const greek = document.getElementById('greek'); // Sağ Kutu
+const latin = document.getElementById('latin');
+const greek = document.getElementById('greek');
 const pillInputLabel = document.getElementById('pill-input-label');
 const pillOutputLabel = document.getElementById('pill-output-label');
 const dropdownInput = document.getElementById('dropdown-input');
 const dropdownOutput = document.getElementById('dropdown-output');
+const kbContainer = document.getElementById('kb-container');
 let activeInput = latin;
 
 // Aktif birimler
@@ -40,12 +41,11 @@ const alphabetMaps = {
     ]
 };
 
-// Çeviri Motoru
+// --- ÇEVİRİ MANTIĞI ---
 function universalTranslate(text, fromUnit, toUnit) {
     if (fromUnit === toUnit) return text;
     const sourceMap = alphabetMaps[fromUnit];
     const targetMap = alphabetMaps[toUnit];
-    
     if (!sourceMap || !targetMap) return text;
 
     return text.split('').map(char => {
@@ -54,32 +54,32 @@ function universalTranslate(text, fromUnit, toUnit) {
     }).join('');
 }
 
-// Merkezi Tetikleyici
 function performTranslation() {
     const mode = document.querySelector('.active-tab').dataset.value;
     if (mode === "Alfabe") {
         if (activeInput === latin) {
-            // Sol kutu (latin) üzerinden işlem yapılıyorsa sağ kutuyu (greek) güncelle
             greek.value = universalTranslate(latin.value, currentInputUnit, currentOutputUnit);
         } else {
-            // Sağ kutu (greek) üzerinden işlem yapılıyorsa sol kutuyu (latin) güncelle
             latin.value = universalTranslate(greek.value, currentOutputUnit, currentInputUnit);
         }
     }
 }
 
-// Event Listeners (Giriş ve Odak)
-[latin, greek].forEach(inputEl => {
-    inputEl.addEventListener('input', (e) => {
-        activeInput = e.target;
-        performTranslation();
-    });
-    inputEl.addEventListener('focus', (e) => {
-        activeInput = e.target;
-    });
-});
+// --- DROPDOWN FONKSİYONLARI ---
+function toggleDropdown(type) {
+    const el = type === 'input' ? dropdownInput : dropdownOutput;
+    const other = type === 'input' ? dropdownOutput : dropdownInput;
+    other.classList.remove('show');
+    el.classList.toggle('show');
+}
 
-// Birim Seçimi ve UI Güncelleme
+window.onclick = function(event) {
+    if (!event.target.closest('.unit-pill')) {
+        dropdownInput.classList.remove('show');
+        dropdownOutput.classList.remove('show');
+    }
+}
+
 function selectUnit(type, value) {
     const mode = document.querySelector('.active-tab').dataset.value;
     const options = unitData[mode];
@@ -91,17 +91,8 @@ function selectUnit(type, value) {
         currentOutputUnit = value;
         if (currentOutputUnit === currentInputUnit) currentInputUnit = options.find(o => o !== value);
     }
-    
     renderPills();
-    // Birim değiştiğinde mevcut metni yeni birime göre tekrar çevir
     performTranslation();
-}
-
-function renderPills() {
-    pillInputLabel.innerText = currentInputUnit;
-    pillOutputLabel.innerText = currentOutputUnit;
-    dropdownInput.classList.remove('show');
-    dropdownOutput.classList.remove('show');
 }
 
 function renderDropdowns(mode) {
@@ -114,16 +105,95 @@ function renderDropdowns(mode) {
     renderPills();
 }
 
-// Navigasyon (Sekme Değişimi)
-document.querySelectorAll('.nav-tab').forEach(tab => {
+function renderPills() {
+    pillInputLabel.innerText = currentInputUnit;
+    pillOutputLabel.innerText = currentOutputUnit;
+    dropdownInput.classList.remove('show');
+    dropdownOutput.classList.remove('show');
+}
+
+// --- ETKİLEŞİM DİNLEYİCİLERİ ---
+[latin, greek].forEach(inputEl => {
+    inputEl.addEventListener('input', (e) => {
+        activeInput = e.target;
+        performTranslation();
+    });
+    inputEl.addEventListener('focus', (e) => activeInput = e.target);
+});
+
+// Klavye Tuşları
+document.querySelectorAll('.key').forEach(key => {
+    key.addEventListener('click', (e) => {
+        e.preventDefault();
+        const action = key.dataset.action;
+        if(action === 'delete') activeInput.value = activeInput.value.slice(0,-1);
+        else if(action === 'enter') activeInput.value += '\n';
+        else if(action === 'space') activeInput.value += ' ';
+        else if(action === 'reset') { latin.value = ''; greek.value = ''; }
+        else if(!key.classList.contains('fn-key')) activeInput.value += key.innerText;
+        performTranslation();
+    });
+});
+
+// Navigasyon Sekmeleri
+const navTabs = document.querySelectorAll('.nav-tab');
+navTabs.forEach(tab => {
     tab.addEventListener('click', function() {
-        document.querySelectorAll('.nav-tab').forEach(t => { 
-            t.classList.remove('active-tab'); t.classList.add('inactive-tab'); 
-        });
+        navTabs.forEach(t => { t.classList.remove('active-tab'); t.classList.add('inactive-tab'); });
         this.classList.add('active-tab'); this.classList.remove('inactive-tab');
         renderDropdowns(this.dataset.value);
     });
 });
 
+// Tema Değiştirici
+document.getElementById('themeToggle').addEventListener('click', function() {
+    document.documentElement.classList.toggle('dark');
+});
+
+// --- ZAMAN VE SAAT FONKSİYONLARI ---
+function toBase12(n, pad = 2) {
+    const digits = "θ123456789ΦΛ";
+    if (n === 0) return "θ".repeat(pad);
+    let res = ""; let num = Math.abs(Math.floor(n));
+    while (num > 0) { res = digits[num % 12] + res; num = Math.floor(num / 12); }
+    return res.padStart(pad, 'θ');
+}
+
+function calculateCustomDate(now) {
+    const gregBase = new Date(1071, 2, 21);
+    const diff = now - gregBase;
+    const daysPassed = Math.floor(diff / 86400000);
+    let year = 0; let daysCounter = 0;
+    while (true) {
+        let yearDays = 365;
+        let nextYear = year + 1;
+        if (nextYear % 20 === 0 && nextYear % 640 !== 0) yearDays += 5;
+        if (daysCounter + yearDays > daysPassed) break;
+        daysCounter += yearDays; year++;
+    }
+    const dayOfYear = daysPassed - daysCounter;
+    const month = Math.floor(dayOfYear / 30) + 1;
+    const day = (dayOfYear % 30) + 1;
+    const base12Year = year + 1 + 10368;
+    return { base12: `${toBase12(day)}.${toBase12(month)}.${toBase12(base12Year, 4)}` };
+}
+
+function updateTime() {
+    const clockEl = document.getElementById('clock');
+    const dateEl = document.getElementById('date');
+    if(!clockEl || !dateEl) return;
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 30, 0);
+    if (now < todayStart) todayStart.setDate(todayStart.getDate() - 1);
+    const totalSecs = Math.floor(((now - todayStart) / 1000) * 2);
+    const h = Math.floor(totalSecs / 14400) % 12;
+    const m = Math.floor((totalSecs / 120) % 120);
+    const s = totalSecs % 120;
+    clockEl.textContent = `${toBase12(h)}.${toBase12(m)}.${toBase12(s)}`;
+    dateEl.textContent = calculateCustomDate(now).base12;
+}
+
 // Başlatma
+setInterval(updateTime, 100);
+updateTime();
 renderDropdowns("Alfabe");
