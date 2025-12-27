@@ -1,4 +1,4 @@
-header h2, .material-symbols-outlined, .nav-tab, .key, #clock, #date, .unit-pill, .dropdown-item {
+header, .nav-tab, #kb-container, .key, #label-input, #label-output, #clock, #date, .unit-pill, .dropdown-item {
     user-select: none; -webkit-user-select: none; -moz-user-select: none; -webkit-touch-callout: none;
 }
 
@@ -27,13 +27,8 @@ header h2, .material-symbols-outlined, .nav-tab, .key, #clock, #date, .unit-pill
 [data-action="space"] { grid-column: span 6 !important; }
 
 @media (max-width: 768px) {
-    .keyboard { 
-        position: fixed !important; 
-        bottom: 25px !important; /* Navigasyon barından bağımsız sabit yükseklik */
-        left: 2% !important; width: 96% !important; 
-        padding: 10px 8px !important; border-radius: 1.25rem !important; 
-        box-shadow: 0 -8px 30px rgba(0,0,0,0.3); z-index: 9999;
-    }
+    .keyboard { position: fixed; bottom: 8px; left: 2%; width: 96%; padding: 8px 4px 12px 4px; border-radius: 1rem; box-shadow: 0 -5px 20px rgba(0,0,0,0.3); }
     .row { gap: 4px; }
-    .key { height: 42px !important; font-size: 1rem; border-bottom-width: 2px; }
+    .key { height: 38px !important; font-size: 1rem; border-bottom-width: 2px; }
+    main { padding-bottom: 260px !important; }
 }
