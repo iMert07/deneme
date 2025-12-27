@@ -13,7 +13,7 @@ let currentOutputUnit = "Yeni Alfabe";
 // --- VERİ SETLERİ ---
 const unitData = {
     "Alfabe": ["Eski Alfabe", "Yeni Alfabe"],
-    "Sayı": ["İkilik (2)", "Onluk (10)", "On İkilik (12)", "Anatolya (12)", "On Altılık (16)"],
+    "Sayı": ["İkilik (2)", "Onluk (10)", "Anatolya (12)", "On Altılık (16)"],
     "Para": ["Lira", "Kuruş", "Anatolya Sikkesi"],
     "Zaman": [
         "Salise", "Salise (Anatolya)", 
@@ -48,15 +48,14 @@ const toGreek = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":
 const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
 
 // --- ÖZEL YARDIMCI FONKSİYONLAR ---
-function toBase12(n, pad = 1) {
-    const digits = "θ123456789ΦΛ";
+function toBase12(n, isAnatolya = true) {
+    const digits = isAnatolya ? "θ123456789ΦΛ" : "0123456789AB";
     let num = Math.abs(n);
     let integerPart = Math.floor(num);
     let fractionPart = num - integerPart;
     let res = "";
     if (integerPart === 0) { res = digits[0]; } 
     else { while (integerPart > 0) { res = digits[integerPart % 12] + res; integerPart = Math.floor(integerPart / 12); } }
-    res = res.padStart(pad, digits[0]);
     if (fractionPart > 0.0001) {
         res += ",";
         for (let i = 0; i < 3; i++) { fractionPart *= 12; let d = Math.floor(fractionPart); res += digits[d]; fractionPart -= d; if (fractionPart < 0.0001) break; }
@@ -71,22 +70,25 @@ function universalNumberConvert(text, fromUnit, toUnit) {
     const getBase = (unit) => {
         if (unit.includes("Anatolya")) return 12;
         if (unit.includes("(2)")) return 2; if (unit.includes("(10)")) return 10;
-        if (unit.includes("(16)")) return 16; if (unit.includes("(12)")) return 12;
+        if (unit.includes("(16)")) return 16;
         return 10;
     };
     let input = text.toUpperCase().replace(',', '.');
     if (fromUnit.includes("Anatolya")) input = input.split('').map(c => stdDigits[anaDigits.indexOf(c)] || c).join('');
     const fromBase = getBase(fromUnit); const toBase = getBase(toUnit);
     const parts = input.split('.');
-    let dec = parseInt(parts[0], fromBase);
-    if (parts[1]) { for (let i = 0; i < parts[1].length; i++) { let dv = stdDigits.indexOf(parts[1][i]); if(dv!==-1) dec += dv * Math.pow(fromBase, -(i+1)); } }
+    let dec = parseFloat(input); // Standart decimal parse
+    if (fromBase !== 10) dec = parseInt(parts[0], fromBase) + (parts[1] ? parts[1].split('').reduce((acc, c, i) => acc + stdDigits.indexOf(c) * Math.pow(fromBase, -(i+1)), 0) : 0);
+
     if (isNaN(dec)) return "Hata";
-    let intP = Math.floor(dec); let fracP = dec - intP;
-    let resI = intP.toString(toBase).toUpperCase(); let resF = "";
-    if (fracP > 0) { for (let i=0; i<6; i++) { fracP *= toBase; let d = Math.floor(fracP); resF += stdDigits[d]; fracP -= d; if (fracP < 0.000001) break; } resF = resF.replace(/0+$/, ""); }
-    let final = resI + (resF ? "." + resF : "");
-    if (toUnit.includes("Anatolya")) final = final.split('').map(c => anaDigits[stdDigits.indexOf(c)] || c).join('');
-    return final.replace('.', ',');
+    
+    if (toUnit.includes("Anatolya")) {
+        const anaVal = toBase12(dec, true);
+        const std12Val = toBase12(dec, false);
+        return (anaVal === std12Val) ? anaVal : `${anaVal} (${std12Val})`;
+    }
+    
+    return dec.toString(toBase).toUpperCase().replace('.', ',');
 }
 
 // --- MERKEZİ DÖNÜŞÜM MOTORU ---
@@ -126,29 +128,31 @@ function performConversion() {
         const rawResult = baseValue / rateOut;
 
         if (isOutputAna) {
-            const anaValue = toBase12(rawResult);
+            const anaValue = toBase12(rawResult, true);
+            const std12Value = toBase12(rawResult, false);
             const decStr = Number(rawResult.toFixed(2)).toLocaleString('tr-TR');
-            if (anaValue === decStr) { outputArea.value = anaValue; } 
-            else { outputArea.value = `${anaValue} (${decStr})`; }
+            
+            let resultStr = anaValue;
+            if (anaValue !== std12Value) {
+                resultStr += ` (${std12Value})`;
+            }
+            if (rateIn !== rateOut) {
+                resultStr += ` [${decStr}]`;
+            }
+            outputArea.value = resultStr;
         } else {
             outputArea.value = Number(rawResult.toFixed(5)).toLocaleString('tr-TR', { maximumFractionDigits: 5 });
         }
     }
 }
 
-// --- UI FONKSİYONLARI (YER DEĞİŞTİRME MANTIĞI) ---
+// --- UI FONKSİYONLARI ---
 function selectUnit(type, value) {
     if (type === 'input') {
-        if (value === currentOutputUnit) {
-            // Swap: Eğer sağdakini sola seçersem, sağa solun eski değerini at
-            currentOutputUnit = currentInputUnit;
-        }
+        if (value === currentOutputUnit) currentOutputUnit = currentInputUnit;
         currentInputUnit = value;
     } else {
-        if (value === currentInputUnit) {
-            // Swap: Eğer soldakini sağa seçersem, sola sağın eski değerini at
-            currentInputUnit = currentOutputUnit;
-        }
+        if (value === currentInputUnit) currentInputUnit = currentOutputUnit;
         currentOutputUnit = value;
     }
     renderPills();
@@ -159,9 +163,7 @@ function renderDropdowns(mode) {
     const options = unitData[mode] || [];
     currentInputUnit = options[0];
     currentOutputUnit = options[1] || options[0];
-    
     const createItems = (type) => options.map(opt => `<div class="dropdown-item" onclick="selectUnit('${type}', '${opt}')">${opt}</div>`).join('');
-    
     dropdownInput.innerHTML = createItems('input');
     dropdownOutput.innerHTML = createItems('output');
     renderPills();
@@ -220,7 +222,8 @@ function calculateCustomDate(now) {
     }
     const day = (daysPassed - daysCounter) % 30 + 1;
     const month = Math.floor((daysPassed - daysCounter) / 30) + 1;
-    return { base12: `${toBase12(day, 2)}.${toBase12(month, 2)}.${toBase12(year + 1 + 10368, 4)}` };
+    const base12Year = year + 1 + 10368;
+    return { base12: `${toBase12(day, true).padStart(2,'θ')}.${toBase12(month, true).padStart(2,'θ')}.${toBase12(base12Year, true).padStart(4,'θ')}` };
 }
 
 function updateTime() {
@@ -231,7 +234,7 @@ function updateTime() {
     const h = Math.floor(totalSecs / 14400) % 12;
     const m = Math.floor((totalSecs / 120) % 120);
     const s = totalSecs % 120;
-    document.getElementById('clock').textContent = `${toBase12(h, 2)}.${toBase12(m, 2)}.${toBase12(s, 2)}`;
+    document.getElementById('clock').textContent = `${toBase12(h, true).padStart(2,'θ')}.${toBase12(m, true).padStart(2,'θ')}.${toBase12(s, true).padStart(2,'θ')}`;
     document.getElementById('date').textContent = calculateCustomDate(now).base12;
 }
 
