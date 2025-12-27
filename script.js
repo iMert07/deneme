@@ -1,7 +1,12 @@
+/* ==========================================================================
+   1. TANIMLAMALAR
+   ========================================================================== */
 const latin = document.getElementById('latin');
 const greek = document.getElementById('greek');
 const selectInput = document.getElementById('select-input');
 const selectOutput = document.getElementById('select-output');
+const pillInputLabel = document.getElementById('pill-input-label');
+const pillOutputLabel = document.getElementById('pill-output-label');
 const kbContainer = document.getElementById('kb-container');
 let activeInput = latin;
 
@@ -25,6 +30,9 @@ const unitData = {
 const toGreekMap = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Ğ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
 const toLatinMap = Object.fromEntries(Object.entries(toGreekMap).map(([k,v])=>[v,k.toUpperCase()]));
 
+/* ==========================================================================
+   2. DROPDOWN & PILL YÖNETİMİ
+   ========================================================================== */
 function updateDropdowns(mode) {
     const options = unitData[mode] || [];
     selectInput.innerHTML = "";
@@ -37,6 +45,12 @@ function updateDropdowns(mode) {
         selectInput.selectedIndex = 0;
         selectOutput.selectedIndex = 1;
     }
+    syncPillLabels();
+}
+
+function syncPillLabels() {
+    pillInputLabel.innerText = selectInput.value;
+    pillOutputLabel.innerText = selectOutput.value;
 }
 
 function handleDropdownChange(changedSelect) {
@@ -44,11 +58,15 @@ function handleDropdownChange(changedSelect) {
     if (changedSelect.value === otherSelect.value) {
         otherSelect.selectedIndex = (changedSelect.selectedIndex + 1) % changedSelect.length;
     }
+    syncPillLabels();
 }
 
 selectInput.addEventListener('change', () => handleDropdownChange(selectInput));
 selectOutput.addEventListener('change', () => handleDropdownChange(selectOutput));
 
+/* ==========================================================================
+   3. ÇEVİRİ VE KLAVYE
+   ========================================================================== */
 function translate(text, dir){
     const map = dir === "toGreek" ? toGreekMap : toLatinMap;
     return text.split('').map(ch => map[ch] || ch).join('');
@@ -73,6 +91,9 @@ document.querySelectorAll('.key').forEach(key => {
     });
 });
 
+/* ==========================================================================
+   4. SEKME YÖNETİMİ
+   ========================================================================== */
 const navTabs = document.querySelectorAll('.nav-tab');
 navTabs.forEach(tab => {
     tab.addEventListener('click', function() {
@@ -88,6 +109,9 @@ document.getElementById('themeToggle').addEventListener('click', () => {
     document.documentElement.classList.toggle('dark');
 });
 
+/* ==========================================================================
+   5. SAAT VE TARİH
+   ========================================================================== */
 function toBase12(n, pad = 2) {
     const digits = "θ123456789ΦΛ";
     if (n === 0) return "θ".repeat(pad);
