@@ -31,7 +31,7 @@ const unitData = {
         "Batman (12⁻¹)", "Paund", "Okka (12⁰)", "Kilogram (10³)", 
         "Kantar (12¹)", "Ton (10⁶)"
     ],
-    "Konum": ["Boylam (Derece)", "Meridyen (Anatolya)"],
+    "Konum": ["Boylam (Derece)", "Meridyen (Anatolya)"], // MERİDYEN BURADA
     "Sıcaklık": ["Celsius", "Fahrenheit", "Kelvin", "Ilım", "Ayaz"],
     "Veri": ["Byte", "Kilobyte", "Megabyte", "Gigabyte", "Terabyte", "Anatolya Verisi"]
 };
@@ -87,7 +87,7 @@ function isValidInput(text, unit) {
     let allowedChars = "";
     const isSpecial = ["Anatolya", "Gün", "Ay", "Yıl", "Arşın", "Menzil", "Endaze", "Rubu", "Kerrab", "Berid", "Fersah", "Merhale", "Okka", "Kantar", "Batman", "Miskal", "Dirhem", "Akçe", "Meridyen"].some(s => unit.includes(s));
     if (unit.includes("(2)")) allowedChars = "01,.";
-    else if (unit.includes("(10)") || unit === "Boylam (Derece)") allowedChars = "0123456789,.";
+    else if (unit.includes("(10)") || unit === "Boylam (Derece)") allowedChars = "0123456789,.-";
     else if (isSpecial) allowedChars = "0123456789AB" + anaDigits + ",.";
     else if (unit.includes("(16)")) allowedChars = "0123456789ABCDEF,.";
     else return true;
@@ -126,6 +126,25 @@ function performConversion() {
     if (mode === "Alfabe") {
         outputArea.value = (currentInputUnit === "Eski Alfabe") ? text.split('').map(ch => toGreek[ch] || ch).join('') : text.split('').map(ch => toLatin[ch] || ch).join('');
     } 
+    else if (mode === "Konum") {
+        let val = parseFloat(text.replace(',','.'));
+        if (isNaN(val) && currentInputUnit.includes("Boylam")) return;
+        
+        if (currentInputUnit === "Boylam (Derece)") {
+            // Meridyen = (168.75 - StandartBoylam) mod 360
+            let res = (168.75 - val);
+            while (res < 0) res += 360; res = res % 360;
+            const a = toBase12Float(res, true), s = toBase12Float(res, false);
+            outputArea.value = `${a} (${s}) [${res.toFixed(2)}]`;
+        } else {
+            // Geri dönüşüm
+            let input = normalizeInput(text.toUpperCase());
+            let dec = parseInt(input.split('.')[0], 12);
+            let res = 168.75 - dec;
+            while (res < -180) res += 360; while (res > 180) res -= 360;
+            outputArea.value = res.toFixed(4).replace('.',',');
+        }
+    }
     else if (mode === "Sayı") {
         const stdDigits = "0123456789ABCDEF";
         const getBase = (u) => u.includes("(2)")?2:u.includes("Anatolya")?12:u.includes("(16)")?16:10;
@@ -140,24 +159,6 @@ function performConversion() {
             const a = toBase12Float(dec, true), s = toBase12Float(dec, false);
             outputArea.value = (a === s) ? a : `${a} (${s})`;
         } else outputArea.value = dec.toString(toBase).toUpperCase().replace('.',',');
-    }
-    else if (mode === "Konum") {
-        let val = parseFloat(text.replace(',','.'));
-        if (isNaN(val)) return;
-        if (currentInputUnit === "Boylam (Derece)") {
-            // Meridyen = (168.75 - StandartBoylam) mod 360
-            let res = (168.75 - val);
-            while (res < 0) res += 360; res = res % 360;
-            const a = toBase12Float(res, true), s = toBase12Float(res, false);
-            outputArea.value = `${a} (${s}) [${res.toFixed(2)}]`;
-        } else {
-            let input = normalizeInput(text.toUpperCase());
-            let dec = parseInt(input.split('.')[0], 12);
-            // Geri dönüşüm: StandartBoylam = 168.75 - Meridyen
-            let res = 168.75 - dec;
-            while (res < -180) res += 360; while (res > 180) res -= 360;
-            outputArea.value = res.toFixed(4).replace('.',',');
-        }
     }
     else if (conversionRates[mode] || mode === "Zaman") {
         if (!isValidInput(text, currentInputUnit)) { outputArea.value = "Geçersiz Karakter"; return; }
