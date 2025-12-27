@@ -13,7 +13,8 @@ let currentOutputUnit = "Yeni Alfabe";
 // --- VERİ SETLERİ VE KATSAYILAR ---
 const unitData = {
     "Alfabe": ["Eski Alfabe", "Yeni Alfabe"],
-    "Sayı": ["Onluk (10)", "Anatolya (12)", "Onikilik (12)", "İkilik (2)", "Onaltılık (16)"],
+    // Seçim paneli tam istediğin sırada: 2, 10, 12, Anatolya, 16
+    "Sayı": ["İkilik (2)", "Onluk (10)", "Onikilik (12)", "Anatolya (12)", "Onaltılık (16)"],
     "Para": ["Lira", "Kuruş", "Anatolya Sikkesi"],
     "Uzunluk": ["Metre", "Kilometre", "Mil", "İnç", "Ayak (ft)", "Arşın", "Menzil"],
     "Kütle": ["Kilogram", "Gram", "Libre (lb)", "Ons (oz)", "Batman", "Dirhem"],
@@ -38,7 +39,7 @@ const conversionRates = {
 const toGreek = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
 const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
 
-// --- SAYI DÖNÜŞÜM MANTIĞI (Kesirli) ---
+// --- SAYI DÖNÜŞÜM MANTIĞI (Kesirli & Temiz Çıkışlı) ---
 function universalNumberConvert(text, fromUnit, toUnit) {
     const stdDigits = "0123456789ABCDEF";
     const anaDigits = "θ123456789ΦΛ";
@@ -51,7 +52,6 @@ function universalNumberConvert(text, fromUnit, toUnit) {
         return 10;
     };
 
-    // Temizleme ve Normalize Etme (Virgülü noktaya çevir, Anatolya harflerini standart tabana çek)
     let input = text.toUpperCase().replace(',', '.');
     if (fromUnit.includes("Anatolya")) {
         input = input.split('').map(c => stdDigits[anaDigits.indexOf(c)] || c).join('');
@@ -60,35 +60,38 @@ function universalNumberConvert(text, fromUnit, toUnit) {
     const fromBase = getBase(fromUnit);
     const toBase = getBase(toUnit);
 
-    // Any Base to Decimal (Fractional)
     const parts = input.split('.');
     let decimalValue = parseInt(parts[0], fromBase);
     if (parts[1]) {
         for (let i = 0; i < parts[1].length; i++) {
-            decimalValue += stdDigits.indexOf(parts[1][i]) * Math.pow(fromBase, -(i + 1));
+            let digitVal = stdDigits.indexOf(parts[1][i]);
+            if(digitVal !== -1) decimalValue += digitVal * Math.pow(fromBase, -(i + 1));
         }
     }
 
     if (isNaN(decimalValue)) return "Hata";
 
-    // Decimal to Any Base (Fractional)
     let integerPart = Math.floor(decimalValue);
     let fractionalPart = decimalValue - integerPart;
     
     let resInteger = integerPart.toString(toBase).toUpperCase();
     let resFraction = "";
     
-    for (let i = 0; i < 6; i++) { // 6 basamak hassasiyet
-        fractionalPart *= toBase;
-        let digit = Math.floor(fractionalPart);
-        resFraction += stdDigits[digit];
-        fractionalPart -= digit;
-        if (fractionalPart === 0) break;
+    // Sadece kesir varsa hesapla
+    if (fractionalPart > 0) {
+        for (let i = 0; i < 6; i++) {
+            fractionalPart *= toBase;
+            let digit = Math.floor(fractionalPart);
+            resFraction += stdDigits[digit];
+            fractionalPart -= digit;
+            if (fractionalPart < 0.000001) break;
+        }
+        // Sondaki gereksiz sıfırları temizle
+        resFraction = resFraction.replace(/0+$/, "");
     }
 
     let final = resInteger + (resFraction ? "." + resFraction : "");
     
-    // Eğer hedef Anatolya ise harfleri değiştir
     if (toUnit.includes("Anatolya")) {
         final = final.split('').map(c => anaDigits[stdDigits.indexOf(c)] || c).join('');
     }
@@ -123,7 +126,8 @@ function performConversion() {
         if (isNaN(val)) { outputArea.value = "Geçersiz Sayı"; return; }
         const baseVal = val * conversionRates[mode][currentInputUnit];
         const result = baseVal / conversionRates[mode][currentOutputUnit];
-        outputArea.value = result.toLocaleString('tr-TR', { maximumFractionDigits: 5 });
+        // Gereksiz kesirleri temizleyen format
+        outputArea.value = Number(result.toFixed(5)).toLocaleString('tr-TR', { maximumFractionDigits: 5 });
     }
 }
 
@@ -136,10 +140,13 @@ function handleTemperature(text) {
     else if (currentInputUnit === "Kelvin") c = v - 273.15;
     else c = v * 2; 
 
-    if (currentOutputUnit === "Celsius") return c.toFixed(2);
-    if (currentOutputUnit === "Fahrenheit") return (c * 9/5 + 32).toFixed(2);
-    if (currentOutputUnit === "Kelvin") return (c + 273.15).toFixed(2);
-    return (c / 2).toFixed(2);
+    let res;
+    if (currentOutputUnit === "Celsius") res = c;
+    else if (currentOutputUnit === "Fahrenheit") res = (c * 9/5 + 32);
+    else if (currentOutputUnit === "Kelvin") res = (c + 273.15);
+    else res = (c / 2);
+    
+    return Number(res.toFixed(2)).toLocaleString('tr-TR');
 }
 
 // --- UI VE DİĞER FONKSİYONLAR ---
@@ -163,10 +170,8 @@ function selectUnit(type, value) {
     const options = unitData[mode];
     if (type === 'input') {
         currentInputUnit = value;
-        if (currentInputUnit === currentOutputUnit) currentOutputUnit = options.find(o => o !== value) || options[0];
     } else {
         currentOutputUnit = value;
-        if (currentOutputUnit === currentInputUnit) currentInputUnit = options.find(o => o !== value) || options[0];
     }
     renderPills();
     performConversion();
@@ -174,8 +179,15 @@ function selectUnit(type, value) {
 
 function renderDropdowns(mode) {
     const options = unitData[mode] || [];
-    currentInputUnit = options[0];
-    currentOutputUnit = options[1] || options[0];
+    // Sayı biriminde özel başlangıç ayarı
+    if (mode === "Sayı") {
+        currentInputUnit = "Onluk (10)";
+        currentOutputUnit = "Anatolya (12)";
+    } else {
+        currentInputUnit = options[0];
+        currentOutputUnit = options[1] || options[0];
+    }
+    
     dropdownInput.innerHTML = options.map(opt => `<div class="dropdown-item" onclick="selectUnit('input', '${opt}')">${opt}</div>`).join('');
     dropdownOutput.innerHTML = options.map(opt => `<div class="dropdown-item" onclick="selectUnit('output', '${opt}')">${opt}</div>`).join('');
     renderPills();
@@ -218,7 +230,7 @@ document.getElementById('themeToggle').addEventListener('click', function() {
     document.documentElement.classList.toggle('dark');
 });
 
-// --- ZAMAN FONKSİYONLARI ---
+// --- ÖZEL ZAMAN FONKSİYONLARI ---
 function toBase12(n, pad = 2) {
     const digits = "θ123456789ΦΛ";
     if (n === 0) return "θ".repeat(pad);
@@ -237,10 +249,10 @@ function calculateCustomDate(now) {
         if (daysCounter + yearDays > daysPassed) break;
         daysCounter += yearDays; year++;
     }
-    const dOY = daysPassed - daysCounter;
-    const m = Math.floor(dOY / 30) + 1;
-    const d = (dOY % 30) + 1;
-    return { base12: `${toBase12(d)}.${toBase12(m)}.${toBase12(year + 10368, 4)}` };
+    const dayOfYear = daysPassed - daysCounter;
+    const month = Math.floor(dayOfYear / 30) + 1;
+    const day = (dayOfYear % 30) + 1;
+    return { base12: `${toBase12(day)}.${toBase12(month)}.${toBase12(year + 10368, 4)}` };
 }
 
 function updateTime() {
