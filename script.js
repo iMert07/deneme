@@ -212,7 +212,7 @@ function renderDropdowns(mode) {
     if (mode === "Sayı") { currentInputUnit = "Onluk (10)"; currentOutputUnit = "Anatolya (12)"; }
     else if (mode === "Zaman") { currentInputUnit = "Dakika"; currentOutputUnit = "Gün"; }
     else if (mode === "Uzunluk") { currentInputUnit = "Metre (10⁰)"; currentOutputUnit = "Arşın (12⁰)"; }
-    else if (mode === "Kütle") { currentInputUnit = "Gram (10⁰)"; currentOutputUnit = "Okka (12⁰)"; }
+    else if (mode === "Kütle") { currentInputUnit = "Kilogram (10³)"; currentOutputUnit = "Okka (12⁰)"; }
     else { currentInputUnit = options[0]; currentOutputUnit = options[1] || options[0]; }
     
     const createItems = (type) => options.map(opt => `<div class="dropdown-item" onclick="selectUnit('${type}', '${opt}')">${opt}</div>`).join('');
