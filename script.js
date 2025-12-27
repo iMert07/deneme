@@ -1,41 +1,32 @@
 const latin = document.getElementById('latin');
 const greek = document.getElementById('greek');
+const pillInputLabel = document.getElementById('pill-input-label');
+const pillOutputLabel = document.getElementById('pill-output-label');
+const dropdownInput = document.getElementById('dropdown-input');
+const dropdownOutput = document.getElementById('dropdown-output');
 const kbContainer = document.getElementById('kb-container');
+const swapIcon = document.getElementById('swap-btn-icon');
 let activeInput = latin;
+let rotation = 0;
 
-// Aktif birimler ve label elementleri
 let currentInputUnit = "Eski Alfabe";
 let currentOutputUnit = "Yeni Alfabe";
 
-const unitLabels = {
-    input: [document.getElementById('pill-input-label'), document.getElementById('pill-input-label-mobile')],
-    output: [document.getElementById('pill-output-label'), document.getElementById('pill-output-label-mobile')]
-};
-
-const dropdowns = {
-    input: document.getElementById('dropdown-input'),
-    output: document.getElementById('dropdown-output')
-};
-
 const unitData = {
-    "Alfabe": ["Eski Alfabe", "Yeni Alfabe"], "Sayı": ["Onluk", "Onikilik"], "Para": ["Lira", "Sikke"], "Takvim": ["Gregoryen", "Anatolya"], "Zaman": ["Standart", "Anatolya"], "Uzunluk": ["Metre", "Arşın"], "Kütle": ["Kilogram", "Batman"], "Sıcaklık": ["Celsius", "Ilım"], "Hacim": ["Litre", "Kile"], "Hız": ["km/sa", "Anatolya"], "Alan": ["m2", "Dönüm"], "Veri": ["Byte", "Anatolya"], "Meridyen": ["Standart", "Anatolya"], "Paralel": ["Standart", "Anatolya"]
+    "Alfabe": ["Eski Alfabe", "Yeni Alfabe"], "Sayı": ["Onluk", "Onikilik"], "Takvim": ["Gregoryen", "Anatolya"], "Zaman": ["Standart", "Anatolya"], "Uzunluk": ["Metre", "Arşın"], "Kütle": ["Kilogram", "Batman"], "Sıcaklık": ["Celsius", "Ilım"], "Hacim": ["Litre", "Kile"], "Hız": ["km/saat", "Anatolya"], "Alan": ["Metrekare", "Dönüm"], "Veri": ["Byte", "Anatolya"], "Meridyen": ["Standart", "Anatolya"], "Paralel": ["Standart", "Anatolya"], "Para": ["Lira", "Anatolya Sikkesi"]
 };
 
-const toGreekMap = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","Κ":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Ϙ","O":"Ϙ", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
-const toLatinMap = Object.fromEntries(Object.entries(toGreekMap).map(([k,v])=>[v,k.toUpperCase()]));
+const toGreek = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Ğ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
+const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
 
 function toggleDropdown(type) {
-    const el = dropdowns[type];
-    const other = type === 'input' ? dropdowns.output : dropdowns.input;
+    const el = type === 'input' ? dropdownInput : dropdownOutput;
+    const other = type === 'input' ? dropdownOutput : dropdownInput;
     other.classList.remove('show');
     el.classList.toggle('show');
 }
 
-window.onclick = function(event) {
-    if (!event.target.closest('.unit-pill')) {
-        Object.values(dropdowns).forEach(d => d.classList.remove('show'));
-    }
-}
+window.onclick = function(e) { if (!e.target.closest('.unit-pill')) { dropdownInput.classList.remove('show'); dropdownOutput.classList.remove('show'); } }
 
 function selectUnit(type, value) {
     const mode = document.querySelector('.active-tab').dataset.value;
@@ -51,14 +42,19 @@ function selectUnit(type, value) {
 }
 
 function swapAction() {
-    // Metinleri yer değiştir
+    // İkonu döndür
+    rotation += 180;
+    swapIcon.style.transform = `rotate(${rotation}deg)`;
+    
+    // Metinleri ve birimleri takas et
     let tempTxt = latin.value;
     latin.value = greek.value;
     greek.value = tempTxt;
-    // Birimleri yer değiştir
+    
     let tempUnit = currentInputUnit;
     currentInputUnit = currentOutputUnit;
     currentOutputUnit = tempUnit;
+    
     renderPills();
 }
 
@@ -66,20 +62,20 @@ function renderDropdowns(mode) {
     const options = unitData[mode] || [];
     currentInputUnit = options[0];
     currentOutputUnit = options[1] || options[0];
-    
-    dropdowns.input.innerHTML = options.map(opt => `<div class="dropdown-item" onclick="selectUnit('input', '${opt}')">${opt}</div>`).join('');
-    dropdowns.output.innerHTML = options.map(opt => `<div class="dropdown-item" onclick="selectUnit('output', '${opt}')">${opt}</div>`).join('');
+    dropdownInput.innerHTML = options.map(opt => `<div class="dropdown-item" onclick="selectUnit('input', '${opt}')">${opt}</div>`).join('');
+    dropdownOutput.innerHTML = options.map(opt => `<div class="dropdown-item" onclick="selectUnit('output', '${opt}')">${opt}</div>`).join('');
     renderPills();
 }
 
 function renderPills() {
-    unitLabels.input.forEach(l => { if(l) l.innerText = currentInputUnit; });
-    unitLabels.output.forEach(l => { if(l) l.innerText = currentOutputUnit; });
-    Object.values(dropdowns).forEach(d => d.classList.remove('show'));
+    pillInputLabel.innerText = currentInputUnit;
+    pillOutputLabel.innerText = currentOutputUnit;
+    dropdownInput.classList.remove('show');
+    dropdownOutput.classList.remove('show');
 }
 
 function translate(text, dir){
-    const map = dir === "toGreek" ? toGreekMap : toLatinMap;
+    const map = dir === "toGreek" ? toGreek : toLatin;
     return text.split('').map(ch => map[ch] || ch).join('');
 }
 
