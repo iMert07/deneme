@@ -1,4 +1,4 @@
-header, .nav-tab, #kb-container, .key, #label-input, #label-output, #clock, #date, .unit-pill, .dropdown-item {
+header h2, .material-symbols-outlined, .nav-tab, .key, #label-input, #label-output, #clock, #date, .unit-pill, .dropdown-item {
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -10,7 +10,7 @@ header, .nav-tab, #kb-container, .key, #label-input, #label-output, #clock, #dat
     display: flex; flex-direction: column; align-items: center; gap: 8px; 
     margin: 20px auto; width: 100%; max-width: 850px; padding: 15px;
     background: #e2e8f0; border-radius: 1.25rem; box-sizing: border-box;
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+    z-index: 100;
 }
 .dark .keyboard { background: #111a22; border: 1px solid #233648; }
 
@@ -32,7 +32,8 @@ header, .nav-tab, #kb-container, .key, #label-input, #label-output, #clock, #dat
 [data-action="space"] { grid-column: span 6 !important; }
 
 @media (max-width: 768px) {
-    .keyboard { position: fixed; bottom: 0; left: 0; width: 100%; padding: 10px 8px calc(env(safe-area-inset-bottom) + 10px) 8px; border-radius: 1.5rem 1.5rem 0 0; box-shadow: 0 -8px 30px rgba(0,0,0,0.3); }
+    .keyboard { position: fixed; bottom: 8px; left: 2%; width: 96%; padding: 8px 4px 12px 4px; border-radius: 1rem; box-shadow: 0 -5px 20px rgba(0,0,0,0.3); }
     .row { gap: 4px; }
     .key { height: 44px !important; font-size: 1rem; border-bottom-width: 2px; }
+    main { padding-bottom: 260px !important; }
 }
