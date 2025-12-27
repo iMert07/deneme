@@ -26,25 +26,36 @@
         .unit-pill-container {
             position: relative;
             display: inline-block;
+            max-width: 50%; /* Kutunun yarısını geçmeyecek şekilde sınırlandı */
             cursor: pointer;
         }
         .unit-pill {
             display: flex;
             align-items: center;
-            padding: 4px 16px;
-            background: #f1f5f9;
-            color: #64748b;
+            justify-content: center;
+            padding: 6px 16px;
+            background: #e2e8f0;
+            color: #475569;
             border-radius: 9999px;
             font-size: 10px;
-            font-weight: 700;
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            transition: all 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        .dark .unit-pill { background: #233648; color: #94a3b8; }
-        .unit-pill:hover { background: #137fec; color: white; }
+        .dark .unit-pill { background: #1e293b; color: #94a3b8; border-color: #334155; }
         
-        /* Görünmez Select Katmanı */
+        .unit-pill-container:hover .unit-pill { 
+            background: #137fec; 
+            color: white; 
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(19, 127, 236, 0.2);
+        }
+
         .hidden-select {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -54,7 +65,7 @@
         @media (min-width: 1024px) {
             textarea { font-size: 1.5rem !important; }
             h2 { font-size: 1.5rem !important; }
-            .unit-pill { font-size: 12px; }
+            .unit-pill { font-size: 11px; padding: 8px 20px; }
         }
 
         @media (max-width: 768px) {
@@ -130,7 +141,7 @@
 <main class="flex-1 flex flex-col p-3 gap-4 lg:gap-8">
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
         <div class="flex flex-col gap-2">
-            <div class="unit-pill-container">
+            <div class="unit-pill-container ml-1">
                 <div class="unit-pill" id="pill-input-label">Eski Alfabe</div>
                 <select id="select-input" class="hidden-select"></select>
             </div>
@@ -138,7 +149,7 @@
         </div>
 
         <div class="flex flex-col gap-2">
-            <div class="unit-pill-container">
+            <div class="unit-pill-container ml-1">
                 <div class="unit-pill" id="pill-output-label">Yeni Alfabe</div>
                 <select id="select-output" class="hidden-select"></select>
             </div>
