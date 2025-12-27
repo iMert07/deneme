@@ -8,12 +8,17 @@
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: { extend: { colors: { "primary": "#137fec", "background-dark": "#101922" } } }
+        }
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark')
         }
     </script>
     <style>
@@ -21,51 +26,51 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .active-tab { background-color: #137fec; color: white !important; }
+        .active-tab span { color: white !important; }
+        .inactive-tab { background-color: transparent; color: #94a3b8; }
+        .dark .inactive-tab { color: #64748b; }
         
-        /* Özel Dropdown Paneli */
+        /* Özel Dropdown Panel Tasarımı */
         .dropdown-panel {
-            display: none;
-            position: absolute;
-            top: calc(100% + 5px);
-            left: 0;
-            min-width: 160px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e2e8f0;
-            z-index: 100;
+            display: none; position: absolute; top: calc(100% + 5px); left: 0;
+            min-width: 140px; background: white; border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid #e2e8f0;
+            z-index: 100; overflow: hidden;
         }
         .dark .dropdown-panel { background: #1e293b; border-color: #334155; }
-        .dropdown-panel.show { display: block; animation: dropdownFade 0.2s ease-out; }
-
-        @keyframes dropdownFade {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .dropdown-panel.show { display: block; animation: dropdownFade 0.15s ease-out; }
+        @keyframes dropdownFade { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
         .dropdown-item {
-            padding: 10px 16px; font-size: 11px; font-weight: 600; color: #475569;
-            cursor: pointer; transition: all 0.2s;
+            padding: 10px 16px; font-size: 11px; font-weight: 700; color: #475569;
+            cursor: pointer; transition: all 0.2s; text-transform: uppercase;
         }
         .dark .dropdown-item { color: #94a3b8; }
         .dropdown-item:hover { background: #f1f5f9; color: #137fec; }
         .dark .dropdown-item:hover { background: #334155; color: white; }
 
-        /* Kapsül Başlıklar (Seçilemez) */
+        /* Kapsül Başlıklar */
         .unit-pill {
             display: flex; align-items: center; justify-content: center;
             padding: 6px 16px; background: #e2e8f0; color: #475569;
             border-radius: 9999px; font-size: 10px; font-weight: 800;
             text-transform: uppercase; letter-spacing: 0.05em;
             transition: all 0.2s; cursor: pointer; border: 1px solid transparent;
-            user-select: none; -webkit-user-select: none;
+            user-select: none; -webkit-user-select: none; max-width: 180px;
         }
         .dark .unit-pill { background: #1e293b; color: #94a3b8; border-color: #334155; }
         .unit-pill:hover { background: #137fec; color: white; transform: translateY(-1px); }
 
+        @media (min-width: 1024px) {
+            textarea { font-size: 1.5rem !important; }
+            h2 { font-size: 1.5rem !important; }
+        }
+
         @media (max-width: 768px) {
-            .keyboard { position: fixed; bottom: 8px; left: 2%; width: 96%; padding: 8px 4px 12px 4px; border-radius: 1rem; box-shadow: 0 -5px 20px rgba(0,0,0,0.3); }
-            main { padding-bottom: 260px !important; }
+            .keyboard { width: 97% !important; max-width: 550px !important; margin: 0 0 0 auto !important; padding: 8px !important; border-radius: 1rem !important; }
+            #kb-container { padding-top: 5px !important; padding-bottom: 0px !important; padding-right: 0px !important; display: flex; justify-content: flex-end; }
+            .key { height: 38px !important; font-size: 1rem !important; border-bottom-width: 2px !important; }
+            textarea { font-size: 1.1rem !important; height: 140px !important; padding: 10px !important; }
         }
     </style>
 </head>
