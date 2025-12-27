@@ -21,10 +21,10 @@ const unitData = {
         "Hafta (Anatolya)", "Hafta", "Ay", "Yıl (Anatolya)", "Yıl (Gregoryen)"
     ],
     "Uzunluk": [
-        "Kerrab (12⁻³)", "Milimetre", "Rubu (12⁻²)", "Santimetre", 
+        "Kerrab (12⁻³)", "Milimetre (10⁻³)", "Rubu (12⁻²)", "Santimetre (10⁻²)", 
         "İnç", "Endaze (12⁻¹)", "Fit (ft)", "Arşın (12⁰)", 
-        "Yard", "Metre", "Berid (12¹)", "Menzil (12²)", 
-        "Kilometre", "Fersah (12³)", "Mil", "Merhale (12⁴)"
+        "Yard", "Metre (10⁰)", "Berid (12¹)", "Menzil (12²)", 
+        "Kilometre (10³)", "Fersah (12³)", "Mil", "Merhale (12⁴)"
     ],
     "Kütle": ["Kilogram", "Gram", "Libre (lb)", "Ons (oz)", "Batman", "Dirhem"],
     "Sıcaklık": ["Celsius", "Fahrenheit", "Kelvin", "Ilım", "Ayaz"],
@@ -46,7 +46,7 @@ const conversionRates = {
         "Metre (10⁰)": 1,
         "Berid (12¹)": 8.64,
         "Menzil (12²)": 103.68,
-        "Kilometre (12³)": 1000,
+        "Kilometre (10³)": 1000,
         "Fersah (12³)": 1244.16,
         "Mil": 1609.34,
         "Merhale (12⁴)": 14929.92
