@@ -41,18 +41,18 @@ const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toU
 
 // --- ANALYZE & NORMALIZE ANATOLYA INPUT ---
 function normalizeAnatolyaInput(text) {
-    // A -> Φ, B -> Λ, 0 -> θ dönüşümlerini kullanıcı klavyesinden gelen girişler için yapar
+    // Tüm alternatifleri Anatolya sembollerine çevirir
     return text.toUpperCase()
+        .replace(/0/g, 'θ')
         .replace(/A/g, 'Φ')
-        .replace(/B/g, 'Λ')
-        .replace(/0/g, 'θ');
+        .replace(/B/g, 'Λ');
 }
 
 // --- VALIDATION MANTIĞI ---
 function isValidInput(text, unit) {
     const stdDigits = "0123456789ABCDEF";
     const anaDigits = "θ123456789ΦΛ";
-    const anaAlternative = "0123456789AB"; // Kullanıcının normal klavye ile yazabileceği haller
+    const anaAlternative = "0123456789AB";
     
     let allowedChars = "";
     if (unit.includes("(2)")) allowedChars = "01,.";
@@ -99,10 +99,13 @@ function universalNumberConvert(text, fromUnit, toUnit) {
 
     let input = text.toUpperCase().replace(',', '.');
     
-    // Anatolya girişini önce kendi içinde normalize et (A->Φ vb), sonra standart 12'liğe çek
     if (fromUnit.includes("Anatolya")) {
         input = normalizeAnatolyaInput(input);
-        input = input.split('').map(c => stdDigits[anaDigits.indexOf(c)] || c).join('');
+        // Anatolya sembollerini standart rakam/harf karşılığına çek (0-9, A, B)
+        input = input.split('').map(c => {
+            const idx = anaDigits.indexOf(c);
+            return idx !== -1 ? stdDigits[idx] : c;
+        }).join('');
     }
 
     const fromBase = getBase(fromUnit);
@@ -161,9 +164,15 @@ function performConversion() {
             const digits = "θ123456789ΦΛ";
             const normalizedText = normalizeAnatolyaInput(text.toUpperCase().replace(',','.'));
             const parts = normalizedText.split('.');
-            numericValue = parts[0].split('').reduce((acc, curr) => (acc * 12) + digits.indexOf(curr), 0);
+            numericValue = parts[0].split('').reduce((acc, curr) => {
+                const idx = digits.indexOf(curr);
+                return idx !== -1 ? (acc * 12) + idx : acc;
+            }, 0);
             if (parts[1]) {
-                for (let i = 0; i < parts[1].length; i++) numericValue += digits.indexOf(parts[1][i]) * Math.pow(12, -(i+1));
+                for (let i = 0; i < parts[1].length; i++) {
+                    const idx = digits.indexOf(parts[1][i]);
+                    if (idx !== -1) numericValue += idx * Math.pow(12, -(i+1));
+                }
             }
         } else {
             numericValue = parseFloat(text.replace(',', '.'));
@@ -205,8 +214,6 @@ function selectUnit(type, value) {
 
 function renderDropdowns(mode) {
     const options = unitData[mode] || [];
-    
-    // SAYI SEKİMESİ İÇİN ÖZEL BAŞLANGIÇ: Onluk (10) -> Anatolya (12)
     if (mode === "Sayı") {
         currentInputUnit = "Onluk (10)";
         currentOutputUnit = "Anatolya (12)";
@@ -214,7 +221,6 @@ function renderDropdowns(mode) {
         currentInputUnit = options[0];
         currentOutputUnit = options[1] || options[0];
     }
-    
     const createItems = (type) => options.map(opt => `<div class="dropdown-item" onclick="selectUnit('${type}', '${opt}')">${opt}</div>`).join('');
     dropdownInput.innerHTML = createItems('input');
     dropdownOutput.innerHTML = createItems('output');
