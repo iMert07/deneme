@@ -26,7 +26,6 @@ const unitData = {
     "Veri": ["Byte", "Kilobyte", "Megabyte", "Gigabyte", "Terabyte", "Anatolya Verisi"]
 };
 
-// --- KATSAYILAR (Saniye bazlı) ---
 const conversionRates = {
     "Uzunluk": { "Metre": 1, "Kilometre": 1000, "Mil": 1609.34, "İnç": 0.0254, "Ayak (ft)": 0.3048, "Arşın": 0.68, "Menzil": 5000 },
     "Kütle": { "Kilogram": 1, "Gram": 0.001, "Libre (lb)": 0.4535, "Ons (oz)": 0.0283, "Batman": 7.697, "Dirhem": 0.0032 },
@@ -61,16 +60,22 @@ function getAnatolyaDays(years) {
     return totalDays;
 }
 
-// --- TABAN DÖNÜŞTÜRÜCÜ (Header ile uyumlu) ---
-function toBase12(n, isAnatolya = true, pad = 1) {
+// --- TABAN DÖNÜŞTÜRÜCÜ (SABİT θθ FORMATLI) ---
+function toBase12(n, pad = 1, isAnatolya = true) {
     const digits = isAnatolya ? "θ123456789ΦΛ" : "0123456789AB";
-    let num = Math.abs(n);
-    let integerPart = Math.floor(num);
-    let fractionPart = num - integerPart;
+    let num = Math.abs(Math.floor(n));
     let res = "";
-    if (integerPart === 0) res = digits[0];
-    else { while (integerPart > 0) { res = digits[integerPart % 12] + res; integerPart = Math.floor(integerPart / 12); } }
-    res = res.padStart(pad, digits[0]);
+    if (num === 0) res = digits[0];
+    else { while (num > 0) { res = digits[num % 12] + res; num = Math.floor(num / 12); } }
+    return res.padStart(pad, digits[0]);
+}
+
+// Virgüllü Anatolya çevirici (Sadece Dönüşüm İçin)
+function toBase12Float(n, isAnatolya = true) {
+    const digits = isAnatolya ? "θ123456789ΦΛ" : "0123456789AB";
+    let integerPart = Math.floor(Math.abs(n));
+    let fractionPart = Math.abs(n) - integerPart;
+    let res = toBase12(integerPart, 1, isAnatolya);
     if (fractionPart > 0.001) {
         res += ",";
         for (let i = 0; i < 3; i++) { fractionPart *= 12; let d = Math.floor(fractionPart); res += digits[d]; fractionPart -= d; if (fractionPart < 0.001) break; }
@@ -78,12 +83,8 @@ function toBase12(n, isAnatolya = true, pad = 1) {
     return res;
 }
 
-// --- GİRDİ NORMALİZASYONU ---
-function normalizeInput(text) {
-    return text.toUpperCase().replace(/θ/g, '0').replace(/Φ/g, 'A').replace(/Λ/g, 'B');
-}
+function normalizeInput(text) { return text.toUpperCase().replace(/θ/g, '0').replace(/Φ/g, 'A').replace(/Λ/g, 'B'); }
 
-// --- VALIDATION ---
 function isValidInput(text, unit) {
     const anaDigits = "θΦΛ";
     let allowedChars = "";
@@ -96,7 +97,6 @@ function isValidInput(text, unit) {
     return true;
 }
 
-// --- SAYI / TABAN DÖNÜŞÜMÜ ---
 function universalNumberConvert(text, fromUnit, toUnit) {
     if (!isValidInput(text, fromUnit)) return "Geçersiz Karakter";
     const stdDigits = "0123456789ABCDEF";
@@ -120,14 +120,13 @@ function universalNumberConvert(text, fromUnit, toUnit) {
     }
     if (isNaN(dec)) return "Hata";
     if (toUnit.includes("Anatolya")) {
-        const anaVal = toBase12(dec, true, 1);
-        const stdVal = toBase12(dec, false, 1);
+        const anaVal = toBase12Float(dec, true);
+        const stdVal = toBase12Float(dec, false);
         return (anaVal === stdVal) ? anaVal : `${anaVal} (${stdVal})`;
     }
     return dec.toString(toBase).toUpperCase().replace('.', ',');
 }
 
-// --- MERKEZİ DÖNÜŞÜM MOTORU ---
 function performConversion() {
     const activeTab = document.querySelector('.active-tab');
     if (!activeTab) return;
@@ -138,9 +137,7 @@ function performConversion() {
     if (mode === "Alfabe") {
         outputArea.value = (currentInputUnit === "Eski Alfabe") ? text.split('').map(ch => toGreek[ch] || ch).join('') : text.split('').map(ch => toLatin[ch] || ch).join('');
     } 
-    else if (mode === "Sayı") {
-        outputArea.value = universalNumberConvert(text, currentInputUnit, currentOutputUnit);
-    }
+    else if (mode === "Sayı") { outputArea.value = universalNumberConvert(text, currentInputUnit, currentOutputUnit); }
     else if (conversionRates[mode] || mode === "Zaman") {
         if (!isValidInput(text, currentInputUnit)) { outputArea.value = "Geçersiz Karakter"; return; }
         let numericValue;
@@ -169,16 +166,14 @@ function performConversion() {
 
         const isOutputSpecial = currentOutputUnit.includes("Anatolya") || ["Gün", "Ay", "Yıl (Anatolya)"].includes(currentOutputUnit);
         if (isOutputSpecial) {
-            const anaVal = toBase12(result, true, 1);
-            const stdVal = toBase12(result, false, 1);
+            const anaVal = toBase12Float(result, true);
+            const stdVal = toBase12Float(result, false);
             const decStr = Number(result.toFixed(2)).toLocaleString('tr-TR');
             let resStr = anaVal;
             if (anaVal !== stdVal) resStr += ` (${stdVal})`;
             resStr += ` [${decStr}]`;
             outputArea.value = resStr;
-        } else {
-            outputArea.value = Number(result.toFixed(5)).toLocaleString('tr-TR');
-        }
+        } else { outputArea.value = Number(result.toFixed(5)).toLocaleString('tr-TR'); }
     }
 }
 
@@ -201,7 +196,6 @@ function renderDropdowns(mode) {
 function renderPills() { pillInputLabel.innerText = currentInputUnit; pillOutputLabel.innerText = currentOutputUnit; dropdownInput.classList.remove('show'); dropdownOutput.classList.remove('show'); }
 function toggleDropdown(type) { const el = type === 'input' ? dropdownInput : dropdownOutput; const other = type === 'input' ? dropdownOutput : dropdownInput; other.classList.remove('show'); el.classList.toggle('show'); }
 window.onclick = function(event) { if (!event.target.closest('.unit-pill')) { dropdownInput.classList.remove('show'); dropdownOutput.classList.remove('show'); } }
-
 inputArea.addEventListener('input', performConversion);
 document.querySelectorAll('.key').forEach(key => { key.addEventListener('click', () => {
     const action = key.dataset.action;
@@ -216,15 +210,23 @@ document.querySelectorAll('.nav-tab').forEach(tab => { tab.addEventListener('cli
 }); });
 document.getElementById('themeToggle').addEventListener('click', () => document.documentElement.classList.toggle('dark'));
 
-// --- HEADER TAKVİM VE SAAT ---
+// --- HEADER SAAT VE TAKVİM (ORİJİNAL MANTIK) ---
 function updateHeader() {
     const now = new Date();
     
-    // Saat (θθ padding garantili)
-    const clockStr = `${toBase12(now.getHours(), true, 2)}.${toBase12(now.getMinutes(), true, 2)}.${toBase12(now.getSeconds(), true, 2)}`;
-    document.getElementById('clock').textContent = clockStr;
+    // 1. Gün Başlangıcı Mantığı (04:30)
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 30, 0);
+    if (now < todayStart) todayStart.setDate(todayStart.getDate() - 1);
     
-    // Tarih (Senin 1071-03-21 bazın ve 20-640 kuralın)
+    // Toplam Saniye ve Saat/Dakika/Saniye (Base12 formatında)
+    const totalSecs = Math.floor(((now - todayStart) / 1000) * 2);
+    const h = Math.floor(totalSecs / 14400) % 12;
+    const m = Math.floor((totalSecs / 120) % 120);
+    const s = totalSecs % 120;
+    
+    document.getElementById('clock').textContent = `${toBase12(h, 2, true)}.${toBase12(m, 2, true)}.${toBase12(s, 2, true)}`;
+
+    // 2. Takvim (20-640 ve 10368 kuralı)
     const gregBase = new Date(1071, 2, 21);
     const diff = now - gregBase;
     const daysPassed = Math.floor(diff / 86400000);
@@ -239,8 +241,7 @@ function updateHeader() {
     const day = (dayOfYear % 30) + 1;
     const month = Math.floor(dayOfYear / 30) + 1;
     
-    const dateStr = `${toBase12(day, true, 2)}.${toBase12(month, true, 2)}.${toBase12(year + 10368, true, 4)}`;
-    document.getElementById('date').textContent = dateStr;
+    document.getElementById('date').textContent = `${toBase12(day, 2, true)}.${toBase12(month, 2, true)}.${toBase12(year + 10368, 4, true)}`;
 }
 
 setInterval(updateHeader, 1000);
