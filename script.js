@@ -3,12 +3,16 @@
    ========================================================================== */
 const latin = document.getElementById('latin');
 const greek = document.getElementById('greek');
-const selectInput = document.getElementById('select-input');
-const selectOutput = document.getElementById('select-output');
 const pillInputLabel = document.getElementById('pill-input-label');
 const pillOutputLabel = document.getElementById('pill-output-label');
+const dropdownInput = document.getElementById('dropdown-input');
+const dropdownOutput = document.getElementById('dropdown-output');
 const kbContainer = document.getElementById('kb-container');
 let activeInput = latin;
+
+// Aktif seçili birimler
+let currentInputUnit = "";
+let currentOutputUnit = "";
 
 const unitData = {
     "Alfabe": ["Eski Alfabe", "Yeni Alfabe"],
@@ -27,42 +31,65 @@ const unitData = {
     "Paralel": ["Standart Paralel", "Anatolya Enlemi"]
 };
 
-const toGreekMap = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Ğ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
+const toGreekMap = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","Κ":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Ğ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
 const toLatinMap = Object.fromEntries(Object.entries(toGreekMap).map(([k,v])=>[v,k.toUpperCase()]));
 
 /* ==========================================================================
-   2. DROPDOWN & PILL YÖNETİMİ
+   2. ÖZEL DROPDOWN MANTIĞI
    ========================================================================== */
-function updateDropdowns(mode) {
+function toggleDropdown(type) {
+    const el = type === 'input' ? dropdownInput : dropdownOutput;
+    const other = type === 'input' ? dropdownOutput : dropdownInput;
+    other.classList.remove('show');
+    el.classList.toggle('show');
+}
+
+// Dışarı tıklandığında kapatma
+window.onclick = function(event) {
+    if (!event.target.matches('.unit-pill')) {
+        dropdownInput.classList.remove('show');
+        dropdownOutput.classList.remove('show');
+    }
+}
+
+function selectUnit(type, value) {
+    const mode = document.querySelector('.active-tab').dataset.value;
+    const options = unitData[mode];
+
+    if (type === 'input') {
+        currentInputUnit = value;
+        if (currentInputUnit === currentOutputUnit) {
+            currentOutputUnit = options.find(o => o !== value);
+        }
+    } else {
+        currentOutputUnit = value;
+        if (currentOutputUnit === currentInputUnit) {
+            currentInputUnit = options.find(o => o !== value);
+        }
+    }
+    renderPills();
+}
+
+function renderDropdowns(mode) {
     const options = unitData[mode] || [];
-    selectInput.innerHTML = "";
-    selectOutput.innerHTML = "";
-    options.forEach(opt => {
-        selectInput.add(new Option(opt, opt));
-        selectOutput.add(new Option(opt, opt));
+    currentInputUnit = options[0];
+    currentOutputUnit = options[1] || options[0];
+    
+    [dropdownInput, dropdownOutput].forEach((drop, idx) => {
+        const type = idx === 0 ? 'input' : 'output';
+        drop.innerHTML = options.map(opt => 
+            `<div class="dropdown-item" onclick="selectUnit('${type}', '${opt}')">${opt}</div>`
+        ).join('');
     });
-    if (options.length > 1) {
-        selectInput.selectedIndex = 0;
-        selectOutput.selectedIndex = 1;
-    }
-    syncPillLabels();
+    renderPills();
 }
 
-function syncPillLabels() {
-    pillInputLabel.innerText = selectInput.value;
-    pillOutputLabel.innerText = selectOutput.value;
+function renderPills() {
+    pillInputLabel.innerText = currentInputUnit;
+    pillOutputLabel.innerText = currentOutputUnit;
+    dropdownInput.classList.remove('show');
+    dropdownOutput.classList.remove('show');
 }
-
-function handleDropdownChange(changedSelect) {
-    const otherSelect = (changedSelect === selectInput) ? selectOutput : selectInput;
-    if (changedSelect.value === otherSelect.value) {
-        otherSelect.selectedIndex = (changedSelect.selectedIndex + 1) % changedSelect.length;
-    }
-    syncPillLabels();
-}
-
-selectInput.addEventListener('change', () => handleDropdownChange(selectInput));
-selectOutput.addEventListener('change', () => handleDropdownChange(selectOutput));
 
 /* ==========================================================================
    3. ÇEVİRİ VE KLAVYE
@@ -91,26 +118,19 @@ document.querySelectorAll('.key').forEach(key => {
     });
 });
 
-/* ==========================================================================
-   4. SEKME YÖNETİMİ
-   ========================================================================== */
 const navTabs = document.querySelectorAll('.nav-tab');
 navTabs.forEach(tab => {
     tab.addEventListener('click', function() {
-        const mode = this.dataset.value;
         navTabs.forEach(t => { t.classList.remove('active-tab'); t.classList.add('inactive-tab'); });
         this.classList.add('active-tab'); this.classList.remove('inactive-tab');
-        updateDropdowns(mode);
-        kbContainer.style.display = "block";
+        renderDropdowns(this.dataset.value);
     });
 });
 
-document.getElementById('themeToggle').addEventListener('click', () => {
-    document.documentElement.classList.toggle('dark');
-});
+document.getElementById('themeToggle').addEventListener('click', () => { document.documentElement.classList.toggle('dark'); });
 
 /* ==========================================================================
-   5. SAAT VE TARİH
+   4. SAAT VE TARİH
    ========================================================================== */
 function toBase12(n, pad = 2) {
     const digits = "θ123456789ΦΛ";
@@ -153,4 +173,4 @@ function updateTime() {
 
 setInterval(updateTime, 100);
 updateTime();
-updateDropdowns("Alfabe");
+renderDropdowns("Alfabe");
