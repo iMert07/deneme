@@ -1,14 +1,21 @@
 const latin = document.getElementById('latin');
 const greek = document.getElementById('greek');
-const pillInputLabel = document.getElementById('pill-input-label');
-const pillOutputLabel = document.getElementById('pill-output-label');
-const dropdownInput = document.getElementById('dropdown-input');
-const dropdownOutput = document.getElementById('dropdown-output');
 const kbContainer = document.getElementById('kb-container');
 let activeInput = latin;
 
-let currentInputUnit = "";
-let currentOutputUnit = "";
+// Aktif birimler ve label elementleri
+let currentInputUnit = "Eski Alfabe";
+let currentOutputUnit = "Yeni Alfabe";
+
+const unitLabels = {
+    input: [document.getElementById('pill-input-label'), document.getElementById('pill-input-label-mobile')],
+    output: [document.getElementById('pill-output-label'), document.getElementById('pill-output-label-mobile')]
+};
+
+const dropdowns = {
+    input: document.getElementById('dropdown-input'),
+    output: document.getElementById('dropdown-output')
+};
 
 const unitData = {
     "Alfabe": ["Eski Alfabe", "Yeni Alfabe"], "Sayı": ["Onluk", "Onikilik"], "Para": ["Lira", "Sikke"], "Takvim": ["Gregoryen", "Anatolya"], "Zaman": ["Standart", "Anatolya"], "Uzunluk": ["Metre", "Arşın"], "Kütle": ["Kilogram", "Batman"], "Sıcaklık": ["Celsius", "Ilım"], "Hacim": ["Litre", "Kile"], "Hız": ["km/sa", "Anatolya"], "Alan": ["m2", "Dönüm"], "Veri": ["Byte", "Anatolya"], "Meridyen": ["Standart", "Anatolya"], "Paralel": ["Standart", "Anatolya"]
@@ -18,13 +25,17 @@ const toGreekMap = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "
 const toLatinMap = Object.fromEntries(Object.entries(toGreekMap).map(([k,v])=>[v,k.toUpperCase()]));
 
 function toggleDropdown(type) {
-    const el = type === 'input' ? dropdownInput : dropdownOutput;
-    const other = type === 'input' ? dropdownOutput : dropdownInput;
+    const el = dropdowns[type];
+    const other = type === 'input' ? dropdowns.output : dropdowns.input;
     other.classList.remove('show');
     el.classList.toggle('show');
 }
 
-window.onclick = function(e) { if (!e.target.closest('.unit-pill')) { dropdownInput.classList.remove('show'); dropdownOutput.classList.remove('show'); } }
+window.onclick = function(event) {
+    if (!event.target.closest('.unit-pill')) {
+        Object.values(dropdowns).forEach(d => d.classList.remove('show'));
+    }
+}
 
 function selectUnit(type, value) {
     const mode = document.querySelector('.active-tab').dataset.value;
@@ -39,10 +50,12 @@ function selectUnit(type, value) {
     renderPills();
 }
 
-function swapValues() {
-    let tempText = latin.value;
+function swapAction() {
+    // Metinleri yer değiştir
+    let tempTxt = latin.value;
     latin.value = greek.value;
-    greek.value = tempText;
+    greek.value = tempTxt;
+    // Birimleri yer değiştir
     let tempUnit = currentInputUnit;
     currentInputUnit = currentOutputUnit;
     currentOutputUnit = tempUnit;
@@ -53,16 +66,16 @@ function renderDropdowns(mode) {
     const options = unitData[mode] || [];
     currentInputUnit = options[0];
     currentOutputUnit = options[1] || options[0];
-    dropdownInput.innerHTML = options.map(opt => `<div class="dropdown-item" onclick="selectUnit('input', '${opt}')">${opt}</div>`).join('');
-    dropdownOutput.innerHTML = options.map(opt => `<div class="dropdown-item" onclick="selectUnit('output', '${opt}')">${opt}</div>`).join('');
+    
+    dropdowns.input.innerHTML = options.map(opt => `<div class="dropdown-item" onclick="selectUnit('input', '${opt}')">${opt}</div>`).join('');
+    dropdowns.output.innerHTML = options.map(opt => `<div class="dropdown-item" onclick="selectUnit('output', '${opt}')">${opt}</div>`).join('');
     renderPills();
 }
 
 function renderPills() {
-    pillInputLabel.innerText = currentInputUnit;
-    pillOutputLabel.innerText = currentOutputUnit;
-    dropdownInput.classList.remove('show');
-    dropdownOutput.classList.remove('show');
+    unitLabels.input.forEach(l => { if(l) l.innerText = currentInputUnit; });
+    unitLabels.output.forEach(l => { if(l) l.innerText = currentOutputUnit; });
+    Object.values(dropdowns).forEach(d => d.classList.remove('show'));
 }
 
 function translate(text, dir){
@@ -71,17 +84,17 @@ function translate(text, dir){
 }
 
 latin.addEventListener('input', () => { greek.value = translate(latin.value, "toGreek"); });
-navTabs = document.querySelectorAll('.nav-tab');
-navTabs.forEach(tab => {
+
+document.querySelectorAll('.nav-tab').forEach(tab => {
     tab.addEventListener('click', function() {
-        navTabs.forEach(t => { t.classList.remove('active-tab'); t.classList.add('inactive-tab'); });
+        document.querySelectorAll('.nav-tab').forEach(t => { t.classList.remove('active-tab'); t.classList.add('inactive-tab'); });
         this.classList.add('active-tab'); this.classList.remove('inactive-tab');
         renderDropdowns(this.dataset.value);
     });
 });
 
 document.querySelectorAll('.key').forEach(key => {
-    key.addEventListener('click', (e) => {
+    key.addEventListener('click', () => {
         const action = key.dataset.action;
         if(action === 'delete') activeInput.value = activeInput.value.slice(0,-1);
         else if(action === 'enter') activeInput.value += '\n';
