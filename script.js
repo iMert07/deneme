@@ -64,7 +64,7 @@ function getAnatolyaDays(years) {
     return totalDays;
 }
 
-// --- TABAN DÖNÜŞTÜRÜCÜ (Header ile uyumlu) ---
+// --- TABAN DÖNÜŞTÜRÜCÜ ---
 function toBase12(n, pad = 1, isAnatolya = true) {
     const digits = isAnatolya ? "θ123456789ΦΛ" : "0123456789AB";
     let num = Math.abs(n);
@@ -84,7 +84,6 @@ function toBase12(n, pad = 1, isAnatolya = true) {
 // --- SAYI / TABAN DÖNÜŞÜMÜ ---
 function universalNumberConvert(text, fromUnit, toUnit) {
     const stdDigits = "0123456789ABCDEF";
-    const anaDigits = "θ123456789ΦΛ";
     const getBase = (unit) => {
         if (unit.includes("(2)")) return 2;
         if (unit.includes("Anatolya") || unit.includes("(12)")) return 12;
@@ -121,7 +120,7 @@ function performConversion() {
     if (!text) { outputArea.value = ""; return; }
 
     if (mode === "Alfabe") {
-        outputArea.value = (currentInputUnit === "Eski Alfabe") ? text.split('').map(ch => toGreek[ch] || ch).join('') : text.split('').map(ch => toGreek[ch] || ch).join('');
+        outputArea.value = text.split('').map(ch => toGreek[ch] || ch).join('');
     } 
     else if (mode === "Sayı") {
         outputArea.value = universalNumberConvert(text, currentInputUnit, currentOutputUnit);
@@ -137,9 +136,7 @@ function performConversion() {
                 const stdDigits = "0123456789ABCDEF";
                 for (let i = 0; i < parts[1].length; i++) numericValue += stdDigits.indexOf(parts[1][i]) * Math.pow(12, -(i+1));
             }
-        } else {
-            numericValue = parseFloat(text.replace(',', '.'));
-        }
+        } else { numericValue = parseFloat(text.replace(',', '.')); }
 
         if (isNaN(numericValue)) { outputArea.value = "Hata"; return; }
 
@@ -187,6 +184,7 @@ function renderDropdowns(mode) {
 function renderPills() { pillInputLabel.innerText = currentInputUnit; pillOutputLabel.innerText = currentOutputUnit; dropdownInput.classList.remove('show'); dropdownOutput.classList.remove('show'); }
 function toggleDropdown(type) { const el = type === 'input' ? dropdownInput : dropdownOutput; const other = type === 'input' ? dropdownOutput : dropdownInput; other.classList.remove('show'); el.classList.toggle('show'); }
 window.onclick = function(event) { if (!event.target.closest('.unit-pill')) { dropdownInput.classList.remove('show'); dropdownOutput.classList.remove('show'); } }
+
 inputArea.addEventListener('input', performConversion);
 document.querySelectorAll('.key').forEach(key => { key.addEventListener('click', () => {
     const action = key.dataset.action;
@@ -195,36 +193,43 @@ document.querySelectorAll('.key').forEach(key => { key.addEventListener('click',
     else if(!key.classList.contains('fn-key')) inputArea.value += key.innerText;
     performConversion();
 }); });
+
 document.querySelectorAll('.nav-tab').forEach(tab => { tab.addEventListener('click', function() {
     document.querySelectorAll('.nav-tab').forEach(t => t.classList.replace('active-tab', 'inactive-tab'));
     this.classList.replace('inactive-tab', 'active-tab'); renderDropdowns(this.dataset.value);
 }); });
+
 document.getElementById('themeToggle').addEventListener('click', () => document.documentElement.classList.toggle('dark'));
 
-// --- HEADER TAKVİM (HASSAS DÜZELTME) ---
-function updateTime() {
+// --- HEADER TAKVİM VE SAAT (DÜZELTİLDİ) ---
+function updateHeader() {
     const now = new Date();
+    
+    // 1. Saat Hesaplama (Gerçek zamana duyarlı, θθ paddingli)
+    const clockStr = `${toBase12(now.getHours(), 2, true)}.${toBase12(now.getMinutes(), 2, true)}.${toBase12(now.getSeconds(), 2, true)}`;
+    document.getElementById('clock').textContent = clockStr;
+    
+    // 2. Tarih Hesaplama (Senin orijinal kuralın: 1071-03-21 bazlı)
     const gregBase = new Date(1071, 2, 21);
     const diff = now - gregBase;
     const daysPassed = Math.floor(diff / 86400000);
+    
     let year = 0; let daysCounter = 0;
     while (true) {
         let yearDays = ((year + 1) % 20 === 0 && (year + 1) % 640 !== 0) ? 370 : 365;
         if (daysCounter + yearDays > daysPassed) break;
         daysCounter += yearDays; year++;
     }
-    const day = (daysPassed - daysCounter) % 30 + 1;
-    const month = Math.floor((daysPassed - daysCounter) / 30) + 1;
     
-    // Header Saati (Padding θθ korundu)
-    const clockStr = `${toBase12(now.getHours(), 2, true)}.${toBase12(now.getMinutes(), 2, true)}.${toBase12(now.getSeconds(), 2, true)}`;
-    document.getElementById('clock').textContent = clockStr;
+    const dayOfYear = daysPassed - daysCounter;
+    const day = (dayOfYear % 30) + 1;
+    const month = Math.floor(dayOfYear / 30) + 1;
     
-    // Header Tarihi (Orijinal katsayı 10368 korundu)
+    // Tarih Gösterimi (10368 katsayısı korundu)
     const dateStr = `${toBase12(day, 2, true)}.${toBase12(month, 2, true)}.${toBase12(year + 10368, 4, true)}`;
     document.getElementById('date').textContent = dateStr;
 }
 
-setInterval(updateTime, 1000);
-updateTime();
+setInterval(updateHeader, 1000);
+updateHeader();
 renderDropdowns("Alfabe");
