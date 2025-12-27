@@ -4,7 +4,6 @@ const pillInputLabel = document.getElementById('pill-input-label');
 const pillOutputLabel = document.getElementById('pill-output-label');
 const dropdownInput = document.getElementById('dropdown-input');
 const dropdownOutput = document.getElementById('dropdown-output');
-const kbContainer = document.getElementById('kb-container');
 let activeInput = latin;
 
 // Aktif birimler
@@ -28,6 +27,7 @@ const unitData = {
     "Paralel": ["Standart Parallel", "Anatolya Enlemi"]
 };
 
+// Alfabe haritalarını dokunmadan, eşleşmeleri tam yapacak şekilde koruyoruz
 const alphabetMaps = {
     "Standart": [
         "a", "b", "c", "ç", "d", "e", "f", "g", "ğ", "h", "ı", "i", "j", "k", "l", "m", "n", "o", "ö", "p", "r", "s", "ş", "t", "u", "ü", "v", "x", "y", "z",
@@ -41,7 +41,7 @@ const alphabetMaps = {
     ]
 };
 
-// --- ÇEVİRİ MANTIĞI ---
+// Çeviri Motoru: İndeks bazlı kesin eşleşme
 function universalTranslate(text, fromUnit, toUnit) {
     if (fromUnit === toUnit) return text;
     const sourceMap = alphabetMaps[fromUnit];
@@ -50,22 +50,27 @@ function universalTranslate(text, fromUnit, toUnit) {
 
     return text.split('').map(char => {
         const index = sourceMap.indexOf(char);
+        // Eğer harf listede varsa (index >= 0), hedefteki karşılığını ver. 
+        // Yoksa karakteri olduğu gibi bırak (boşluklar, noktalar vb.)
         return index !== -1 ? targetMap[index] : char;
     }).join('');
 }
 
+// Merkezi Çeviri Tetikleyici: Aktif kutuya göre yön tayin eder
 function performTranslation() {
     const mode = document.querySelector('.active-tab').dataset.value;
     if (mode === "Alfabe") {
         if (activeInput === latin) {
+            // Sol kutuya yazılıyorsa: Soldaki Birim -> Sağdaki Birim
             greek.value = universalTranslate(latin.value, currentInputUnit, currentOutputUnit);
-        } else {
+        } else if (activeInput === greek) {
+            // Sağ kutuya yazılıyorsa: Sağdaki Birim -> Soldaki Birim
             latin.value = universalTranslate(greek.value, currentOutputUnit, currentInputUnit);
         }
     }
 }
 
-// --- DROPDOWN FONKSİYONLARI ---
+// Dropdown Mantığı
 function toggleDropdown(type) {
     const el = type === 'input' ? dropdownInput : dropdownOutput;
     const other = type === 'input' ? dropdownOutput : dropdownInput;
@@ -92,7 +97,7 @@ function selectUnit(type, value) {
         if (currentOutputUnit === currentInputUnit) currentInputUnit = options.find(o => o !== value);
     }
     renderPills();
-    performTranslation();
+    performTranslation(); // Birim değişince mevcut metni de çevir
 }
 
 function renderDropdowns(mode) {
@@ -112,16 +117,18 @@ function renderPills() {
     dropdownOutput.classList.remove('show');
 }
 
-// --- ETKİLEŞİM DİNLEYİCİLERİ ---
+// Giriş Dinleyicileri (Input & Focus)
 [latin, greek].forEach(inputEl => {
     inputEl.addEventListener('input', (e) => {
         activeInput = e.target;
         performTranslation();
     });
-    inputEl.addEventListener('focus', (e) => activeInput = e.target);
+    inputEl.addEventListener('focus', (e) => {
+        activeInput = e.target;
+    });
 });
 
-// Klavye Tuşları
+// Sanal Klavye Desteği
 document.querySelectorAll('.key').forEach(key => {
     key.addEventListener('click', (e) => {
         e.preventDefault();
@@ -135,7 +142,7 @@ document.querySelectorAll('.key').forEach(key => {
     });
 });
 
-// Navigasyon Sekmeleri
+// Navigasyon (Tablar)
 const navTabs = document.querySelectorAll('.nav-tab');
 navTabs.forEach(tab => {
     tab.addEventListener('click', function() {
@@ -145,12 +152,11 @@ navTabs.forEach(tab => {
     });
 });
 
-// Tema Değiştirici
-document.getElementById('themeToggle').addEventListener('click', function() {
+// Tema ve Zaman Fonksiyonları (Orijinal haliyle korunmuştur)
+document.getElementById('themeToggle')?.addEventListener('click', function() {
     document.documentElement.classList.toggle('dark');
 });
 
-// --- ZAMAN VE SAAT FONKSİYONLARI ---
 function toBase12(n, pad = 2) {
     const digits = "θ123456789ΦΛ";
     if (n === 0) return "θ".repeat(pad);
@@ -193,7 +199,6 @@ function updateTime() {
     dateEl.textContent = calculateCustomDate(now).base12;
 }
 
-// Başlatma
 setInterval(updateTime, 100);
 updateTime();
 renderDropdowns("Alfabe");
