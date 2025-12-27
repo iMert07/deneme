@@ -179,14 +179,16 @@ function performConversion() {
         if (isNaN(numericValue)) { outputArea.value = "Hata"; return; }
         
         let baseValue;
+        const currentModeRates = conversionRates[mode] || conversionRates["Zaman"];
+        
         if (currentInputUnit === "Yıl (Gregoryen)") baseValue = getGregorianDays(numericValue) * 86400;
         else if (currentInputUnit === "Yıl (Anatolya)") baseValue = getAnatolyaDays(numericValue) * 86400;
-        else baseValue = numericValue * (conversionRates[mode][currentInputUnit] || 1);
+        else baseValue = numericValue * (currentModeRates[currentInputUnit] || 1);
 
         let result;
         if (currentOutputUnit === "Yıl (Gregoryen)") result = baseValue / (365.2425 * 86400);
         else if (currentOutputUnit === "Yıl (Anatolya)") result = baseValue / (365.25 * 86400);
-        else result = baseValue / (conversionRates[mode][currentOutputUnit] || 1);
+        else result = baseValue / (currentModeRates[currentOutputUnit] || 1);
 
         const isOutputSpecial = ["Anatolya", "Gün", "Ay", "Yıl (Anatolya)", "Arşın", "Menzil", "Endaze", "Rubu", "Kerrab", "Berid", "Fersah", "Merhale"].some(s => currentOutputUnit.includes(s));
         if (isOutputSpecial) {
@@ -210,8 +212,25 @@ function selectUnit(type, value) {
 
 function renderDropdowns(mode) {
     const options = unitData[mode] || [];
-    if (mode === "Sayı") { currentInputUnit = "Onluk (10)"; currentOutputUnit = "Anatolya (12)"; }
-    else { currentInputUnit = options[0]; currentOutputUnit = options[1] || options[0]; }
+    
+    // Varsayılan birim seçimleri
+    if (mode === "Sayı") { 
+        currentInputUnit = "Onluk (10)"; 
+        currentOutputUnit = "Anatolya (12)"; 
+    }
+    else if (mode === "Zaman") {
+        currentInputUnit = "Dakika";
+        currentOutputUnit = "Gün";
+    }
+    else if (mode === "Uzunluk") {
+        currentInputUnit = "Metre (10⁰)";
+        currentOutputUnit = "Arşın (12⁰)";
+    }
+    else { 
+        currentInputUnit = options[0]; 
+        currentOutputUnit = options[1] || options[0]; 
+    }
+    
     const createItems = (type) => options.map(opt => `<div class="dropdown-item" onclick="selectUnit('${type}', '${opt}')">${opt}</div>`).join('');
     dropdownInput.innerHTML = createItems('input'); dropdownOutput.innerHTML = createItems('output');
     renderPills(); performConversion();
@@ -262,7 +281,6 @@ function updateHeader() {
     document.getElementById('date').textContent = `${toBase12(day, 2, true)}.${toBase12(month, 2, true)}.${toBase12(year + 10368, 4, true)}`;
 }
 
-// 2 kat hızlı saniyeler için güncelleme hızı 500ms yapıldı
 setInterval(updateHeader, 500);
 updateHeader();
 renderDropdowns("Alfabe");
