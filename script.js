@@ -28,7 +28,7 @@ const unitData = {
     "Paralel": ["Standart Parallel", "Anatolya Enlemi"]
 };
 
-// Alfabe Tanımlamaları - İndeks tabanlı eşleşme
+// Alfabe Tanımlamaları - Harflerine dokunulmadı
 const alphabetMaps = {
     "Standart": [
         "a", "b", "c", "ç", "d", "e", "f", "g", "ğ", "h", "ı", "i", "j", "k", "l", "m", "n", "o", "ö", "p", "r", "s", "ş", "t", "u", "ü", "v", "x", "y", "z",
@@ -36,30 +36,29 @@ const alphabetMaps = {
         "0"
     ],
     "Yeni Alfabe": [
-        // Standart küçük harflerin karşılığı (Büyük olarak ayarlandı)
         "Α", "Β", "J", "C", "D", "Ε", "F", "G", "Γ", "Η", "Ь", "Ͱ", "Σ", "Κ", "L", "Μ", "Ν", "Q", "Ω", "Π", "Ρ", "S", "Ш", "Τ", "U", "Υ", "V", "Ψ", "R", "Ζ",
-        // Standart büyük harflerin karşılığı
         "Α", "Β", "J", "C", "D", "Ε", "F", "G", "Γ", "Η", "Ь", "Ͱ", "Σ", "Κ", "L", "Μ", "Ν", "Q", "Ω", "Π", "Ρ", "S", "Ш", "Τ", "U", "Υ", "V", "Ψ", "R", "Ζ",
         "θ"
     ]
 };
 
-// Evrensel Çeviri Fonksiyonu
+// Evrensel Çeviri Fonksiyonu (Düzeltilmiş Mantık)
 function universalTranslate(text, fromUnit, toUnit) {
     if (fromUnit === toUnit) return text;
     
     const sourceMap = alphabetMaps[fromUnit];
     const targetMap = alphabetMaps[toUnit];
     
-    // Eğer alfabe haritası yoksa (diğer modlar için) metni olduğu gibi döndür
     if (!sourceMap || !targetMap) return text;
 
     return text.split('').map(char => {
+        // Harfi hangi kutuya yazıyorsak o kutunun birimine ait listede ara
         const index = sourceMap.indexOf(char);
         if (index !== -1) {
+            // Diğer listedeki aynı sıradaki harfi getir
             return targetMap[index];
         }
-        return char; // Harita dışı karakterleri (boşluk vb.) koru
+        return char; 
     }).join('');
 }
 
@@ -68,8 +67,10 @@ function performTranslation() {
     const mode = document.querySelector('.active-tab').dataset.value;
     if (mode === "Alfabe") {
         if (activeInput === latin) {
+            // Sol kutu aktifse: Soldaki birimden -> Sağdaki birime
             greek.value = universalTranslate(latin.value, currentInputUnit, currentOutputUnit);
         } else {
+            // Sağ kutu aktifse: Sağdaki birimden -> Soldaki birime
             latin.value = universalTranslate(greek.value, currentOutputUnit, currentInputUnit);
         }
     }
@@ -102,7 +103,7 @@ function selectUnit(type, value) {
         if (currentOutputUnit === currentInputUnit) currentInputUnit = options.find(o => o !== value);
     }
     renderPills();
-    performTranslation(); // Birim değişince çeviriyi güncelle
+    performTranslation(); 
 }
 
 function renderDropdowns(mode) {
@@ -149,7 +150,7 @@ document.querySelectorAll('.key').forEach(key => {
     });
 });
 
-// Navigasyon
+// Geri kalan fonksiyonlar (Nav Tabs, Zaman vs.)
 const navTabs = document.querySelectorAll('.nav-tab');
 navTabs.forEach(tab => {
     tab.addEventListener('click', function() {
@@ -159,13 +160,11 @@ navTabs.forEach(tab => {
     });
 });
 
-// Tema
 document.getElementById('themeToggle').addEventListener('click', function() {
     document.documentElement.classList.toggle('dark');
     localStorage.setItem('color-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
 });
 
-// Zaman Fonksiyonları
 function toBase12(n, pad = 2) {
     const digits = "θ123456789ΦΛ";
     if (n === 0) return "θ".repeat(pad);
@@ -197,7 +196,6 @@ function updateTime() {
     const clockEl = document.getElementById('clock');
     const dateEl = document.getElementById('date');
     if(!clockEl || !dateEl) return;
-
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 30, 0);
     if (now < todayStart) todayStart.setDate(todayStart.getDate() - 1);
