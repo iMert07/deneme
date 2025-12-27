@@ -1,4 +1,3 @@
-// --- ELEMENT SEÇİCİLER ---
 const inputArea = document.getElementById('input-area');
 const outputArea = document.getElementById('output-area');
 const pillInputLabel = document.getElementById('pill-input-label');
@@ -7,105 +6,92 @@ const dropdownInput = document.getElementById('dropdown-input');
 const dropdownOutput = document.getElementById('dropdown-output');
 
 let activeInput = inputArea;
-let currentInputUnit = "Standart Alfabe";
+let currentInputUnit = "Eski Alfabe";
 let currentOutputUnit = "Yeni Alfabe";
 
-// --- VERİ SETLERİ ---
-const alphabets = {
-    "Standart Alfabe": ["A","B","C","Ç","D","E","F","G","Ğ","H","I","İ","J","K","L","M","N","O","Ö","P","R","S","Ş","T","U","Ü","V","Y","Z","X","W","Q","0","1","2","3","4","5","6","7","8","9"],
-    "Yeni Alfabe":     ["Α","Β","J","C","D","Ε","F","G","Γ","Η","Ь","Ͱ","Σ","Κ","L","Μ","Ν","Q","Ω","Π","Ρ","S","Ш","Τ","U","Υ","V","R","Ζ","Ψ","W","Q","θ","1","2","3","4","5","6","7","8","9"]
-};
-
 const unitData = {
-    "Alfabe": ["Standart Alfabe", "Yeni Alfabe"],
-    "Uzunluk": ["Metre", "Kilometre", "Mil", "İnç", "Ayak (ft)", "Arşın", "Menzil"],
-    "Kütle": ["Kilogram", "Gram", "Libre (lb)", "Ons (oz)", "Batman", "Dirhem"],
-    "Hız": ["m/s", "km/saat", "mil/saat", "Knot", "Anatolya Hızı"],
-    "Sıcaklık": ["Celsius", "Fahrenheit", "Kelvin", "Ilım", "Ayaz"]
+    "Alfabe": ["Eski Alfabe", "Yeni Alfabe"],
+    "Sayı": ["Onluk (Standart)", "Onikilik (Anatolya)"],
+    "Para": ["Lira", "Kuruş", "Anatolya Sikkesi"],
+    "Takvim": ["Gregoryen", "Anatolya Takvimi"],
+    "Zaman": ["Standart Saat", "Anatolya Saati"],
+    "Uzunluk": ["Metre", "Kilometre", "Arşın", "Menzil"],
+    "Kütle": ["Kilogram", "Gram", "Batman", "Dirhem"],
+    "Sıcaklık": ["Celsius", "Fahrenheit", "Ilım", "Ayaz"],
+    "Hacim": ["Litre", "Mililitre", "Kile", "Katre"],
+    "Hız": ["km/saat", "mil/saat", "Anatolya Hızı"],
+    "Alan": ["Metrekare", "Dönüm", "Evlek"],
+    "Veri": ["Byte", "Bit", "Anatolya Verisi"],
+    "Meridyen": ["Standart Meridyen", "Anatolya Boylamı"],
+    "Paralel": ["Standart Paralel", "Anatolya Enlemi"]
 };
 
-const rates = {
-    "Uzunluk": { "Metre": 1, "Kilometre": 1000, "Mil": 1609.34, "İnç": 0.0254, "Ayak (ft)": 0.3048, "Arşın": 0.68, "Menzil": 5000 },
-    "Kütle": { "Kilogram": 1, "Gram": 0.001, "Libre (lb)": 0.4535, "Ons (oz)": 0.0283, "Batman": 7.697, "Dirhem": 0.0032 },
-    "Hız": { "m/s": 1, "km/saat": 0.2777, "mil/saat": 0.4470, "Knot": 0.5144, "Anatolya Hızı": 0.85 }
-};
+// Alfabe Sözlüğü
+const toGreek = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
+const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
 
-// --- ANA MANTIK FONKSİYONLARI ---
+// --- MERKEZİ DÖNÜŞÜM MOTORU ---
 function performConversion() {
-    const val = inputArea.value;
     const activeTab = document.querySelector('.active-tab');
-    if(!activeTab) return;
+    if (!activeTab) return;
     const mode = activeTab.dataset.value;
+    const text = inputArea.value;
+
+    if (!text) { outputArea.value = ""; return; }
 
     if (mode === "Alfabe") {
-        outputArea.value = translateText(val, currentInputUnit, currentOutputUnit);
-    } else if (mode === "Sıcaklık") {
-        outputArea.value = convertTemperature(val, currentInputUnit, currentOutputUnit);
-    } else if (rates[mode]) {
-        outputArea.value = convertGeneric(val, mode, currentInputUnit, currentOutputUnit);
+        if (currentInputUnit === "Eski Alfabe" && currentOutputUnit === "Yeni Alfabe") {
+            outputArea.value = text.split('').map(ch => toGreek[ch] || ch).join('');
+        } else if (currentInputUnit === "Yeni Alfabe" && currentOutputUnit === "Eski Alfabe") {
+            outputArea.value = text.split('').map(ch => toLatin[ch] || ch).join('');
+        } else {
+            outputArea.value = text;
+        }
     } else {
-        outputArea.value = val; // Diğer modlar için geçici
+        // Diğer modlar için hesaplama şablonu (Sayı, Uzunluk vb.)
+        outputArea.value = `[${mode}] Dönüşüm yapılıyor: ${currentInputUnit} -> ${currentOutputUnit}`;
     }
 }
 
-function translateText(text, fromKey, toKey) {
-    const fromArr = alphabets[fromKey];
-    const toArr = alphabets[toKey];
-    if (!fromArr || !toArr) return text;
-    return text.split('').map(char => {
-        const isUpper = char === char.toUpperCase();
-        const searchChar = char.toUpperCase();
-        const idx = fromArr.indexOf(searchChar);
-        if (idx !== -1) {
-            const res = toArr[idx];
-            return isUpper ? res : res.toLowerCase();
-        }
-        return char;
-    }).join('');
-}
-
-function convertGeneric(val, category, from, to) {
-    const num = parseFloat(val.replace(',', '.'));
-    if (isNaN(num)) return "";
-    const baseValue = num * rates[category][from];
-    const result = baseValue / rates[category][to];
-    return result.toLocaleString('tr-TR', { maximumFractionDigits: 4 });
-}
-
-function convertTemperature(val, from, to) {
-    let celsius;
-    const n = parseFloat(val.replace(',', '.'));
-    if (isNaN(n)) return "";
-    if (from === "Celsius") celsius = n;
-    else if (from === "Fahrenheit") celsius = (n - 32) * 5/9;
-    else if (from === "Kelvin") celsius = n - 273.15;
-    else if (from === "Ilım") celsius = n * 1.5;
-    else celsius = n;
-
-    if (to === "Celsius") return celsius.toFixed(2);
-    if (to === "Fahrenheit") return (celsius * 9/5 + 32).toFixed(2);
-    if (to === "Kelvin") return (celsius + 273.15).toFixed(2);
-    if (to === "Ilım") return (celsius / 1.5).toFixed(2);
-    return celsius.toFixed(2);
-}
-
-// --- UI KONTROLLERİ ---
-// EKSİK OLAN: Dropdown açma/kapama fonksiyonu
+// Dropdown Mantığı
 function toggleDropdown(type) {
-    if (type === 'input') {
-        dropdownInput.classList.toggle('show');
-        dropdownOutput.classList.remove('show');
-    } else {
-        dropdownOutput.classList.toggle('show');
+    const el = type === 'input' ? dropdownInput : dropdownOutput;
+    const other = type === 'input' ? dropdownOutput : dropdownInput;
+    other.classList.remove('show');
+    el.classList.toggle('show');
+}
+
+window.onclick = function(event) {
+    if (!event.target.closest('.unit-pill')) {
         dropdownInput.classList.remove('show');
+        dropdownOutput.classList.remove('show');
     }
 }
 
 function selectUnit(type, value) {
-    if (type === 'input') currentInputUnit = value;
-    else currentOutputUnit = value;
+    const mode = document.querySelector('.active-tab').dataset.value;
+    const options = unitData[mode];
+
+    if (type === 'input') {
+        currentInputUnit = value;
+        if (currentInputUnit === currentOutputUnit) currentOutputUnit = options.find(o => o !== value) || options[0];
+    } else {
+        currentOutputUnit = value;
+        if (currentOutputUnit === currentInputUnit) currentInputUnit = options.find(o => o !== value) || options[0];
+    }
     renderPills();
-    performConversion();
+    performConversion(); // Birim değişince hesapla
+}
+
+function renderDropdowns(mode) {
+    const options = unitData[mode] || [];
+    currentInputUnit = options[0];
+    currentOutputUnit = options[1] || options[0];
+    
+    dropdownInput.innerHTML = options.map(opt => `<div class="dropdown-item" onclick="selectUnit('input', '${opt}')">${opt}</div>`).join('');
+    dropdownOutput.innerHTML = options.map(opt => `<div class="dropdown-item" onclick="selectUnit('output', '${opt}')">${opt}</div>`).join('');
+    renderPills();
+    performConversion(); // Sekme değişince hesapla
 }
 
 function renderPills() {
@@ -115,46 +101,42 @@ function renderPills() {
     dropdownOutput.classList.remove('show');
 }
 
-function renderDropdowns(mode) {
-    const options = unitData[mode] || [];
-    currentInputUnit = options[0];
-    currentOutputUnit = options[1] || options[0];
-    
-    const createItems = (type) => options.map(opt => 
-        `<div class="dropdown-item" onclick="selectUnit('${type}', '${opt}')">${opt}</div>`
-    ).join('');
+// Olay Dinleyicileri
+inputArea.addEventListener('input', performConversion);
+inputArea.addEventListener('focus', () => activeInput = inputArea);
 
-    dropdownInput.innerHTML = createItems('input');
-    dropdownOutput.innerHTML = createItems('output');
-    renderPills();
-}
-
-// --- EKSİK OLAN: KLAVYE DİNLEYİCİSİ ---
 document.querySelectorAll('.key').forEach(key => {
     key.addEventListener('click', (e) => {
         e.preventDefault();
         const action = key.dataset.action;
-        
-        if (action === 'delete') {
-            inputArea.value = inputArea.value.slice(0, -1);
-        } else if (action === 'reset') {
-            inputArea.value = '';
-            outputArea.value = '';
-        } else if (action === 'space') {
-            inputArea.value += ' ';
-        } else if (action === 'enter') {
-            inputArea.value += '\n';
-        } else if (!key.classList.contains('fn-key')) {
-            inputArea.value += key.innerText;
-        }
+        if(action === 'delete') inputArea.value = inputArea.value.slice(0,-1);
+        else if(action === 'reset') { inputArea.value = ''; outputArea.value = ''; }
+        else if(action === 'space') inputArea.value += ' ';
+        else if(!key.classList.contains('fn-key')) inputArea.value += key.innerText;
         performConversion();
     });
 });
 
-// --- EKSİK OLAN: TEMA VE ZAMAN ---
-document.getElementById('themeToggle').addEventListener('click', () => {
+document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.replace('active-tab', 'inactive-tab'));
+        this.classList.replace('inactive-tab', 'active-tab');
+        renderDropdowns(this.dataset.value);
+    });
+});
+
+document.getElementById('themeToggle').addEventListener('click', function() {
     document.documentElement.classList.toggle('dark');
 });
+
+// Zaman Fonksiyonları
+function toBase12(n, pad = 2) {
+    const digits = "θ123456789ΦΛ";
+    if (n === 0) return "θ".repeat(pad);
+    let res = ""; let num = Math.abs(Math.floor(n));
+    while (num > 0) { res = digits[num % 12] + res; num = Math.floor(num / 12); }
+    return res.padStart(pad, 'θ');
+}
 
 function updateTime() {
     const now = new Date();
@@ -162,28 +144,6 @@ function updateTime() {
     document.getElementById('date').textContent = now.toLocaleDateString('tr-TR');
 }
 
-// --- EVENT LISTENERS ---
-inputArea.addEventListener('input', performConversion);
-
-document.querySelectorAll('.nav-tab').forEach(tab => {
-    tab.addEventListener('click', function() {
-        document.querySelectorAll('.nav-tab').forEach(t => t.classList.replace('active-tab', 'inactive-tab'));
-        this.classList.replace('inactive-tab', 'active-tab');
-        renderDropdowns(this.dataset.value);
-        inputArea.value = "";
-        outputArea.value = "";
-    });
-});
-
-// Dışarı tıklayınca dropdownları kapat
-window.onclick = function(event) {
-    if (!event.target.closest('.unit-pill')) {
-        dropdownInput.classList.remove('show');
-        dropdownOutput.classList.remove('show');
-    }
-}
-
-// Başlat
 setInterval(updateTime, 1000);
 updateTime();
 renderDropdowns("Alfabe");
