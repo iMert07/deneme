@@ -48,10 +48,11 @@ const toGreek = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":
 const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
 
 // --- ÖZEL YARDIMCI FONKSİYONLAR ---
-function toBase12(n, pad = 2) {
+function toBase12(n, pad = 1) {
     const digits = "θ123456789ΦΛ";
-    let integerPart = Math.floor(Math.abs(n));
-    let fractionPart = Math.abs(n) - integerPart;
+    let num = Math.abs(n);
+    let integerPart = Math.floor(num);
+    let fractionPart = num - integerPart;
     let res = "";
     
     if (integerPart === 0) {
@@ -62,7 +63,6 @@ function toBase12(n, pad = 2) {
             integerPart = Math.floor(integerPart / 12); 
         }
     }
-    
     res = res.padStart(pad, digits[0]);
 
     if (fractionPart > 0.0001) {
@@ -133,13 +133,23 @@ function performConversion() {
         } else { numericValue = parseFloat(text.replace(',', '.')); }
 
         if (isNaN(numericValue)) { outputArea.value = "Hata"; return; }
-        const baseValue = numericValue * conversionRates[mode][currentInputUnit];
-        const rawResult = baseValue / conversionRates[mode][currentOutputUnit];
+        
+        const rateIn = conversionRates[mode][currentInputUnit];
+        const rateOut = conversionRates[mode][currentOutputUnit];
+        const baseValue = numericValue * rateIn;
+        const rawResult = baseValue / rateOut;
 
         if (isOutputAna) {
-            const anaValue = toBase12(rawResult, 1);
-            const decValue = Number(rawResult.toFixed(2)).toLocaleString('tr-TR');
-            outputArea.value = `${anaValue} (${decValue})`; 
+            const anaValue = toBase12(rawResult);
+            const decStr = Number(rawResult.toFixed(2)).toLocaleString('tr-TR');
+            
+            // --- AKILLI PARANTEZ MANTIĞI ---
+            // Eğer yazılış (Anatolya sembolü) ile 10'luk tabandaki karşılığı aynı ise parantez basma
+            if (anaValue === decStr) {
+                outputArea.value = anaValue;
+            } else {
+                outputArea.value = `${anaValue} (${decStr})`; 
+            }
         } else {
             outputArea.value = Number(rawResult.toFixed(5)).toLocaleString('tr-TR', { maximumFractionDigits: 5 });
         }
@@ -151,7 +161,6 @@ function selectUnit(type, value) {
     if (type === 'input') currentInputUnit = value; else currentOutputUnit = value;
     renderPills(); performConversion();
 }
-
 function renderDropdowns(mode) {
     const options = unitData[mode] || [];
     if (mode === "Sayı") { currentInputUnit = "Onluk (10)"; currentOutputUnit = "Anatolya (12)"; }
@@ -160,12 +169,10 @@ function renderDropdowns(mode) {
     dropdownOutput.innerHTML = options.map(opt => `<div class="dropdown-item" onclick="selectUnit('output', '${opt}')">${opt}</div>`).join('');
     renderPills(); performConversion();
 }
-
 function renderPills() {
     pillInputLabel.innerText = currentInputUnit; pillOutputLabel.innerText = currentOutputUnit;
     dropdownInput.classList.remove('show'); dropdownOutput.classList.remove('show');
 }
-
 function toggleDropdown(type) { const el = type === 'input' ? dropdownInput : dropdownOutput; el.classList.toggle('show'); }
 window.onclick = function(event) { if (!event.target.closest('.unit-pill')) { dropdownInput.classList.remove('show'); dropdownOutput.classList.remove('show'); } }
 
@@ -189,7 +196,7 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
 });
 document.getElementById('themeToggle').addEventListener('click', () => document.documentElement.classList.toggle('dark'));
 
-// --- HEADER TAKVİM (ORİJİNAL) ---
+// --- HEADER TAKVİM ---
 function calculateCustomDate(now) {
     const gregBase = new Date(1071, 2, 21); const diff = now - gregBase; const daysPassed = Math.floor(diff / 86400000);
     let year = 0; let daysCounter = 0;
