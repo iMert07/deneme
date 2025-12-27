@@ -22,7 +22,7 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .active-tab { background-color: #137fec; color: white !important; }
         
-        /* Özel Dropdown Paneli Tasarımı */
+        /* Özel Dropdown Paneli */
         .dropdown-panel {
             display: none;
             position: absolute;
@@ -31,37 +31,34 @@
             min-width: 160px;
             background: white;
             border-radius: 12px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
             border: 1px solid #e2e8f0;
             z-index: 100;
-            overflow: hidden;
         }
         .dark .dropdown-panel { background: #1e293b; border-color: #334155; }
         .dropdown-panel.show { display: block; animation: dropdownFade 0.2s ease-out; }
 
         @keyframes dropdownFade {
-            from { opacity: 0; transform: translateY(-10px); }
+            from { opacity: 0; transform: translateY(-5px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .dropdown-item {
-            padding: 10px 16px;
-            font-size: 11px;
-            font-weight: 600;
-            color: #475569;
-            cursor: pointer;
-            transition: all 0.2s;
+            padding: 10px 16px; font-size: 11px; font-weight: 600; color: #475569;
+            cursor: pointer; transition: all 0.2s;
         }
         .dark .dropdown-item { color: #94a3b8; }
         .dropdown-item:hover { background: #f1f5f9; color: #137fec; }
         .dark .dropdown-item:hover { background: #334155; color: white; }
 
+        /* Kapsül Başlıklar (Seçilemez) */
         .unit-pill {
             display: flex; align-items: center; justify-content: center;
             padding: 6px 16px; background: #e2e8f0; color: #475569;
             border-radius: 9999px; font-size: 10px; font-weight: 800;
             text-transform: uppercase; letter-spacing: 0.05em;
             transition: all 0.2s; cursor: pointer; border: 1px solid transparent;
+            user-select: none; -webkit-user-select: none;
         }
         .dark .unit-pill { background: #1e293b; color: #94a3b8; border-color: #334155; }
         .unit-pill:hover { background: #137fec; color: white; transform: translateY(-1px); }
@@ -78,7 +75,7 @@
     <div class="flex items-center justify-between px-6 py-2">
         <div class="flex items-center gap-3">
             <h2 class="text-base sm:text-lg font-bold truncate leading-none">Anatolya'ya Dönüş</h2>
-            <div class="flex items-center gap-3 border-l border-slate-200 dark:border-slate-700 pl-3 leading-none font-mono font-bold select-none pointer-events-none">
+            <div class="flex items-center gap-3 border-l border-slate-200 dark:border-slate-700 pl-3 leading-none font-mono font-bold pointer-events-none">
                 <span id="clock" class="text-sm sm:text-lg text-primary">θθ.θθ.θθ</span>
                 <span id="date" class="text-sm sm:text-lg text-slate-500 dark:text-slate-400">θθ.θθ.θθθθ</span>
             </div>
@@ -89,9 +86,7 @@
     </div>
 
     <div class="flex items-center gap-2 px-4 pb-1.5 overflow-x-auto no-scrollbar scroll-smooth select-none">
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all active-tab cursor-pointer" data-value="Alfabe">
-            <span class="material-symbols-outlined text-[18px]">translate</span><span class="text-sm font-medium">Alfabe</span>
-        </button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all active-tab cursor-pointer" data-value="Alfabe"><span class="material-symbols-outlined text-[18px]">translate</span><span class="text-sm font-medium">Alfabe</span></button>
         <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Sayı"><span class="material-symbols-outlined text-[18px]">123</span><span class="text-sm font-medium">Sayı</span></button>
         <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Para"><span class="material-symbols-outlined text-[18px]">payments</span><span class="text-sm font-medium">Para</span></button>
         <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Takvim"><span class="material-symbols-outlined text-[18px]">calendar_month</span><span class="text-sm font-medium">Takvim</span></button>
@@ -113,15 +108,14 @@
         <div class="flex flex-col gap-2 relative">
             <div class="w-max ml-1 relative">
                 <div class="unit-pill" id="pill-input-label" onclick="toggleDropdown('input')">Eski Alfabe</div>
-                <div id="dropdown-input" class="dropdown-panel"></div>
+                <div id="dropdown-input" class="dropdown-panel select-none"></div>
             </div>
             <textarea id="latin" class="w-full h-[180px] lg:h-[300px] p-5 bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm focus:ring-2 focus:ring-primary/50 resize-none text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
         </div>
-
         <div class="flex flex-col gap-2 relative">
             <div class="w-max ml-1 relative">
                 <div class="unit-pill" id="pill-output-label" onclick="toggleDropdown('output')">Yeni Alfabe</div>
-                <div id="dropdown-output" class="dropdown-panel"></div>
+                <div id="dropdown-output" class="dropdown-panel select-none"></div>
             </div>
             <textarea id="greek" class="w-full h-[180px] lg:h-[300px] p-5 bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner resize-none text-slate-900 dark:text-white" placeholder="Sonuç..." readonly></textarea>
         </div>
