@@ -39,17 +39,27 @@ const conversionRates = {
 const toGreek = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Ğ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
 const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
 
-// --- VALIDATION (DOGRULAMA) MANTIĞI ---
+// --- ANALYZE & NORMALIZE ANATOLYA INPUT ---
+function normalizeAnatolyaInput(text) {
+    // A -> Φ, B -> Λ, 0 -> θ dönüşümlerini kullanıcı klavyesinden gelen girişler için yapar
+    return text.toUpperCase()
+        .replace(/A/g, 'Φ')
+        .replace(/B/g, 'Λ')
+        .replace(/0/g, 'θ');
+}
+
+// --- VALIDATION MANTIĞI ---
 function isValidInput(text, unit) {
     const stdDigits = "0123456789ABCDEF";
     const anaDigits = "θ123456789ΦΛ";
+    const anaAlternative = "0123456789AB"; // Kullanıcının normal klavye ile yazabileceği haller
     
     let allowedChars = "";
     if (unit.includes("(2)")) allowedChars = "01,.";
     else if (unit.includes("(10)")) allowedChars = "0123456789,.";
-    else if (unit.includes("Anatolya")) allowedChars = anaDigits + ",.";
+    else if (unit.includes("Anatolya")) allowedChars = anaDigits + anaAlternative + ",.";
     else if (unit.includes("(16)")) allowedChars = "0123456789ABCDEF,.";
-    else return true; // Diğer birimler için serbest
+    else return true;
 
     for (let char of text.toUpperCase()) {
         if (!allowedChars.includes(char)) return false;
@@ -79,6 +89,7 @@ function universalNumberConvert(text, fromUnit, toUnit) {
 
     const stdDigits = "0123456789ABCDEF";
     const anaDigits = "θ123456789ΦΛ";
+    
     const getBase = (unit) => {
         if (unit.includes("(2)")) return 2;
         if (unit.includes("Anatolya") || unit.includes("(12)")) return 12;
@@ -87,7 +98,10 @@ function universalNumberConvert(text, fromUnit, toUnit) {
     };
 
     let input = text.toUpperCase().replace(',', '.');
+    
+    // Anatolya girişini önce kendi içinde normalize et (A->Φ vb), sonra standart 12'liğe çek
     if (fromUnit.includes("Anatolya")) {
+        input = normalizeAnatolyaInput(input);
         input = input.split('').map(c => stdDigits[anaDigits.indexOf(c)] || c).join('');
     }
 
@@ -114,7 +128,6 @@ function universalNumberConvert(text, fromUnit, toUnit) {
         const std12Val = toBase12(dec, false);
         return (anaVal === std12Val) ? anaVal : `${anaVal} (${std12Val})`;
     }
-    
     return dec.toString(toBase).toUpperCase().replace('.', ',');
 }
 
@@ -146,7 +159,8 @@ function performConversion() {
         let numericValue;
         if (isInputAna) {
             const digits = "θ123456789ΦΛ";
-            const parts = text.toUpperCase().replace(',','.').split('.');
+            const normalizedText = normalizeAnatolyaInput(text.toUpperCase().replace(',','.'));
+            const parts = normalizedText.split('.');
             numericValue = parts[0].split('').reduce((acc, curr) => (acc * 12) + digits.indexOf(curr), 0);
             if (parts[1]) {
                 for (let i = 0; i < parts[1].length; i++) numericValue += digits.indexOf(parts[1][i]) * Math.pow(12, -(i+1));
@@ -191,8 +205,16 @@ function selectUnit(type, value) {
 
 function renderDropdowns(mode) {
     const options = unitData[mode] || [];
-    currentInputUnit = options[0];
-    currentOutputUnit = options[1] || options[0];
+    
+    // SAYI SEKİMESİ İÇİN ÖZEL BAŞLANGIÇ: Onluk (10) -> Anatolya (12)
+    if (mode === "Sayı") {
+        currentInputUnit = "Onluk (10)";
+        currentOutputUnit = "Anatolya (12)";
+    } else {
+        currentInputUnit = options[0];
+        currentOutputUnit = options[1] || options[0];
+    }
+    
     const createItems = (type) => options.map(opt => `<div class="dropdown-item" onclick="selectUnit('${type}', '${opt}')">${opt}</div>`).join('');
     dropdownInput.innerHTML = createItems('input');
     dropdownOutput.innerHTML = createItems('output');
@@ -252,7 +274,8 @@ function calculateCustomDate(now) {
     }
     const day = (daysPassed - daysCounter) % 30 + 1;
     const month = Math.floor((daysPassed - daysCounter) / 30) + 1;
-    return { base12: `${toBase12(day, true).padStart(2,'θ')}.${toBase12(month, true).padStart(2,'θ')}.${toBase12(year + 1 + 10368, true).padStart(4,'θ')}` };
+    const base12Year = year + 1 + 10368;
+    return { base12: `${toBase12(day, true).padStart(2,'θ')}.${toBase12(month, true).padStart(2,'θ')}.${toBase12(base12Year, true).padStart(4,'θ')}` };
 }
 
 function updateTime() {
