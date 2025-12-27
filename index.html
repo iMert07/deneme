@@ -15,11 +15,6 @@
             darkMode: "class",
             theme: { extend: { colors: { "primary": "#137fec", "background-dark": "#101922" } } }
         }
-        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark')
-        }
     </script>
     <style>
         html, body { min-height: 100%; overflow-y: auto; margin: 0; padding: 0; }
@@ -30,7 +25,6 @@
         .inactive-tab { background-color: transparent; color: #94a3b8; }
         .dark .inactive-tab { color: #64748b; }
         
-        /* Özel Dropdown Panel Tasarımı */
         .dropdown-panel {
             display: none; position: absolute; top: calc(100% + 5px); left: 0;
             min-width: 140px; background: white; border-radius: 12px;
@@ -59,6 +53,10 @@
         }
         .dark .unit-pill { background: #1e293b; color: #94a3b8; border-color: #334155; }
         .unit-pill:hover { background: #137fec; color: white; transform: translateY(-1px); }
+
+        /* Swap Butonu Animasyonu */
+        #swap-btn-icon { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .rotated { transform: rotate(180deg); }
 
         @media (min-width: 1024px) {
             textarea { font-size: 1.5rem !important; }
@@ -107,23 +105,28 @@
     </div>
 </header>
 
-<main class="flex-1 flex flex-col p-3 gap-4 lg:gap-8">
-    <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
-        <div class="flex flex-col gap-2 relative">
-            <div class="w-max ml-1 relative">
+<main class="flex-1 flex flex-col p-3 gap-2 lg:gap-4">
+    <div class="flex flex-col gap-2">
+        <textarea id="latin" class="w-full h-[160px] lg:h-[280px] p-5 bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm focus:ring-2 focus:ring-primary/50 resize-none text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
+
+        <div class="flex items-center justify-center gap-4 py-1 select-none">
+            <div class="relative">
                 <div class="unit-pill" id="pill-input-label" onclick="toggleDropdown('input')">Eski Alfabe</div>
                 <div id="dropdown-input" class="dropdown-panel select-none"></div>
             </div>
-            <textarea id="latin" class="w-full h-[180px] lg:h-[300px] p-5 bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm focus:ring-2 focus:ring-primary/50 resize-none text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
-        </div>
-        <div class="flex flex-col gap-2 relative">
-            <div class="w-max ml-1 relative">
+            
+            <button onclick="swapAction()" class="bg-primary text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform">
+                <span id="swap-btn-icon" class="material-symbols-outlined !text-[24px]">swap_horiz</span>
+            </button>
+
+            <div class="relative">
                 <div class="unit-pill" id="pill-output-label" onclick="toggleDropdown('output')">Yeni Alfabe</div>
                 <div id="dropdown-output" class="dropdown-panel select-none"></div>
             </div>
-            <textarea id="greek" class="w-full h-[180px] lg:h-[300px] p-5 bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner resize-none text-slate-900 dark:text-white" placeholder="Sonuç..." readonly></textarea>
         </div>
-    </section>
+
+        <textarea id="greek" class="w-full h-[160px] lg:h-[280px] p-5 bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner resize-none text-slate-900 dark:text-white" placeholder="Sonuç..." readonly></textarea>
+    </div>
 
     <section id="kb-container" class="select-none">
         <div class="keyboard !my-0" id="mainKeyboard">
