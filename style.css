@@ -1,4 +1,4 @@
-header, .nav-tab, #kb-container, .key, #label-input, #label-output, #clock, #date, select {
+header, .nav-tab, #kb-container, .key, #label-input, #label-output, #clock, #date, .unit-pill, .dropdown-item {
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
