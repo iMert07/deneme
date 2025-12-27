@@ -7,24 +7,11 @@ const dropdownOutput = document.getElementById('dropdown-output');
 const kbContainer = document.getElementById('kb-container');
 let activeInput = latin;
 
-let currentInputUnit = "Eski Alfabe";
-let currentOutputUnit = "Yeni Alfabe";
+let currentInputUnit = "";
+let currentOutputUnit = "";
 
 const unitData = {
-    "Alfabe": ["Eski Alfabe", "Yeni Alfabe"],
-    "Sayı": ["Onluk (Standart)", "Onikilik (Anatolya)"],
-    "Takvim": ["Gregoryen", "Anatolya Takvimi"],
-    "Zaman": ["Standart Saat", "Anatolya Saati"],
-    "Uzunluk": ["Metre", "Kilometre", "Arşın", "Menzil"],
-    "Kütle": ["Kilogram", "Gram", "Batman", "Dirhem"],
-    "Sıcaklık": ["Celsius", "Fahrenheit", "Ilım", "Ayaz"],
-    "Hacim": ["Litre", "Mililitre", "Kile", "Katre"],
-    "Hız": ["km/saat", "mil/saat", "Anatolya Hızı"],
-    "Alan": ["Metrekare", "Dönüm", "Evlek"],
-    "Veri": ["Byte", "Bit", "Anatolya Verisi"],
-    "Meridyen": ["Standart Meridyen", "Anatolya Boylamı"],
-    "Paralel": ["Standart Paralel", "Anatolya Enlemi"],
-    "Para": ["Lira", "Kuruş", "Anatolya Sikkesi"]
+    "Alfabe": ["Eski Alfabe", "Yeni Alfabe"], "Sayı": ["Onluk", "Onikilik"], "Para": ["Lira", "Sikke"], "Takvim": ["Gregoryen", "Anatolya"], "Zaman": ["Standart", "Anatolya"], "Uzunluk": ["Metre", "Arşın"], "Kütle": ["Kilogram", "Batman"], "Sıcaklık": ["Celsius", "Ilım"], "Hacim": ["Litre", "Kile"], "Hız": ["km/sa", "Anatolya"], "Alan": ["m2", "Dönüm"], "Veri": ["Byte", "Anatolya"], "Meridyen": ["Standart", "Anatolya"], "Paralel": ["Standart", "Anatolya"]
 };
 
 const toGreekMap = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","Κ":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Ğ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
@@ -37,12 +24,7 @@ function toggleDropdown(type) {
     el.classList.toggle('show');
 }
 
-window.onclick = function(event) {
-    if (!event.target.closest('.unit-pill')) {
-        dropdownInput.classList.remove('show');
-        dropdownOutput.classList.remove('show');
-    }
-}
+window.onclick = function(e) { if (!e.target.closest('.unit-pill')) { dropdownInput.classList.remove('show'); dropdownOutput.classList.remove('show'); } }
 
 function selectUnit(type, value) {
     const mode = document.querySelector('.active-tab').dataset.value;
@@ -54,6 +36,16 @@ function selectUnit(type, value) {
         currentOutputUnit = value;
         if (currentOutputUnit === currentInputUnit) currentInputUnit = options.find(o => o !== value);
     }
+    renderPills();
+}
+
+function swapValues() {
+    let tempText = latin.value;
+    latin.value = greek.value;
+    greek.value = tempText;
+    let tempUnit = currentInputUnit;
+    currentInputUnit = currentOutputUnit;
+    currentOutputUnit = tempUnit;
     renderPills();
 }
 
@@ -79,30 +71,24 @@ function translate(text, dir){
 }
 
 latin.addEventListener('input', () => { greek.value = translate(latin.value, "toGreek"); });
-greek.addEventListener('input', () => { latin.value = translate(greek.value, "toLatin"); });
-latin.addEventListener('focus', () => activeInput = latin);
-greek.addEventListener('focus', () => activeInput = greek);
+navTabs = document.querySelectorAll('.nav-tab');
+navTabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+        navTabs.forEach(t => { t.classList.remove('active-tab'); t.classList.add('inactive-tab'); });
+        this.classList.add('active-tab'); this.classList.remove('inactive-tab');
+        renderDropdowns(this.dataset.value);
+    });
+});
 
 document.querySelectorAll('.key').forEach(key => {
     key.addEventListener('click', (e) => {
-        e.preventDefault();
         const action = key.dataset.action;
         if(action === 'delete') activeInput.value = activeInput.value.slice(0,-1);
         else if(action === 'enter') activeInput.value += '\n';
         else if(action === 'space') activeInput.value += ' ';
         else if(action === 'reset') { latin.value = ''; greek.value = ''; }
         else if(!key.classList.contains('fn-key')) activeInput.value += key.innerText;
-        if(activeInput === latin) greek.value = translate(latin.value, "toGreek");
-        else latin.value = translate(greek.value, "toLatin");
-    });
-});
-
-const navTabs = document.querySelectorAll('.nav-tab');
-navTabs.forEach(tab => {
-    tab.addEventListener('click', function() {
-        navTabs.forEach(t => { t.classList.remove('active-tab'); t.classList.add('inactive-tab'); });
-        this.classList.add('active-tab'); this.classList.remove('inactive-tab');
-        renderDropdowns(this.dataset.value);
+        greek.value = translate(latin.value, "toGreek");
     });
 });
 
@@ -122,8 +108,7 @@ function calculateCustomDate(now) {
     const daysPassed = Math.floor(diff / 86400000);
     let year = 0; let daysCounter = 0;
     while (true) {
-        let yearDays = 365;
-        let nextYear = year + 1;
+        let yearDays = 365; let nextYear = year + 1;
         if (nextYear % 20 === 0 && nextYear % 640 !== 0) yearDays += 5;
         if (daysCounter + yearDays > daysPassed) break;
         daysCounter += yearDays; year++;
