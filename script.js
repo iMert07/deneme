@@ -136,26 +136,20 @@ function performConversion() {
     }
 }
 
-// --- UI FONKSİYONLARI (ENGELLEME MANTIĞI BURADA) ---
+// --- UI FONKSİYONLARI (YER DEĞİŞTİRME MANTIĞI) ---
 function selectUnit(type, value) {
-    const activeTab = document.querySelector('.active-tab');
-    const mode = activeTab.dataset.value;
-    const options = unitData[mode];
-
     if (type === 'input') {
+        if (value === currentOutputUnit) {
+            // Swap: Eğer sağdakini sola seçersem, sağa solun eski değerini at
+            currentOutputUnit = currentInputUnit;
+        }
         currentInputUnit = value;
-        // ÇAKIŞMA KONTROLÜ: Eğer sağ taraf sol taraf ile aynı olduysa, sağ tarafı listedeki bir sonrakine at
-        if (currentInputUnit === currentOutputUnit) {
-            let nextIndex = (options.indexOf(value) + 1) % options.length;
-            currentOutputUnit = options[nextIndex];
-        }
     } else {
-        currentOutputUnit = value;
-        // ÇAKIŞMA KONTROLÜ: Eğer sol taraf sağ taraf ile aynı olduysa, sol tarafı listedeki bir öncekine at
-        if (currentOutputUnit === currentInputUnit) {
-            let prevIndex = (options.indexOf(value) - 1 + options.length) % options.length;
-            currentInputUnit = options[prevIndex];
+        if (value === currentInputUnit) {
+            // Swap: Eğer soldakini sağa seçersem, sola sağın eski değerini at
+            currentInputUnit = currentOutputUnit;
         }
+        currentOutputUnit = value;
     }
     renderPills();
     performConversion();
@@ -163,7 +157,6 @@ function selectUnit(type, value) {
 
 function renderDropdowns(mode) {
     const options = unitData[mode] || [];
-    // Başlangıçta çakışmayacak şekilde ata
     currentInputUnit = options[0];
     currentOutputUnit = options[1] || options[0];
     
