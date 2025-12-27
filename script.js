@@ -7,14 +7,12 @@ const dropdownOutput = document.getElementById('dropdown-output');
 const kbContainer = document.getElementById('kb-container');
 let activeInput = latin;
 
-// Aktif birimler
 let currentInputUnit = "Eski Alfabe";
 let currentOutputUnit = "Yeni Alfabe";
 
 const unitData = {
     "Alfabe": ["Eski Alfabe", "Yeni Alfabe"],
     "Sayı": ["Onluk (Standart)", "Onikilik (Anatolya)"],
-    "Para": ["Lira", "Kuruş", "Anatolya Sikkesi"],
     "Takvim": ["Gregoryen", "Anatolya Takvimi"],
     "Zaman": ["Standart Saat", "Anatolya Saati"],
     "Uzunluk": ["Metre", "Kilometre", "Arşın", "Menzil"],
@@ -25,13 +23,13 @@ const unitData = {
     "Alan": ["Metrekare", "Dönüm", "Evlek"],
     "Veri": ["Byte", "Bit", "Anatolya Verisi"],
     "Meridyen": ["Standart Meridyen", "Anatolya Boylamı"],
-    "Paralel": ["Standart Paralel", "Anatolya Enlemi"]
+    "Paralel": ["Standart Paralel", "Anatolya Enlemi"],
+    "Para": ["Lira", "Kuruş", "Anatolya Sikkesi"]
 };
 
-const toGreek = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Ğ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
-const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
+const toGreekMap = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","Κ":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Ğ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
+const toLatinMap = Object.fromEntries(Object.entries(toGreekMap).map(([k,v])=>[v,k.toUpperCase()]));
 
-// Dropdown Mantığı
 function toggleDropdown(type) {
     const el = type === 'input' ? dropdownInput : dropdownOutput;
     const other = type === 'input' ? dropdownOutput : dropdownInput;
@@ -49,7 +47,6 @@ window.onclick = function(event) {
 function selectUnit(type, value) {
     const mode = document.querySelector('.active-tab').dataset.value;
     const options = unitData[mode];
-
     if (type === 'input') {
         currentInputUnit = value;
         if (currentInputUnit === currentOutputUnit) currentOutputUnit = options.find(o => o !== value);
@@ -64,7 +61,6 @@ function renderDropdowns(mode) {
     const options = unitData[mode] || [];
     currentInputUnit = options[0];
     currentOutputUnit = options[1] || options[0];
-    
     dropdownInput.innerHTML = options.map(opt => `<div class="dropdown-item" onclick="selectUnit('input', '${opt}')">${opt}</div>`).join('');
     dropdownOutput.innerHTML = options.map(opt => `<div class="dropdown-item" onclick="selectUnit('output', '${opt}')">${opt}</div>`).join('');
     renderPills();
@@ -77,9 +73,8 @@ function renderPills() {
     dropdownOutput.classList.remove('show');
 }
 
-// Çeviri ve Klavye
 function translate(text, dir){
-    const map = dir === "toGreek" ? toGreek : toLatin;
+    const map = dir === "toGreek" ? toGreekMap : toLatinMap;
     return text.split('').map(ch => map[ch] || ch).join('');
 }
 
@@ -111,12 +106,8 @@ navTabs.forEach(tab => {
     });
 });
 
-document.getElementById('themeToggle').addEventListener('click', function() {
-    document.documentElement.classList.toggle('dark');
-    localStorage.setItem('color-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-});
+document.getElementById('themeToggle').addEventListener('click', () => { document.documentElement.classList.toggle('dark'); });
 
-// Zaman Fonksiyonları
 function toBase12(n, pad = 2) {
     const digits = "θ123456789ΦΛ";
     if (n === 0) return "θ".repeat(pad);
