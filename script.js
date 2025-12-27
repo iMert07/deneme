@@ -11,14 +11,11 @@ let currentInputUnit = "Standart Alfabe";
 let currentOutputUnit = "Yeni Alfabe";
 
 // --- VERİ SETLERİ ---
-
-// Alfabeler: İndeks tabanlı eşleşme (Sıralama aynı olmalı)
 const alphabets = {
     "Standart Alfabe": ["A","B","C","Ç","D","E","F","G","Ğ","H","I","İ","J","K","L","M","N","O","Ö","P","R","S","Ş","T","U","Ü","V","Y","Z","X","W","Q","0","1","2","3","4","5","6","7","8","9"],
     "Yeni Alfabe":     ["Α","Β","J","C","D","Ε","F","G","Γ","Η","Ь","Ͱ","Σ","Κ","L","Μ","Ν","Q","Ω","Π","Ρ","S","Ш","Τ","U","Υ","V","R","Ζ","Ψ","W","Q","θ","1","2","3","4","5","6","7","8","9"]
 };
 
-// Ölçü Birimleri ve Katsayılar (Temel birimlere göre: Metre, Kilogram, Celsius, m/s)
 const unitData = {
     "Alfabe": ["Standart Alfabe", "Yeni Alfabe"],
     "Uzunluk": ["Metre", "Kilometre", "Mil", "İnç", "Ayak (ft)", "Arşın", "Menzil"],
@@ -34,10 +31,11 @@ const rates = {
 };
 
 // --- ANA MANTIK FONKSİYONLARI ---
-
 function performConversion() {
     const val = inputArea.value;
-    const mode = document.querySelector('.active-tab').dataset.value;
+    const activeTab = document.querySelector('.active-tab');
+    if(!activeTab) return;
+    const mode = activeTab.dataset.value;
 
     if (mode === "Alfabe") {
         outputArea.value = translateText(val, currentInputUnit, currentOutputUnit);
@@ -45,15 +43,15 @@ function performConversion() {
         outputArea.value = convertTemperature(val, currentInputUnit, currentOutputUnit);
     } else if (rates[mode]) {
         outputArea.value = convertGeneric(val, mode, currentInputUnit, currentOutputUnit);
+    } else {
+        outputArea.value = val; // Diğer modlar için geçici
     }
 }
 
-// Alfabe Çevirici (İndeks Metodu)
 function translateText(text, fromKey, toKey) {
     const fromArr = alphabets[fromKey];
     const toArr = alphabets[toKey];
     if (!fromArr || !toArr) return text;
-
     return text.split('').map(char => {
         const isUpper = char === char.toUpperCase();
         const searchChar = char.toUpperCase();
@@ -66,7 +64,6 @@ function translateText(text, fromKey, toKey) {
     }).join('');
 }
 
-// Genel Ölçü Çevirici
 function convertGeneric(val, category, from, to) {
     const num = parseFloat(val.replace(',', '.'));
     if (isNaN(num)) return "";
@@ -75,20 +72,16 @@ function convertGeneric(val, category, from, to) {
     return result.toLocaleString('tr-TR', { maximumFractionDigits: 4 });
 }
 
-// Sıcaklık Özel Fonksiyonu (Lineer olmadığı için ayrı)
 function convertTemperature(val, from, to) {
     let celsius;
     const n = parseFloat(val.replace(',', '.'));
     if (isNaN(n)) return "";
-
-    // To Celsius
     if (from === "Celsius") celsius = n;
     else if (from === "Fahrenheit") celsius = (n - 32) * 5/9;
     else if (from === "Kelvin") celsius = n - 273.15;
-    else if (from === "Ilım") celsius = n * 1.5; // Örnek katsayı
+    else if (from === "Ilım") celsius = n * 1.5;
     else celsius = n;
 
-    // From Celsius to Target
     if (to === "Celsius") return celsius.toFixed(2);
     if (to === "Fahrenheit") return (celsius * 9/5 + 32).toFixed(2);
     if (to === "Kelvin") return (celsius + 273.15).toFixed(2);
@@ -97,6 +90,16 @@ function convertTemperature(val, from, to) {
 }
 
 // --- UI KONTROLLERİ ---
+// EKSİK OLAN: Dropdown açma/kapama fonksiyonu
+function toggleDropdown(type) {
+    if (type === 'input') {
+        dropdownInput.classList.toggle('show');
+        dropdownOutput.classList.remove('show');
+    } else {
+        dropdownOutput.classList.toggle('show');
+        dropdownInput.classList.remove('show');
+    }
+}
 
 function selectUnit(type, value) {
     if (type === 'input') currentInputUnit = value;
@@ -126,8 +129,40 @@ function renderDropdowns(mode) {
     renderPills();
 }
 
-// --- EVENT LISTENERS ---
+// --- EKSİK OLAN: KLAVYE DİNLEYİCİSİ ---
+document.querySelectorAll('.key').forEach(key => {
+    key.addEventListener('click', (e) => {
+        e.preventDefault();
+        const action = key.dataset.action;
+        
+        if (action === 'delete') {
+            inputArea.value = inputArea.value.slice(0, -1);
+        } else if (action === 'reset') {
+            inputArea.value = '';
+            outputArea.value = '';
+        } else if (action === 'space') {
+            inputArea.value += ' ';
+        } else if (action === 'enter') {
+            inputArea.value += '\n';
+        } else if (!key.classList.contains('fn-key')) {
+            inputArea.value += key.innerText;
+        }
+        performConversion();
+    });
+});
 
+// --- EKSİK OLAN: TEMA VE ZAMAN ---
+document.getElementById('themeToggle').addEventListener('click', () => {
+    document.documentElement.classList.toggle('dark');
+});
+
+function updateTime() {
+    const now = new Date();
+    document.getElementById('clock').textContent = now.toLocaleTimeString('tr-TR');
+    document.getElementById('date').textContent = now.toLocaleDateString('tr-TR');
+}
+
+// --- EVENT LISTENERS ---
 inputArea.addEventListener('input', performConversion);
 
 document.querySelectorAll('.nav-tab').forEach(tab => {
@@ -140,5 +175,15 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
     });
 });
 
+// Dışarı tıklayınca dropdownları kapat
+window.onclick = function(event) {
+    if (!event.target.closest('.unit-pill')) {
+        dropdownInput.classList.remove('show');
+        dropdownOutput.classList.remove('show');
+    }
+}
+
 // Başlat
+setInterval(updateTime, 1000);
+updateTime();
 renderDropdowns("Alfabe");
