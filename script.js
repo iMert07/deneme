@@ -14,7 +14,7 @@ let currentOutputUnit = "Yeni Alfabe";
 const unitData = {
     "Alfabe": ["Eski Alfabe", "Yeni Alfabe"],
     // Seçim paneli tam istediğin sırada: 2, 10, 12, Anatolya, 16
-    "Sayı": ["İkilik (2)", "Onluk (10)", "Onikilik (12)", "Anatolya (12)", "Onaltılık (16)"],
+    "Sayı": ["İkilik (2)", "Onluk (10)", "On İkilik (12)", "Anatolya (12)", "On Altılık (16)"],
     "Para": ["Lira", "Kuruş", "Anatolya Sikkesi"],
     "Uzunluk": ["Metre", "Kilometre", "Mil", "İnç", "Ayak (ft)", "Arşın", "Menzil"],
     "Kütle": ["Kilogram", "Gram", "Libre (lb)", "Ons (oz)", "Batman", "Dirhem"],
