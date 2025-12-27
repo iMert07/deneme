@@ -35,18 +35,18 @@ const unitData = {
 const conversionRates = {
     "Uzunluk": {
         "Kerrab (12⁻³)": 0.00041666666,
-        "Milimetre": 0.001,
+        "Milimetre (10⁻³)": 0.001,
         "Rubu (12⁻²)": 0.005,
-        "Santimetre": 0.01,
+        "Santimetre (10⁻²)": 0.01,
         "İnç": 0.0254,
         "Endaze (12⁻¹)": 0.06,
-        "Fit (ft)": 0.3048,
+        "Fit": 0.3048,
         "Arşın (12⁰)": 0.72,
         "Yard": 0.9144,
-        "Metre": 1,
+        "Metre (10⁰)": 1,
         "Berid (12¹)": 8.64,
         "Menzil (12²)": 103.68,
-        "Kilometre": 1000,
+        "Kilometre (12³)": 1000,
         "Fersah (12³)": 1244.16,
         "Mil": 1609.34,
         "Merhale (12⁴)": 14929.92
