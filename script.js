@@ -10,9 +10,8 @@ const dropdownOutput = document.getElementById('dropdown-output');
 const kbContainer = document.getElementById('kb-container');
 let activeInput = latin;
 
-// Aktif seçili birimler
-let currentInputUnit = "";
-let currentOutputUnit = "";
+let currentInputUnit = "Eski Alfabe";
+let currentOutputUnit = "Yeni Alfabe";
 
 const unitData = {
     "Alfabe": ["Eski Alfabe", "Yeni Alfabe"],
@@ -44,9 +43,8 @@ function toggleDropdown(type) {
     el.classList.toggle('show');
 }
 
-// Dışarı tıklandığında kapatma
 window.onclick = function(event) {
-    if (!event.target.matches('.unit-pill')) {
+    if (!event.target.closest('.unit-pill')) {
         dropdownInput.classList.remove('show');
         dropdownOutput.classList.remove('show');
     }
@@ -58,14 +56,10 @@ function selectUnit(type, value) {
 
     if (type === 'input') {
         currentInputUnit = value;
-        if (currentInputUnit === currentOutputUnit) {
-            currentOutputUnit = options.find(o => o !== value);
-        }
+        if (currentInputUnit === currentOutputUnit) currentOutputUnit = options.find(o => o !== value);
     } else {
         currentOutputUnit = value;
-        if (currentOutputUnit === currentInputUnit) {
-            currentInputUnit = options.find(o => o !== value);
-        }
+        if (currentOutputUnit === currentInputUnit) currentInputUnit = options.find(o => o !== value);
     }
     renderPills();
 }
@@ -75,12 +69,8 @@ function renderDropdowns(mode) {
     currentInputUnit = options[0];
     currentOutputUnit = options[1] || options[0];
     
-    [dropdownInput, dropdownOutput].forEach((drop, idx) => {
-        const type = idx === 0 ? 'input' : 'output';
-        drop.innerHTML = options.map(opt => 
-            `<div class="dropdown-item" onclick="selectUnit('${type}', '${opt}')">${opt}</div>`
-        ).join('');
-    });
+    dropdownInput.innerHTML = options.map(opt => `<div class="dropdown-item" onclick="selectUnit('input', '${opt}')">${opt}</div>`).join('');
+    dropdownOutput.innerHTML = options.map(opt => `<div class="dropdown-item" onclick="selectUnit('output', '${opt}')">${opt}</div>`).join('');
     renderPills();
 }
 
