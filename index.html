@@ -27,7 +27,7 @@
         
         .dropdown-panel {
             display: none; position: absolute; top: calc(100% + 5px); left: 0;
-            min-width: 160px; background: white; border-radius: 12px;
+            min-width: 140px; background: white; border-radius: 12px;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid #e2e8f0;
             z-index: 100; overflow: hidden;
         }
@@ -40,7 +40,8 @@
             cursor: pointer; transition: all 0.2s; text-transform: uppercase;
         }
         .dark .dropdown-item { color: #94a3b8; }
-        .dropdown-item:hover { background: #137fec; color: white; }
+        .dropdown-item:hover { background: #f1f5f9; color: #137fec; }
+        .dark .dropdown-item:hover { background: #334155; color: white; }
 
         .unit-pill {
             display: flex; align-items: center; justify-content: center;
@@ -48,20 +49,21 @@
             border-radius: 9999px; font-size: 10px; font-weight: 800;
             text-transform: uppercase; letter-spacing: 0.05em;
             transition: all 0.2s; cursor: pointer; border: 1px solid transparent;
-            user-select: none; -webkit-user-select: none; max-width: 180px;
+            user-select: none; max-width: 180px;
         }
         .dark .unit-pill { background: #1e293b; color: #94a3b8; border-color: #334155; }
         .unit-pill:hover { background: #137fec; color: white; transform: translateY(-1px); }
 
-        @media (min-width: 1024px) {
-            textarea { font-size: 1.5rem !important; }
-            h2 { font-size: 1.5rem !important; }
+        .key { 
+            cursor: pointer; user-select: none; transition: all 0.1s;
+            display: flex; align-items: center; justify-content: center;
         }
+        .key:active { transform: scale(0.95); background-color: #137fec !important; color: white; }
 
         @media (max-width: 768px) {
-            .keyboard { width: 97% !important; max-width: 550px !important; margin: 0 auto !important; padding: 8px !important; border-radius: 1rem !important; }
-            .key { height: 42px !important; font-size: 1.1rem !important; }
-            textarea { font-size: 1.1rem !important; height: 160px !important; padding: 12px !important; }
+            .keyboard { width: 100%; padding: 8px; }
+            .key { height: 40px; font-size: 1rem; }
+            textarea { height: 140px !important; }
         }
     </style>
 </head>
@@ -70,72 +72,96 @@
 <header class="sticky top-0 bg-white dark:bg-[#111a22] border-b border-slate-200 dark:border-[#233648] z-50 select-none">
     <div class="flex items-center justify-between px-6 py-2">
         <div class="flex items-center gap-3">
-            <h2 class="text-base sm:text-lg font-bold truncate leading-none">Anatolya'ya Dönüş</h2>
-            <div class="flex items-center gap-3 border-l border-slate-200 dark:border-slate-700 pl-3 leading-none font-mono font-bold pointer-events-none">
+            <h2 class="text-base sm:text-lg font-bold truncate">Anatolya'ya Dönüş</h2>
+            <div class="flex items-center gap-3 border-l border-slate-200 dark:border-slate-700 pl-3 leading-none font-mono font-bold">
                 <span id="clock" class="text-sm sm:text-lg text-primary">θθ.θθ.θθ</span>
                 <span id="date" class="text-sm sm:text-lg text-slate-500 dark:text-slate-400">θθ.θθ.θθθθ</span>
             </div>
         </div>
-        <button id="themeToggle" class="p-1 flex items-center justify-center bg-transparent border-none text-slate-500 dark:text-slate-400 focus:outline-none cursor-pointer">
+        <button id="themeToggle" class="p-1 flex items-center justify-center text-slate-500 dark:text-slate-400">
             <span class="material-symbols-outlined text-[26px]">globe_book</span>
         </button>
     </div>
 
-    <div class="flex items-center gap-2 px-4 pb-1.5 overflow-x-auto no-scrollbar scroll-smooth select-none">
-        <button class="nav-tab active-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all cursor-pointer" data-value="Alfabe"><span class="material-symbols-outlined text-[18px]">translate</span><span class="text-sm font-medium">Alfabe</span></button>
-        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all cursor-pointer" data-value="Sayı"><span class="material-symbols-outlined text-[18px]">123</span><span class="text-sm font-medium">Sayı</span></button>
-        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all cursor-pointer" data-value="Para"><span class="material-symbols-outlined text-[18px]">payments</span><span class="text-sm font-medium">Para</span></button>
-        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all cursor-pointer" data-value="Uzunluk"><span class="material-symbols-outlined text-[18px]">straighten</span><span class="text-sm font-medium">Uzunluk</span></button>
-        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all cursor-pointer" data-value="Kütle"><span class="material-symbols-outlined text-[18px]">fitness_center</span><span class="text-sm font-medium">Kütle</span></button>
-        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all cursor-pointer" data-value="Sıcaklık"><span class="material-symbols-outlined text-[18px]">thermostat</span><span class="text-sm font-medium">Sıcaklık</span></button>
-        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all cursor-pointer" data-value="Hacim"><span class="material-symbols-outlined text-[18px]">opacity</span><span class="text-sm font-medium">Hacim</span></button>
-        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all cursor-pointer" data-value="Hız"><span class="material-symbols-outlined text-[18px]">speed</span><span class="text-sm font-medium">Hız</span></button>
-        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all cursor-pointer" data-value="Alan"><span class="material-symbols-outlined text-[18px]">texture</span><span class="text-sm font-medium">Alan</span></button>
-        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all cursor-pointer" data-value="Veri"><span class="material-symbols-outlined text-[18px]">database</span><span class="text-sm font-medium">Veri</span></button>
-        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all cursor-pointer" data-value="Meridyen"><span class="material-symbols-outlined text-[18px]">explore</span><span class="text-sm font-medium">Meridyen</span></button>
-        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all cursor-pointer" data-value="Paralel"><span class="material-symbols-outlined text-[18px]">language</span><span class="text-sm font-medium">Paralel</span></button>
-    </div>
+    <div class="flex items-center gap-2 px-4 pb-1.5 overflow-x-auto no-scrollbar select-none">
+        <button class="nav-tab active-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all cursor-pointer" data-value="Alfabe"><span class="text-sm font-medium">Alfabe</span></button>
+        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all cursor-pointer" data-value="Sayı"><span class="text-sm font-medium">Sayı</span></button>
+        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all cursor-pointer" data-value="Uzunluk"><span class="text-sm font-medium">Uzunluk</span></button>
+        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all cursor-pointer" data-value="Sıcaklık"><span class="text-sm font-medium">Sıcaklık</span></button>
+        </div>
 </header>
 
-<main class="flex-1 flex flex-col p-3 gap-4 lg:gap-8">
-    <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
+<main class="flex-1 flex flex-col p-3 gap-4">
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div class="flex flex-col gap-2 relative">
             <div class="w-max ml-1 relative">
-                <div class="unit-pill" id="pill-input-label" onclick="toggleDropdown('input')">Seçiniz</div>
+                <div class="unit-pill" id="pill-input-label" onclick="toggleDropdown('input')">Eski Alfabe</div>
                 <div id="dropdown-input" class="dropdown-panel select-none"></div>
             </div>
-            <textarea id="input-area" class="w-full h-[180px] lg:h-[300px] p-5 bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm focus:ring-2 focus:ring-primary/50 resize-none text-slate-900 dark:text-white" placeholder="Değer veya metin girin..."></textarea>
+            <textarea id="input-area" class="w-full h-[180px] p-5 bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] focus:ring-2 focus:ring-primary/50 resize-none" placeholder="Yazın..."></textarea>
         </div>
 
         <div class="flex flex-col gap-2 relative">
             <div class="w-max ml-1 relative">
-                <div class="unit-pill" id="pill-output-label" onclick="toggleDropdown('output')">Sonuç</div>
+                <div class="unit-pill" id="pill-output-label" onclick="toggleDropdown('output')">Yeni Alfabe</div>
                 <div id="dropdown-output" class="dropdown-panel select-none"></div>
             </div>
-            <textarea id="output-area" class="w-full h-[180px] lg:h-[300px] p-5 bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner resize-none text-slate-900 dark:text-white" placeholder="Sonuç burada görünecek..." readonly></textarea>
+            <textarea id="output-area" class="w-full h-[180px] p-5 bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner resize-none" readonly placeholder="Sonuç..."></textarea>
         </div>
     </section>
 
-    <section id="kb-container" class="select-none">
-        <div class="keyboard !my-0" id="mainKeyboard">
+    <section id="kb-container" class="select-none mt-auto">
+        <div class="keyboard max-w-2xl mx-auto bg-slate-200 dark:bg-slate-900 p-2 rounded-xl shadow-lg" id="mainKeyboard">
             <div class="row flex justify-center gap-1 mb-1">
-                <button class="key bg-white dark:bg-slate-800 p-2 rounded w-10 h-10 font-bold border-b-2 border-slate-300 dark:border-slate-900">θ</button>
-                <button class="key bg-white dark:bg-slate-800 p-2 rounded w-10 h-10 font-bold border-b-2 border-slate-300 dark:border-slate-900">1</button>
-                <button class="key bg-white dark:bg-slate-800 p-2 rounded w-10 h-10 font-bold border-b-2 border-slate-300 dark:border-slate-900">2</button>
-                <button class="key bg-white dark:bg-slate-800 p-2 rounded w-10 h-10 font-bold border-b-2 border-slate-300 dark:border-slate-900">3</button>
-                <button class="key bg-white dark:bg-slate-800 p-2 rounded w-10 h-10 font-bold border-b-2 border-slate-300 dark:border-slate-900">4</button>
-                <button class="key bg-white dark:bg-slate-800 p-2 rounded w-10 h-10 font-bold border-b-2 border-slate-300 dark:border-slate-900">5</button>
-                <button class="key bg-white dark:bg-slate-800 p-2 rounded w-10 h-10 font-bold border-b-2 border-slate-300 dark:border-slate-900">6</button>
-                <button class="key bg-white dark:bg-slate-800 p-2 rounded w-10 h-10 font-bold border-b-2 border-slate-300 dark:border-slate-900">7</button>
-                <button class="key bg-white dark:bg-slate-800 p-2 rounded w-10 h-10 font-bold border-b-2 border-slate-300 dark:border-slate-900">8</button>
-                <button class="key bg-white dark:bg-slate-800 p-2 rounded w-10 h-10 font-bold border-b-2 border-slate-300 dark:border-slate-900">9</button>
-                <button class="key bg-white dark:bg-slate-800 p-2 rounded w-10 h-10 font-bold border-b-2 border-slate-300 dark:border-slate-900">Φ</button>
-                <button class="key bg-white dark:bg-slate-800 p-2 rounded w-10 h-10 font-bold border-b-2 border-slate-300 dark:border-slate-900">Λ</button>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">θ</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">1</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">2</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">3</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">4</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">5</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">6</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">7</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">8</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">9</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">Φ</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">Λ</div>
+            </div>
+            <div class="row flex justify-center gap-1 mb-1">
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">Ϙ</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">Ш</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">E</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">R</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">T</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">Y</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">U</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">Ͱ</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">Ω</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">P</div>
+            </div>
+            <div class="row flex justify-center gap-1 mb-1">
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">A</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">S</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">D</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">F</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">G</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">H</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">J</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">K</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">L</div>
+            </div>
+            <div class="row flex justify-center gap-1 mb-1">
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">Z</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">Ψ</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">C</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">V</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">B</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">N</div>
+                <div class="key bg-white dark:bg-slate-800 w-10 h-10 rounded shadow">M</div>
             </div>
             <div class="row flex justify-center gap-1">
-                <button class="key fn-key bg-slate-300 dark:bg-slate-700 px-4 py-2 rounded font-bold" data-action="reset">Sıfırla</button>
-                <button class="key bg-white dark:bg-slate-800 px-10 py-2 rounded font-bold border-b-2 border-slate-300 dark:border-slate-900" data-action="space">Boşluk</button>
-                <button class="key fn-key bg-slate-300 dark:bg-slate-700 px-4 py-2 rounded font-bold" data-action="delete"><span class="material-symbols-outlined">backspace</span></button>
+                <div class="key bg-slate-300 dark:bg-slate-700 px-4 h-10 rounded font-bold" data-action="reset">C</div>
+                <div class="key bg-white dark:bg-slate-800 flex-1 h-10 rounded shadow" data-action="space">BOŞLUK</div>
+                <div class="key bg-slate-300 dark:bg-slate-700 px-4 h-10 rounded" data-action="delete">⌫</div>
             </div>
         </div>
     </section>
