@@ -15,9 +15,10 @@ const unitData = {
     "Sayı": ["İkilik (2)", "Onluk (10)", "Anatolya (12)", "On Altılık (16)"],
     "Para": ["Lira", "Kuruş", "Anatolya Sikkesi"],
     "Zaman": [
-        "Salise", "Salise (Anatolya)", "Saniye", "Saniye (Anatolya)", 
-        "Dakika", "Dakika (Anatolya)", "Saat", "Saat (Anatolya)", 
-        "Gün", "Hafta (Anatolya)", "Ay (Anatolya)", "Yıl (Anatolya)"
+        "Milisaniye", "Salise (Anatolya)", "Salise", 
+        "Saniye (Anatolya)", "Saniye", "Dakika", 
+        "Saat", "Saat (Anatolya)", "Gün", 
+        "Hafta (Anatolya)", "Hafta", "Ay", "Yıl"
     ],
     "Uzunluk": ["Metre", "Kilometre", "Mil", "İnç", "Ayak (ft)", "Arşın", "Menzil"],
     "Kütle": ["Kilogram", "Gram", "Libre (lb)", "Ons (oz)", "Batman", "Dirhem"],
@@ -25,21 +26,31 @@ const unitData = {
     "Veri": ["Byte", "Kilobyte", "Megabyte", "Gigabyte", "Terabyte", "Anatolya Verisi"]
 };
 
+// --- KATSAYILAR (Saniye bazlı) ---
 const conversionRates = {
     "Uzunluk": { "Metre": 1, "Kilometre": 1000, "Mil": 1609.34, "İnç": 0.0254, "Ayak (ft)": 0.3048, "Arşın": 0.68, "Menzil": 5000 },
     "Kütle": { "Kilogram": 1, "Gram": 0.001, "Libre (lb)": 0.4535, "Ons (oz)": 0.0283, "Batman": 7.697, "Dirhem": 0.0032 },
     "Veri": { "Byte": 1, "Kilobyte": 1024, "Megabyte": 1048576, "Gigabyte": 1073741824, "Terabyte": 1099511627776, "Anatolya Verisi": 1200 },
     "Zaman": { 
-        "Salise": 1/60, "Salise (Anatolya)": 1/240, "Saniye": 1, "Saniye (Anatolya)": 0.5,
-        "Dakika": 60, "Dakika (Anatolya)": 60, "Saat": 3600, "Saat (Anatolya)": 7200, 
-        "Gün": 86400, "Hafta (Anatolya)": 432000, "Ay (Anatolya)": 2592000, "Yıl (Anatolya)": 31536000 
+        "Milisaniye": 0.001,
+        "Salise (Anatolya)": 1/240, 
+        "Salise": 1/60,
+        "Saniye (Anatolya)": 0.5,
+        "Saniye": 1, 
+        "Dakika": 60, 
+        "Saat": 3600, 
+        "Saat (Anatolya)": 7200, 
+        "Gün": 86400, 
+        "Hafta (Anatolya)": 432000, 
+        "Hafta": 604800,
+        "Ay": 2592000, 
+        "Yıl": 31536000 
     }
 };
 
 const toGreek = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Ğ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
-const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
 
-// --- GİRDİ NORMALİZASYONU (Sembolleri Standart Karşılığa Çevirir) ---
+// --- GİRDİ NORMALİZASYONU ---
 function normalizeInput(text) {
     return text.toUpperCase()
         .replace(/θ/g, '0')
@@ -47,15 +58,13 @@ function normalizeInput(text) {
         .replace(/Λ/g, 'B');
 }
 
-// --- VALIDATION MANTIĞI ---
+// --- VALIDATION ---
 function isValidInput(text, unit) {
-    const stdDigits = "0123456789ABCDEF";
-    const anaDigits = "θΦΛ"; // Senin simgelerin
+    const anaDigits = "θΦΛ";
     let allowedChars = "";
-    
     if (unit.includes("(2)")) allowedChars = "01,.";
     else if (unit.includes("(10)")) allowedChars = "0123456789,.";
-    else if (unit.includes("Anatolya")) allowedChars = "0123456789AB" + anaDigits + ",.";
+    else if (unit.includes("Anatolya") || ["Gün", "Ay", "Yıl"].includes(unit)) allowedChars = "0123456789AB" + anaDigits + ",.";
     else if (unit.includes("(16)")) allowedChars = "0123456789ABCDEF,.";
     else return true;
 
@@ -65,7 +74,7 @@ function isValidInput(text, unit) {
     return true;
 }
 
-// --- ÖZEL YARDIMCI FONKSİYONLAR ---
+// --- TABAN DÖNÜŞTÜRÜCÜ ---
 function toBase12(n, isAnatolya = true) {
     const digits = isAnatolya ? "θ123456789ΦΛ" : "0123456789AB";
     let num = Math.abs(n);
@@ -84,7 +93,6 @@ function toBase12(n, isAnatolya = true) {
 // --- SAYI / TABAN DÖNÜŞÜMÜ ---
 function universalNumberConvert(text, fromUnit, toUnit) {
     if (!isValidInput(text, fromUnit)) return "Geçersiz Karakter";
-
     const stdDigits = "0123456789ABCDEF";
     const getBase = (unit) => {
         if (unit.includes("(2)")) return 2;
@@ -92,32 +100,23 @@ function universalNumberConvert(text, fromUnit, toUnit) {
         if (unit.includes("(16)")) return 16;
         return 10;
     };
-
-    // Girişi normalize et (θ -> 0, Φ -> A vb.)
     let input = normalizeInput(text.toUpperCase()).replace(',', '.');
     const fromBase = getBase(fromUnit);
     const toBase = getBase(toUnit);
     const parts = input.split('.');
-    
-    let dec = 0;
-    try {
-        dec = parseInt(parts[0], fromBase);
-        if (parts[1]) {
-            for (let i = 0; i < parts[1].length; i++) {
-                let digitVal = stdDigits.indexOf(parts[1][i]);
-                if (digitVal >= fromBase || digitVal === -1) throw new Error();
-                dec += digitVal * Math.pow(fromBase, -(i + 1));
-            }
+    let dec = parseInt(parts[0], fromBase);
+    if (parts[1]) {
+        for (let i = 0; i < parts[1].length; i++) {
+            let digitVal = stdDigits.indexOf(parts[1][i]);
+            if (digitVal >= fromBase || digitVal === -1) break;
+            dec += digitVal * Math.pow(fromBase, -(i + 1));
         }
-    } catch(e) { return "Hata"; }
-
-    if (isNaN(dec)) return "Hata";
-    
-    if (toUnit.includes("Anatolya")) {
-        const anaVal = toBase12(dec, true);
-        const std12Val = toBase12(dec, false);
-        return (anaVal === std12Val) ? anaVal : `${anaVal} (${std12Val})`;
     }
+    if (isNaN(dec)) return "Hata";
+    const anaVal = toBase12(dec, true);
+    const stdVal = toBase12(dec, false);
+    const decStr = Number(dec.toFixed(2)).toLocaleString('tr-TR');
+    if (toUnit.includes("Anatolya")) return (anaVal === stdVal) ? anaVal : `${anaVal} (${stdVal})`;
     return dec.toString(toBase).toUpperCase().replace('.', ',');
 }
 
@@ -135,27 +134,19 @@ function performConversion() {
     else if (mode === "Sayı") {
         outputArea.value = universalNumberConvert(text, currentInputUnit, currentOutputUnit);
     }
-    else if (mode === "Sıcaklık") {
-        const v = parseFloat(text.replace(',', '.')); if (isNaN(v)) return;
-        let c = (currentInputUnit==="Celsius")?v:(currentInputUnit==="Fahrenheit")?(v-32)*5/9:(currentInputUnit==="Kelvin")?v-273.15:v*2;
-        let res = (currentOutputUnit==="Celsius")?c:(currentOutputUnit==="Fahrenheit")?c*9/5+32:(currentOutputUnit==="Kelvin")?c+273.15:c/2;
-        outputArea.value = Number(res.toFixed(2)).toLocaleString('tr-TR');
-    } 
     else if (conversionRates[mode]) {
         if (!isValidInput(text, currentInputUnit)) { outputArea.value = "Geçersiz Karakter"; return; }
         
-        // Normalize edilmiş sayısal değeri al
         let numericValue;
-        const isInputAna = currentInputUnit.includes("Anatolya");
-        if (isInputAna) {
+        const isInputSpecial = currentInputUnit.includes("Anatolya") || ["Gün", "Ay", "Yıl"].includes(currentInputUnit);
+        
+        if (isInputSpecial) {
             const normalizedText = normalizeInput(text.toUpperCase()).replace(',','.');
             const parts = normalizedText.split('.');
             numericValue = parseInt(parts[0], 12);
             if (parts[1]) {
                 const stdDigits = "0123456789ABCDEF";
-                for (let i = 0; i < parts[1].length; i++) {
-                    numericValue += stdDigits.indexOf(parts[1][i]) * Math.pow(12, -(i+1));
-                }
+                for (let i = 0; i < parts[1].length; i++) numericValue += stdDigits.indexOf(parts[1][i]) * Math.pow(12, -(i+1));
             }
         } else {
             numericValue = parseFloat(text.replace(',', '.'));
@@ -168,13 +159,24 @@ function performConversion() {
         const baseValue = numericValue * rateIn;
         const rawResult = baseValue / rateOut;
 
-        if (currentOutputUnit.includes("Anatolya")) {
+        const isOutputSpecial = currentOutputUnit.includes("Anatolya") || ["Gün", "Ay", "Yıl"].includes(currentOutputUnit);
+
+        if (isOutputSpecial) {
             const anaValue = toBase12(rawResult, true);
             const std12Value = toBase12(rawResult, false);
             const decStr = Number(rawResult.toFixed(2)).toLocaleString('tr-TR');
+            
             let resultStr = anaValue;
-            if (anaValue !== std12Value) resultStr += ` (${std12Value})`;
-            if (rateIn !== rateOut) resultStr += ` [${decStr}]`;
+            // Yazım farkı varsa (Φ/A, Λ/B veya θ/0) parantez aç
+            if (anaValue !== std12Value) {
+                resultStr += ` (${std12Value})`;
+            }
+            // Değer farkı (katsayı) varsa veya birim ismi farklıysa onluk karşılığı ekle
+            if (rateIn !== rateOut || isOutputSpecial) {
+                if (resultStr.indexOf(decStr) === -1) { // Eğer zaten decStr ile aynı değilse ekle
+                    resultStr += ` [${decStr}]`;
+                }
+            }
             outputArea.value = resultStr;
         } else {
             outputArea.value = Number(rawResult.toFixed(5)).toLocaleString('tr-TR', { maximumFractionDigits: 5 });
@@ -197,13 +199,8 @@ function selectUnit(type, value) {
 
 function renderDropdowns(mode) {
     const options = unitData[mode] || [];
-    if (mode === "Sayı") {
-        currentInputUnit = "Onluk (10)";
-        currentOutputUnit = "Anatolya (12)";
-    } else {
-        currentInputUnit = options[0];
-        currentOutputUnit = options[1] || options[0];
-    }
+    if (mode === "Sayı") { currentInputUnit = "Onluk (10)"; currentOutputUnit = "Anatolya (12)"; }
+    else { currentInputUnit = options[0]; currentOutputUnit = options[1] || options[0]; }
     const createItems = (type) => options.map(opt => `<div class="dropdown-item" onclick="selectUnit('${type}', '${opt}')">${opt}</div>`).join('');
     dropdownInput.innerHTML = createItems('input');
     dropdownOutput.innerHTML = createItems('output');
