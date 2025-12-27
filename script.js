@@ -262,6 +262,7 @@ function updateHeader() {
     document.getElementById('date').textContent = `${toBase12(day, 2, true)}.${toBase12(month, 2, true)}.${toBase12(year + 10368, 4, true)}`;
 }
 
-setInterval(updateHeader, 1000);
+// 2 kat hızlı saniyeler için güncelleme hızı 500ms yapıldı
+setInterval(updateHeader, 500);
 updateHeader();
 renderDropdowns("Alfabe");
