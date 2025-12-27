@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&display=swap" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script id="tailwind-config">
         tailwind.config = {
@@ -22,57 +22,53 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .active-tab { background-color: #137fec; color: white !important; }
         
-        /* Özel Kapsül Dropdown Tasarımı */
-        .unit-pill-container {
-            position: relative;
-            display: inline-block;
-            max-width: 50%; /* Kutunun yarısını geçmeyecek şekilde sınırlandı */
-            cursor: pointer;
-        }
-        .unit-pill {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 6px 16px;
-            background: #e2e8f0;
-            color: #475569;
-            border-radius: 9999px;
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid transparent;
-            white-space: nowrap;
+        /* Özel Dropdown Paneli Tasarımı */
+        .dropdown-panel {
+            display: none;
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            min-width: 160px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            z-index: 100;
             overflow: hidden;
-            text-overflow: ellipsis;
+        }
+        .dark .dropdown-panel { background: #1e293b; border-color: #334155; }
+        .dropdown-panel.show { display: block; animation: dropdownFade 0.2s ease-out; }
+
+        @keyframes dropdownFade {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropdown-item {
+            padding: 10px 16px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .dark .dropdown-item { color: #94a3b8; }
+        .dropdown-item:hover { background: #f1f5f9; color: #137fec; }
+        .dark .dropdown-item:hover { background: #334155; color: white; }
+
+        .unit-pill {
+            display: flex; align-items: center; justify-content: center;
+            padding: 6px 16px; background: #e2e8f0; color: #475569;
+            border-radius: 9999px; font-size: 10px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.05em;
+            transition: all 0.2s; cursor: pointer; border: 1px solid transparent;
         }
         .dark .unit-pill { background: #1e293b; color: #94a3b8; border-color: #334155; }
-        
-        .unit-pill-container:hover .unit-pill { 
-            background: #137fec; 
-            color: white; 
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(19, 127, 236, 0.2);
-        }
-
-        .hidden-select {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0; cursor: pointer; z-index: 10;
-        }
-
-        @media (min-width: 1024px) {
-            textarea { font-size: 1.5rem !important; }
-            h2 { font-size: 1.5rem !important; }
-            .unit-pill { font-size: 11px; padding: 8px 20px; }
-        }
+        .unit-pill:hover { background: #137fec; color: white; transform: translateY(-1px); }
 
         @media (max-width: 768px) {
-            .keyboard { width: 97% !important; max-width: 550px !important; margin: 0 0 0 auto !important; padding: 8px !important; border-radius: 1rem !important; }
-            #kb-container { padding-top: 5px !important; padding-bottom: 0px !important; padding-right: 0px !important; display: flex; justify-content: flex-end; }
-            .key { height: 38px !important; font-size: 1rem !important; border-bottom-width: 2px !important; }
-            textarea { font-size: 1.1rem !important; height: 140px !important; padding: 10px !important; }
+            .keyboard { position: fixed; bottom: 8px; left: 2%; width: 96%; padding: 8px 4px 12px 4px; border-radius: 1rem; box-shadow: 0 -5px 20px rgba(0,0,0,0.3); }
+            main { padding-bottom: 260px !important; }
         }
     </style>
 </head>
@@ -96,64 +92,38 @@
         <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all active-tab cursor-pointer" data-value="Alfabe">
             <span class="material-symbols-outlined text-[18px]">translate</span><span class="text-sm font-medium">Alfabe</span>
         </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Sayı">
-            <span class="material-symbols-outlined text-[18px]">123</span><span class="text-sm font-medium">Sayı</span>
-        </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Para">
-            <span class="material-symbols-outlined text-[18px]">payments</span><span class="text-sm font-medium">Para</span>
-        </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Takvim">
-            <span class="material-symbols-outlined text-[18px]">calendar_month</span><span class="text-sm font-medium">Takvim</span>
-        </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Zaman">
-            <span class="material-symbols-outlined text-[18px]">schedule</span><span class="text-sm font-medium">Zaman</span>
-        </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Uzunluk">
-            <span class="material-symbols-outlined text-[18px]">straighten</span><span class="text-sm font-medium">Uzunluk</span>
-        </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Kütle">
-            <span class="material-symbols-outlined text-[18px]">fitness_center</span><span class="text-sm font-medium">Kütle</span>
-        </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Sıcaklık">
-            <span class="material-symbols-outlined text-[18px]">thermostat</span><span class="text-sm font-medium">Sıcaklık</span>
-        </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Hacim">
-            <span class="material-symbols-outlined text-[18px]">opacity</span><span class="text-sm font-medium">Hacim</span>
-        </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Hız">
-            <span class="material-symbols-outlined text-[18px]">speed</span><span class="text-sm font-medium">Hız</span>
-        </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Alan">
-            <span class="material-symbols-outlined text-[18px]">texture</span><span class="text-sm font-medium">Alan</span>
-        </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Veri">
-            <span class="material-symbols-outlined text-[18px]">database</span><span class="text-sm font-medium">Veri</span>
-        </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Meridyen">
-            <span class="material-symbols-outlined text-[18px]">explore</span><span class="text-sm font-medium">Meridyen</span>
-        </button>
-        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Paralel">
-            <span class="material-symbols-outlined text-[18px]">language</span><span class="text-sm font-medium">Paralel</span>
-        </button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Sayı"><span class="material-symbols-outlined text-[18px]">123</span><span class="text-sm font-medium">Sayı</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Para"><span class="material-symbols-outlined text-[18px]">payments</span><span class="text-sm font-medium">Para</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Takvim"><span class="material-symbols-outlined text-[18px]">calendar_month</span><span class="text-sm font-medium">Takvim</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Zaman"><span class="material-symbols-outlined text-[18px]">schedule</span><span class="text-sm font-medium">Zaman</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Uzunluk"><span class="material-symbols-outlined text-[18px]">straighten</span><span class="text-sm font-medium">Uzunluk</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Kütle"><span class="material-symbols-outlined text-[18px]">fitness_center</span><span class="text-sm font-medium">Kütle</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Sıcaklık"><span class="material-symbols-outlined text-[18px]">thermostat</span><span class="text-sm font-medium">Sıcaklık</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Hacim"><span class="material-symbols-outlined text-[18px]">opacity</span><span class="text-sm font-medium">Hacim</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Hız"><span class="material-symbols-outlined text-[18px]">speed</span><span class="text-sm font-medium">Hız</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Alan"><span class="material-symbols-outlined text-[18px]">texture</span><span class="text-sm font-medium">Alan</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Veri"><span class="material-symbols-outlined text-[18px]">database</span><span class="text-sm font-medium">Veri</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Meridyen"><span class="material-symbols-outlined text-[18px]">explore</span><span class="text-sm font-medium">Meridyen</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Paralel"><span class="material-symbols-outlined text-[18px]">language</span><span class="text-sm font-medium">Paralel</span></button>
     </div>
 </header>
 
 <main class="flex-1 flex flex-col p-3 gap-4 lg:gap-8">
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
-        <div class="flex flex-col gap-2">
-            <div class="unit-pill-container ml-1">
-                <div class="unit-pill" id="pill-input-label">Eski Alfabe</div>
-                <select id="select-input" class="hidden-select"></select>
+        <div class="flex flex-col gap-2 relative">
+            <div class="w-max ml-1 relative">
+                <div class="unit-pill" id="pill-input-label" onclick="toggleDropdown('input')">Eski Alfabe</div>
+                <div id="dropdown-input" class="dropdown-panel"></div>
             </div>
-            <textarea id="latin" class="w-full h-[180px] lg:h-[300px] p-5 bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all resize-none text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
+            <textarea id="latin" class="w-full h-[180px] lg:h-[300px] p-5 bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm focus:ring-2 focus:ring-primary/50 resize-none text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
         </div>
 
-        <div class="flex flex-col gap-2">
-            <div class="unit-pill-container ml-1">
-                <div class="unit-pill" id="pill-output-label">Yeni Alfabe</div>
-                <select id="select-output" class="hidden-select"></select>
+        <div class="flex flex-col gap-2 relative">
+            <div class="w-max ml-1 relative">
+                <div class="unit-pill" id="pill-output-label" onclick="toggleDropdown('output')">Yeni Alfabe</div>
+                <div id="dropdown-output" class="dropdown-panel"></div>
             </div>
-            <textarea id="greek" class="w-full h-[180px] lg:h-[300px] p-5 bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner focus:ring-0 resize-none text-slate-900 dark:text-white" placeholder="Sonuç..." readonly></textarea>
+            <textarea id="greek" class="w-full h-[180px] lg:h-[300px] p-5 bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner resize-none text-slate-900 dark:text-white" placeholder="Sonuç..." readonly></textarea>
         </div>
     </section>
 
