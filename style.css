@@ -1,5 +1,9 @@
-header, .nav-tab, #kb-container, .key, .unit-pill, .dropdown-item {
-    user-select: none; -webkit-user-select: none; -moz-user-select: none; -webkit-touch-callout: none;
+header, .nav-tab, #kb-container, .key, #label-input, #label-output, #clock, #date, .unit-pill, .dropdown-item {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-touch-callout: none;
 }
 
 .keyboard {
@@ -27,8 +31,8 @@ header, .nav-tab, #kb-container, .key, .unit-pill, .dropdown-item {
 [data-action="space"] { grid-column: span 6 !important; }
 
 @media (max-width: 768px) {
-    .keyboard { position: fixed; bottom: 25px; left: 2%; width: 96%; padding: 8px 4px 12px 4px; border-radius: 1rem; box-shadow: 0 -5px 20px rgba(0,0,0,0.3); }
+    .keyboard { position: fixed; bottom: 8px; left: 2%; width: 96%; padding: 8px 4px 12px 4px; border-radius: 1rem; box-shadow: 0 -5px 20px rgba(0,0,0,0.3); }
     .row { gap: 4px; }
     .key { height: 38px !important; font-size: 1rem; border-bottom-width: 2px; }
-    main { padding-bottom: 300px !important; }
+    main { padding-bottom: 260px !important; }
 }
