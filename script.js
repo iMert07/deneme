@@ -39,25 +39,23 @@ const conversionRates = {
 const toGreek = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Ğ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
 const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
 
-// --- ANALYZE & NORMALIZE ANATOLYA INPUT ---
-function normalizeAnatolyaInput(text) {
-    // Tüm alternatifleri Anatolya sembollerine çevirir
+// --- GİRDİ NORMALİZASYONU (Sembolleri Standart Karşılığa Çevirir) ---
+function normalizeInput(text) {
     return text.toUpperCase()
-        .replace(/0/g, 'θ')
-        .replace(/A/g, 'Φ')
-        .replace(/B/g, 'Λ');
+        .replace(/θ/g, '0')
+        .replace(/Φ/g, 'A')
+        .replace(/Λ/g, 'B');
 }
 
 // --- VALIDATION MANTIĞI ---
 function isValidInput(text, unit) {
     const stdDigits = "0123456789ABCDEF";
-    const anaDigits = "θ123456789ΦΛ";
-    const anaAlternative = "0123456789AB";
-    
+    const anaDigits = "θΦΛ"; // Senin simgelerin
     let allowedChars = "";
+    
     if (unit.includes("(2)")) allowedChars = "01,.";
     else if (unit.includes("(10)")) allowedChars = "0123456789,.";
-    else if (unit.includes("Anatolya")) allowedChars = anaDigits + anaAlternative + ",.";
+    else if (unit.includes("Anatolya")) allowedChars = "0123456789AB" + anaDigits + ",.";
     else if (unit.includes("(16)")) allowedChars = "0123456789ABCDEF,.";
     else return true;
 
@@ -88,8 +86,6 @@ function universalNumberConvert(text, fromUnit, toUnit) {
     if (!isValidInput(text, fromUnit)) return "Geçersiz Karakter";
 
     const stdDigits = "0123456789ABCDEF";
-    const anaDigits = "θ123456789ΦΛ";
-    
     const getBase = (unit) => {
         if (unit.includes("(2)")) return 2;
         if (unit.includes("Anatolya") || unit.includes("(12)")) return 12;
@@ -97,17 +93,8 @@ function universalNumberConvert(text, fromUnit, toUnit) {
         return 10;
     };
 
-    let input = text.toUpperCase().replace(',', '.');
-    
-    if (fromUnit.includes("Anatolya")) {
-        input = normalizeAnatolyaInput(input);
-        // Anatolya sembollerini standart rakam/harf karşılığına çek (0-9, A, B)
-        input = input.split('').map(c => {
-            const idx = anaDigits.indexOf(c);
-            return idx !== -1 ? stdDigits[idx] : c;
-        }).join('');
-    }
-
+    // Girişi normalize et (θ -> 0, Φ -> A vb.)
+    let input = normalizeInput(text.toUpperCase()).replace(',', '.');
     const fromBase = getBase(fromUnit);
     const toBase = getBase(toUnit);
     const parts = input.split('.');
@@ -156,22 +143,18 @@ function performConversion() {
     } 
     else if (conversionRates[mode]) {
         if (!isValidInput(text, currentInputUnit)) { outputArea.value = "Geçersiz Karakter"; return; }
-        const isInputAna = currentInputUnit.includes("Anatolya");
-        const isOutputAna = currentOutputUnit.includes("Anatolya");
         
+        // Normalize edilmiş sayısal değeri al
         let numericValue;
+        const isInputAna = currentInputUnit.includes("Anatolya");
         if (isInputAna) {
-            const digits = "θ123456789ΦΛ";
-            const normalizedText = normalizeAnatolyaInput(text.toUpperCase().replace(',','.'));
+            const normalizedText = normalizeInput(text.toUpperCase()).replace(',','.');
             const parts = normalizedText.split('.');
-            numericValue = parts[0].split('').reduce((acc, curr) => {
-                const idx = digits.indexOf(curr);
-                return idx !== -1 ? (acc * 12) + idx : acc;
-            }, 0);
+            numericValue = parseInt(parts[0], 12);
             if (parts[1]) {
+                const stdDigits = "0123456789ABCDEF";
                 for (let i = 0; i < parts[1].length; i++) {
-                    const idx = digits.indexOf(parts[1][i]);
-                    if (idx !== -1) numericValue += idx * Math.pow(12, -(i+1));
+                    numericValue += stdDigits.indexOf(parts[1][i]) * Math.pow(12, -(i+1));
                 }
             }
         } else {
@@ -185,7 +168,7 @@ function performConversion() {
         const baseValue = numericValue * rateIn;
         const rawResult = baseValue / rateOut;
 
-        if (isOutputAna) {
+        if (currentOutputUnit.includes("Anatolya")) {
             const anaValue = toBase12(rawResult, true);
             const std12Value = toBase12(rawResult, false);
             const decStr = Number(rawResult.toFixed(2)).toLocaleString('tr-TR');
