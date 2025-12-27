@@ -29,7 +29,7 @@ const unitData = {
     "Veri": ["Byte", "Kilobyte", "Megabyte", "Gigabyte", "Terabyte", "Anatolya Verisi"]
 };
 
-// --- KATSAYILAR (Saniye/Metre/Kg bazlı) ---
+// --- KATSAYILAR ---
 const conversionRates = {
     "Uzunluk": { "Metre": 1, "Kilometre": 1000, "Mil": 1609.34, "İnç": 0.0254, "Ayak (ft)": 0.3048, "Arşın": 0.68, "Menzil": 5000 },
     "Kütle": { "Kilogram": 1, "Gram": 0.001, "Libre (lb)": 0.4535, "Ons (oz)": 0.0283, "Batman": 7.697, "Dirhem": 0.0032 },
@@ -44,26 +44,35 @@ const conversionRates = {
     }
 };
 
-const toGreek = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
+const toGreek = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Ğ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
 const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
 
 // --- ÖZEL YARDIMCI FONKSİYONLAR ---
-function toBase12(n, pad = 1) {
+function toBase12(n, pad = 2) {
     const digits = "θ123456789ΦΛ";
-    if (n === 0) return "θ".repeat(pad);
     let integerPart = Math.floor(Math.abs(n));
     let fractionPart = Math.abs(n) - integerPart;
     let res = "";
-    while (integerPart > 0) { res = digits[integerPart % 12] + res; integerPart = Math.floor(integerPart / 12); }
-    res = res.padStart(pad, 'θ');
-    if (fractionPart > 0) {
+    
+    if (integerPart === 0) {
+        res = digits[0];
+    } else {
+        while (integerPart > 0) { 
+            res = digits[integerPart % 12] + res; 
+            integerPart = Math.floor(integerPart / 12); 
+        }
+    }
+    
+    res = res.padStart(pad, digits[0]);
+
+    if (fractionPart > 0.0001) {
         res += ",";
         for (let i = 0; i < 3; i++) {
             fractionPart *= 12;
             let d = Math.floor(fractionPart);
             res += digits[d];
             fractionPart -= d;
-            if (fractionPart === 0) break;
+            if (fractionPart < 0.0001) break;
         }
     }
     return res;
@@ -128,7 +137,7 @@ function performConversion() {
         const rawResult = baseValue / conversionRates[mode][currentOutputUnit];
 
         if (isOutputAna) {
-            const anaValue = toBase12(rawResult);
+            const anaValue = toBase12(rawResult, 1);
             const decValue = Number(rawResult.toFixed(2)).toLocaleString('tr-TR');
             outputArea.value = `${anaValue} (${decValue})`; 
         } else {
@@ -192,7 +201,7 @@ function calculateCustomDate(now) {
     }
     const day = (daysPassed - daysCounter) % 30 + 1;
     const month = Math.floor((daysPassed - daysCounter) / 30) + 1;
-    return { base12: `${toBase12(day)}.${toBase12(month)}.${toBase12(year + 1 + 10368, 4)}` };
+    return { base12: `${toBase12(day, 2)}.${toBase12(month, 2)}.${toBase12(year + 1 + 10368, 4)}` };
 }
 
 function updateTime() {
@@ -203,7 +212,7 @@ function updateTime() {
     const h = Math.floor(totalSecs / 14400) % 12;
     const m = Math.floor((totalSecs / 120) % 120);
     const s = totalSecs % 120;
-    document.getElementById('clock').textContent = `${toBase12(h)}.${toBase12(m)}.${toBase12(s)}`;
+    document.getElementById('clock').textContent = `${toBase12(h, 2)}.${toBase12(m, 2)}.${toBase12(s, 2)}`;
     document.getElementById('date').textContent = calculateCustomDate(now).base12;
 }
 
