@@ -1,6 +1,3 @@
-/* ==========================================================================
-   1. TANIMLAMALAR
-   ========================================================================== */
 const latin = document.getElementById('latin');
 const greek = document.getElementById('greek');
 const pillInputLabel = document.getElementById('pill-input-label');
@@ -10,6 +7,7 @@ const dropdownOutput = document.getElementById('dropdown-output');
 const kbContainer = document.getElementById('kb-container');
 let activeInput = latin;
 
+// Aktif birimler
 let currentInputUnit = "Eski Alfabe";
 let currentOutputUnit = "Yeni Alfabe";
 
@@ -30,12 +28,10 @@ const unitData = {
     "Paralel": ["Standart Paralel", "Anatolya Enlemi"]
 };
 
-const toGreekMap = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","Κ":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Ğ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
-const toLatinMap = Object.fromEntries(Object.entries(toGreekMap).map(([k,v])=>[v,k.toUpperCase()]));
+const toGreek = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Ğ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
+const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
 
-/* ==========================================================================
-   2. ÖZEL DROPDOWN MANTIĞI
-   ========================================================================== */
+// Dropdown Mantığı
 function toggleDropdown(type) {
     const el = type === 'input' ? dropdownInput : dropdownOutput;
     const other = type === 'input' ? dropdownOutput : dropdownInput;
@@ -81,11 +77,9 @@ function renderPills() {
     dropdownOutput.classList.remove('show');
 }
 
-/* ==========================================================================
-   3. ÇEVİRİ VE KLAVYE
-   ========================================================================== */
+// Çeviri ve Klavye
 function translate(text, dir){
-    const map = dir === "toGreek" ? toGreekMap : toLatinMap;
+    const map = dir === "toGreek" ? toGreek : toLatin;
     return text.split('').map(ch => map[ch] || ch).join('');
 }
 
@@ -117,11 +111,12 @@ navTabs.forEach(tab => {
     });
 });
 
-document.getElementById('themeToggle').addEventListener('click', () => { document.documentElement.classList.toggle('dark'); });
+document.getElementById('themeToggle').addEventListener('click', function() {
+    document.documentElement.classList.toggle('dark');
+    localStorage.setItem('color-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+});
 
-/* ==========================================================================
-   4. SAAT VE TARİH
-   ========================================================================== */
+// Zaman Fonksiyonları
 function toBase12(n, pad = 2) {
     const digits = "θ123456789ΦΛ";
     if (n === 0) return "θ".repeat(pad);
