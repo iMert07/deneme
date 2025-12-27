@@ -30,7 +30,6 @@
         .inactive-tab { background-color: transparent; color: #94a3b8; }
         .dark .inactive-tab { color: #64748b; }
         
-        /* Özel Dropdown Panel Tasarımı */
         .dropdown-panel {
             display: none; position: absolute; top: calc(100% + 5px); left: 0;
             min-width: 140px; background: white; border-radius: 12px;
@@ -111,17 +110,18 @@
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
         <div class="flex flex-col gap-2 relative">
             <div class="w-max ml-1 relative">
-                <div class="unit-pill" id="pill-input-label" onclick="toggleDropdown('input')">Eski Alfabe</div>
+                <div class="unit-pill" id="pill-input-label" onclick="toggleDropdown('input')">Seçiniz</div>
                 <div id="dropdown-input" class="dropdown-panel select-none"></div>
             </div>
-            <textarea id="latin" class="w-full h-[180px] lg:h-[300px] p-5 bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm focus:ring-2 focus:ring-primary/50 resize-none text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
+            <textarea id="input-area" class="w-full h-[180px] lg:h-[300px] p-5 bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm focus:ring-2 focus:ring-primary/50 resize-none text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
         </div>
+
         <div class="flex flex-col gap-2 relative">
             <div class="w-max ml-1 relative">
-                <div class="unit-pill" id="pill-output-label" onclick="toggleDropdown('output')">Yeni Alfabe</div>
+                <div class="unit-pill" id="pill-output-label" onclick="toggleDropdown('output')">Seçiniz</div>
                 <div id="dropdown-output" class="dropdown-panel select-none"></div>
             </div>
-            <textarea id="greek" class="w-full h-[180px] lg:h-[300px] p-5 bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner resize-none text-slate-900 dark:text-white" placeholder="Sonuç..." readonly></textarea>
+            <textarea id="output-area" class="w-full h-[180px] lg:h-[300px] p-5 bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner resize-none text-slate-900 dark:text-white" placeholder="Sonuç..." readonly></textarea>
         </div>
     </section>
 
@@ -139,4 +139,3 @@
 <script src="script.js"></script>
 </body>
 </html>
-
