@@ -54,26 +54,12 @@ function toBase12(n, pad = 1) {
     let integerPart = Math.floor(num);
     let fractionPart = num - integerPart;
     let res = "";
-    
-    if (integerPart === 0) {
-        res = digits[0];
-    } else {
-        while (integerPart > 0) { 
-            res = digits[integerPart % 12] + res; 
-            integerPart = Math.floor(integerPart / 12); 
-        }
-    }
+    if (integerPart === 0) { res = digits[0]; } 
+    else { while (integerPart > 0) { res = digits[integerPart % 12] + res; integerPart = Math.floor(integerPart / 12); } }
     res = res.padStart(pad, digits[0]);
-
     if (fractionPart > 0.0001) {
         res += ",";
-        for (let i = 0; i < 3; i++) {
-            fractionPart *= 12;
-            let d = Math.floor(fractionPart);
-            res += digits[d];
-            fractionPart -= d;
-            if (fractionPart < 0.0001) break;
-        }
+        for (let i = 0; i < 3; i++) { fractionPart *= 12; let d = Math.floor(fractionPart); res += digits[d]; fractionPart -= d; if (fractionPart < 0.0001) break; }
     }
     return res;
 }
@@ -142,38 +128,67 @@ function performConversion() {
         if (isOutputAna) {
             const anaValue = toBase12(rawResult);
             const decStr = Number(rawResult.toFixed(2)).toLocaleString('tr-TR');
-            
-            // --- AKILLI PARANTEZ MANTIĞI ---
-            // Eğer yazılış (Anatolya sembolü) ile 10'luk tabandaki karşılığı aynı ise parantez basma
-            if (anaValue === decStr) {
-                outputArea.value = anaValue;
-            } else {
-                outputArea.value = `${anaValue} (${decStr})`; 
-            }
+            if (anaValue === decStr) { outputArea.value = anaValue; } 
+            else { outputArea.value = `${anaValue} (${decStr})`; }
         } else {
             outputArea.value = Number(rawResult.toFixed(5)).toLocaleString('tr-TR', { maximumFractionDigits: 5 });
         }
     }
 }
 
-// --- UI FONKSİYONLARI ---
+// --- UI FONKSİYONLARI (ENGELLEME MANTIĞI BURADA) ---
 function selectUnit(type, value) {
-    if (type === 'input') currentInputUnit = value; else currentOutputUnit = value;
-    renderPills(); performConversion();
+    const activeTab = document.querySelector('.active-tab');
+    const mode = activeTab.dataset.value;
+    const options = unitData[mode];
+
+    if (type === 'input') {
+        currentInputUnit = value;
+        // ÇAKIŞMA KONTROLÜ: Eğer sağ taraf sol taraf ile aynı olduysa, sağ tarafı listedeki bir sonrakine at
+        if (currentInputUnit === currentOutputUnit) {
+            let nextIndex = (options.indexOf(value) + 1) % options.length;
+            currentOutputUnit = options[nextIndex];
+        }
+    } else {
+        currentOutputUnit = value;
+        // ÇAKIŞMA KONTROLÜ: Eğer sol taraf sağ taraf ile aynı olduysa, sol tarafı listedeki bir öncekine at
+        if (currentOutputUnit === currentInputUnit) {
+            let prevIndex = (options.indexOf(value) - 1 + options.length) % options.length;
+            currentInputUnit = options[prevIndex];
+        }
+    }
+    renderPills();
+    performConversion();
 }
+
 function renderDropdowns(mode) {
     const options = unitData[mode] || [];
-    if (mode === "Sayı") { currentInputUnit = "Onluk (10)"; currentOutputUnit = "Anatolya (12)"; }
-    else { currentInputUnit = options[0]; currentOutputUnit = options[1] || options[0]; }
-    dropdownInput.innerHTML = options.map(opt => `<div class="dropdown-item" onclick="selectUnit('input', '${opt}')">${opt}</div>`).join('');
-    dropdownOutput.innerHTML = options.map(opt => `<div class="dropdown-item" onclick="selectUnit('output', '${opt}')">${opt}</div>`).join('');
-    renderPills(); performConversion();
+    // Başlangıçta çakışmayacak şekilde ata
+    currentInputUnit = options[0];
+    currentOutputUnit = options[1] || options[0];
+    
+    const createItems = (type) => options.map(opt => `<div class="dropdown-item" onclick="selectUnit('${type}', '${opt}')">${opt}</div>`).join('');
+    
+    dropdownInput.innerHTML = createItems('input');
+    dropdownOutput.innerHTML = createItems('output');
+    renderPills();
+    performConversion();
 }
+
 function renderPills() {
-    pillInputLabel.innerText = currentInputUnit; pillOutputLabel.innerText = currentOutputUnit;
-    dropdownInput.classList.remove('show'); dropdownOutput.classList.remove('show');
+    pillInputLabel.innerText = currentInputUnit;
+    pillOutputLabel.innerText = currentOutputUnit;
+    dropdownInput.classList.remove('show');
+    dropdownOutput.classList.remove('show');
 }
-function toggleDropdown(type) { const el = type === 'input' ? dropdownInput : dropdownOutput; el.classList.toggle('show'); }
+
+function toggleDropdown(type) {
+    const el = type === 'input' ? dropdownInput : dropdownOutput;
+    const other = type === 'input' ? dropdownOutput : dropdownInput;
+    other.classList.remove('show');
+    el.classList.toggle('show');
+}
+
 window.onclick = function(event) { if (!event.target.closest('.unit-pill')) { dropdownInput.classList.remove('show'); dropdownOutput.classList.remove('show'); } }
 
 // --- EVENT LISTENERS ---
@@ -191,17 +206,21 @@ document.querySelectorAll('.key').forEach(key => {
 document.querySelectorAll('.nav-tab').forEach(tab => {
     tab.addEventListener('click', function() {
         document.querySelectorAll('.nav-tab').forEach(t => t.classList.replace('active-tab', 'inactive-tab'));
-        this.classList.replace('inactive-tab', 'active-tab'); renderDropdowns(this.dataset.value);
+        this.classList.replace('inactive-tab', 'active-tab'); 
+        renderDropdowns(this.dataset.value);
     });
 });
 document.getElementById('themeToggle').addEventListener('click', () => document.documentElement.classList.toggle('dark'));
 
 // --- HEADER TAKVİM ---
 function calculateCustomDate(now) {
-    const gregBase = new Date(1071, 2, 21); const diff = now - gregBase; const daysPassed = Math.floor(diff / 86400000);
+    const gregBase = new Date(1071, 2, 21);
+    const diff = now - gregBase;
+    const daysPassed = Math.floor(diff / 86400000);
     let year = 0; let daysCounter = 0;
     while (true) {
-        let yearDays = 365; let nextYear = year + 1;
+        let yearDays = 365;
+        let nextYear = year + 1;
         if (nextYear % 20 === 0 && nextYear % 640 !== 0) yearDays += 5;
         if (daysCounter + yearDays > daysPassed) break;
         daysCounter += yearDays; year++;
