@@ -26,7 +26,6 @@ const unitData = {
     "Paralel": ["Standart Paralel", "Anatolya Enlemi"]
 };
 
-// Temel birim katsayıları (Örn: Uzunluk için Metre, Kütle için KG baz alınmıştır)
 const conversionRates = {
     "Uzunluk": { "Metre": 1, "Kilometre": 1000, "Mil": 1609.34, "İnç": 0.0254, "Ayak (ft)": 0.3048, "Arşın": 0.68, "Menzil": 5000 },
     "Kütle": { "Kilogram": 1, "Gram": 0.001, "Libre (lb)": 0.4535, "Ons (oz)": 0.0283, "Batman": 7.697, "Dirhem": 0.0032 },
@@ -39,6 +38,21 @@ const conversionRates = {
 const toGreek = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
 const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
 
+// --- ÖZEL SAYI FORMATLAMA (Kopyalamayı bozmayan kesme işareti) ---
+function formatAnatolyaNumber(numStr) {
+    if (!numStr) return "";
+    // Sayısal olmayan ifadeleri (alfabe gibi) elleme
+    if (isNaN(numStr.toString().replace(',', '.'))) return numStr;
+
+    let parts = numStr.toString().split('.');
+    let integerPart = parts[0];
+    let decimalPart = parts.length > 1 ? "," + parts[1] : "";
+    
+    // Binlikleri kopyalanamaz span ile ayır
+    integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, "<span class='sep'>'</span>");
+    return integerPart + decimalPart;
+}
+
 // --- MERKEZİ DÖNÜŞÜM MOTORU ---
 function performConversion() {
     const activeTab = document.querySelector('.active-tab');
@@ -46,38 +60,28 @@ function performConversion() {
     const mode = activeTab.dataset.value;
     const text = inputArea.value.trim();
 
-    if (!text) { outputArea.value = ""; return; }
+    if (!text) { outputArea.innerHTML = "Sonuç..."; return; }
 
-    // 1. Alfabe Modu
     if (mode === "Alfabe") {
-        if (currentInputUnit === "Eski Alfabe" && currentOutputUnit === "Yeni Alfabe") {
-            outputArea.value = text.split('').map(ch => toGreek[ch] || ch).join('');
-        } else if (currentInputUnit === "Yeni Alfabe" && currentOutputUnit === "Eski Alfabe") {
-            outputArea.value = text.split('').map(ch => toLatin[ch] || ch).join('');
-        } else { outputArea.value = text; }
+        let res = (currentInputUnit === "Eski Alfabe") 
+            ? text.split('').map(ch => toGreek[ch] || ch).join('')
+            : text.split('').map(ch => toLatin[ch] || ch).join('');
+        outputArea.innerHTML = res;
     } 
-    // 2. Sayı Modu (2, 10, 12, 16 tabanları)
     else if (mode === "Sayı") {
-        outputArea.value = handleNumberConversion(text);
+        outputArea.innerHTML = handleNumberConversion(text);
     }
-    // 3. Sıcaklık Modu
     else if (mode === "Sıcaklık") {
-        outputArea.value = handleTemperature(text);
+        outputArea.innerHTML = handleTemperature(text);
     }
-    // 4. Genel Birim Dönüşümleri (Uzunluk, Kütle, Hacim, Hız, Alan, Veri)
     else if (conversionRates[mode]) {
         const val = parseFloat(text.replace(',', '.'));
-        if (isNaN(val)) { outputArea.value = "Geçersiz Sayı"; return; }
+        if (isNaN(val)) { outputArea.innerHTML = "Geçersiz Sayı"; return; }
         const baseVal = val * conversionRates[mode][currentInputUnit];
-        const result = baseVal / conversionRates[mode][currentOutputUnit];
-        outputArea.value = result.toLocaleString('tr-TR', { maximumFractionDigits: 5 });
-    }
-    else {
-        outputArea.value = `[${mode}] Henüz veri girilmedi.`;
+        const result = (baseVal / conversionRates[mode][currentOutputUnit]).toFixed(5).replace(/\.?0+$/, "");
+        outputArea.innerHTML = formatAnatolyaNumber(result);
     }
 }
-
-// --- YARDIMCI HESAPLAMA FONKSİYONLARI ---
 
 function handleNumberConversion(text) {
     let dec;
@@ -89,10 +93,13 @@ function handleNumberConversion(text) {
         else dec = text.split('').reverse().reduce((acc, c, i) => acc + digits.indexOf(c) * Math.pow(12, i), 0);
 
         if (isNaN(dec)) return "Hata";
-        if (currentOutputUnit === "Onluk (Standart)") return dec.toString(10);
-        if (currentOutputUnit === "İkilik (Base 2)") return dec.toString(2);
-        if (currentOutputUnit === "Onaltılık (Hex)") return dec.toString(16).toUpperCase();
-        return toBase12(dec, 1);
+        let res;
+        if (currentOutputUnit === "Onluk (Standart)") res = dec.toString(10);
+        else if (currentOutputUnit === "İkilik (Base 2)") res = dec.toString(2);
+        else if (currentOutputUnit === "Onaltılık (Hex)") res = dec.toString(16).toUpperCase();
+        else res = toBase12(dec, 1);
+        
+        return formatAnatolyaNumber(res);
     } catch(e) { return "Hata"; }
 }
 
@@ -103,16 +110,18 @@ function handleTemperature(text) {
     if (currentInputUnit === "Celsius") c = v;
     else if (currentInputUnit === "Fahrenheit") c = (v - 32) * 5/9;
     else if (currentInputUnit === "Kelvin") c = v - 273.15;
-    else c = v * 2; // Anatolya Ilım/Ayaz mantığı
+    else c = v * 2; 
 
-    if (currentOutputUnit === "Celsius") return c.toFixed(2);
-    if (currentOutputUnit === "Fahrenheit") return (c * 9/5 + 32).toFixed(2);
-    if (currentOutputUnit === "Kelvin") return (c + 273.15).toFixed(2);
-    return (c / 2).toFixed(2);
+    let res;
+    if (currentOutputUnit === "Celsius") res = c.toFixed(2);
+    else if (currentOutputUnit === "Fahrenheit") res = (c * 9/5 + 32).toFixed(2);
+    else if (currentOutputUnit === "Kelvin") res = (c + 273.15).toFixed(2);
+    else res = (c / 2).toFixed(2);
+    
+    return formatAnatolyaNumber(res);
 }
 
-// --- DROPDOWN VE UI MANTIĞI ---
-
+// --- UI KONTROLLERİ ---
 function toggleDropdown(type) {
     const el = type === 'input' ? dropdownInput : dropdownOutput;
     const other = type === 'input' ? dropdownOutput : dropdownInput;
@@ -158,8 +167,7 @@ function renderPills() {
     dropdownOutput.classList.remove('show');
 }
 
-// --- OLAY DİNLEYİCİLER ---
-
+// --- EVENT LISTENERS ---
 inputArea.addEventListener('input', performConversion);
 inputArea.addEventListener('focus', () => activeInput = inputArea);
 
@@ -168,7 +176,7 @@ document.querySelectorAll('.key').forEach(key => {
         e.preventDefault();
         const action = key.dataset.action;
         if(action === 'delete') inputArea.value = inputArea.value.slice(0,-1);
-        else if(action === 'reset') { inputArea.value = ''; outputArea.value = ''; }
+        else if(action === 'reset') { inputArea.value = ''; outputArea.innerHTML = 'Sonuç...'; }
         else if(action === 'space') inputArea.value += ' ';
         else if(action === 'enter') inputArea.value += '\n';
         else if(!key.classList.contains('fn-key')) inputArea.value += key.innerText;
@@ -186,10 +194,10 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
 
 document.getElementById('themeToggle').addEventListener('click', function() {
     document.documentElement.classList.toggle('dark');
+    localStorage.setItem('color-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
 });
 
 // --- ÖZEL ZAMAN FONKSİYONLARI ---
-
 function toBase12(n, pad = 2) {
     const digits = "θ123456789ΦΛ";
     if (n === 0) return "θ".repeat(pad);
