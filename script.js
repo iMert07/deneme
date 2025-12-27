@@ -28,39 +28,37 @@ const unitData = {
     "Paralel": ["Standart Parallel", "Anatolya Enlemi"]
 };
 
-// --- ALFABE SÜTUNLARI ---
-// Yeni alfabe ekleyeceksen sadece altına yeni bir satır ekle.
+// --- ALFABE SÜTUNLARI (TEK SATIR MANTIĞI) ---
 const alphabetMaps = {
     "Standart Alfabe": [
-        "a", "b", "c", "ç", "d", "e", "f", "g", "ğ", "h", "ı", "i", "j", "k", "l", "m", "n", "o", "ö", "p", "r", "s", "ş", "t", "u", "ü", "v", "x", "y", "z",
-        "A", "B", "C", "Ç", "D", "E", "F", "G", "Ğ", "H", "I", "İ", "J", "K", "L", "M", "N", "O", "Ö", "P", "R", "S", "Ş", "T", "U", "Ü", "V", "X", "Y", "Z",
-        "0"
+        "a", "b", "c", "ç", "d", "e", "f", "g", "ğ", "h", "ı", "i", "j", "k", "l", "m", "n", "o", "ö", "p", "r", "s", "ş", "t", "u", "ü", "v", "x", "y", "z", "0"
     ],
     "Yeni Alfabe": [
-        "Α", "Β", "J", "C", "D", "Ε", "F", "G", "Γ", "Η", "Ь", "Ͱ", "Σ", "Κ", "L", "Μ", "Ν", "Q", "Ω", "Π", "Ρ", "S", "Ш", "Τ", "U", "Υ", "V", "Ψ", "R", "Ζ",
-        "Α", "Β", "J", "C", "D", "Ε", "F", "G", "Γ", "Η", "Ь", "Ͱ", "Σ", "Κ", "L", "Μ", "Ν", "Q", "Ω", "Π", "Ρ", "S", "Ш", "Τ", "U", "Υ", "V", "Ψ", "R", "Ζ",
-        "θ"
+        "Α", "Β", "J", "C", "D", "Ε", "F", "G", "Γ", "Η", "Ь", "Ͱ", "Σ", "Κ", "L", "Μ", "Ν", "Q", "Ω", "Π", "Ρ", "S", "Ш", "Τ", "U", "Υ", "V", "Ψ", "R", "Ζ", "θ"
     ],
-    "Fars Alfabesi (Yok)": [], // İleride burayı doldurabilirsin
-    "Orhun Alfabesi (Yok)": [] // İleride burayı doldurabilirsin
+    "Fars Alfabesi (Yok)": [],
+    "Orhun Alfabesi (Yok)": []
 };
 
-// --- ÇEVİRİ MOTORU ---
+// --- ÇEVİRİ MOTORU (KÜÇÜK/BÜYÜK DUYARLI) ---
 function universalTranslate(text, fromUnit, toUnit) {
     if (fromUnit === toUnit) return text;
     
     const sourceMap = alphabetMaps[fromUnit];
     const targetMap = alphabetMaps[toUnit];
     
-    // Eğer seçilen alfabenin verisi yoksa metni olduğu gibi bırak
     if (!sourceMap || sourceMap.length === 0 || !targetMap || targetMap.length === 0) return text;
 
     return text.split('').map(char => {
-        const index = sourceMap.indexOf(char);
-        if (index !== -1) {
-            return targetMap[index];
+        // 1. Karakteri olduğu gibi ara
+        let index = sourceMap.indexOf(char);
+        
+        // 2. Bulamazsa küçük harfe çevirip tekrar ara (A girilirse a'yı bulması için)
+        if (index === -1) {
+            index = sourceMap.indexOf(char.toLowerCase());
         }
-        return char; // Harita dışı karakterleri koru
+
+        return index !== -1 ? targetMap[index] : char;
     }).join('');
 }
 
@@ -84,21 +82,7 @@ function performTranslation() {
     inputEl.addEventListener('focus', (e) => activeInput = e.target);
 });
 
-// Klavye Tuşları
-document.querySelectorAll('.key').forEach(key => {
-    key.addEventListener('click', (e) => {
-        e.preventDefault();
-        const action = key.dataset.action;
-        if(action === 'delete') activeInput.value = activeInput.value.slice(0,-1);
-        else if(action === 'enter') activeInput.value += '\n';
-        else if(action === 'space') activeInput.value += ' ';
-        else if(action === 'reset') { latin.value = ''; greek.value = ''; }
-        else if(!key.classList.contains('fn-key')) activeInput.value += key.innerText;
-        performTranslation();
-    });
-});
-
-// Dropdown & UI Mantığı
+// Dropdown Mantığı
 function toggleDropdown(type) {
     const el = type === 'input' ? dropdownInput : dropdownOutput;
     const other = type === 'input' ? dropdownOutput : dropdownInput;
@@ -131,6 +115,7 @@ function renderDropdowns(mode) {
     const options = unitData[mode] || [];
     currentInputUnit = options[0];
     currentOutputUnit = options[1] || options[0];
+    
     dropdownInput.innerHTML = options.map(opt => `<div class="dropdown-item" onclick="selectUnit('input', '${opt}')">${opt}</div>`).join('');
     dropdownOutput.innerHTML = options.map(opt => `<div class="dropdown-item" onclick="selectUnit('output', '${opt}')">${opt}</div>`).join('');
     renderPills();
@@ -143,6 +128,21 @@ function renderPills() {
     dropdownOutput.classList.remove('show');
 }
 
+// Klavye Olayları
+document.querySelectorAll('.key').forEach(key => {
+    key.addEventListener('click', (e) => {
+        e.preventDefault();
+        const action = key.dataset.action;
+        if(action === 'delete') activeInput.value = activeInput.value.slice(0,-1);
+        else if(action === 'enter') activeInput.value += '\n';
+        else if(action === 'space') activeInput.value += ' ';
+        else if(action === 'reset') { latin.value = ''; greek.value = ''; }
+        else if(!key.classList.contains('fn-key')) activeInput.value += key.innerText;
+        performTranslation();
+    });
+});
+
+// Sekme Navigasyonu
 const navTabs = document.querySelectorAll('.nav-tab');
 navTabs.forEach(tab => {
     tab.addEventListener('click', function() {
@@ -152,11 +152,13 @@ navTabs.forEach(tab => {
     });
 });
 
-// Tema & Zaman (Mevcut fonksiyonların)
+// Tema Değiştirici
 document.getElementById('themeToggle').addEventListener('click', function() {
     document.documentElement.classList.toggle('dark');
+    localStorage.setItem('color-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
 });
 
+// --- ZAMAN VE TAKVİM (ORİJİNAL) ---
 function toBase12(n, pad = 2) {
     const digits = "θ123456789ΦΛ";
     if (n === 0) return "θ".repeat(pad);
@@ -165,14 +167,40 @@ function toBase12(n, pad = 2) {
     return res.padStart(pad, 'θ');
 }
 
+function calculateCustomDate(now) {
+    const gregBase = new Date(1071, 2, 21);
+    const diff = now - gregBase;
+    const daysPassed = Math.floor(diff / 86400000);
+    let year = 0; let daysCounter = 0;
+    while (true) {
+        let yearDays = 365;
+        let nextYear = year + 1;
+        if (nextYear % 20 === 0 && nextYear % 640 !== 0) yearDays += 5;
+        if (daysCounter + yearDays > daysPassed) break;
+        daysCounter += yearDays; year++;
+    }
+    const dayOfYear = daysPassed - daysCounter;
+    const month = Math.floor(dayOfYear / 30) + 1;
+    const day = (dayOfYear % 30) + 1;
+    const base12Year = year + 1 + 10368;
+    return { base12: `${toBase12(day)}.${toBase12(month)}.${toBase12(base12Year, 4)}` };
+}
+
 function updateTime() {
     const clockEl = document.getElementById('clock');
     const dateEl = document.getElementById('date');
     if(!clockEl || !dateEl) return;
     const now = new Date();
-    // Zaman hesaplamaların...
-    clockEl.textContent = "00.00.00"; // Örnek
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 30, 0);
+    if (now < todayStart) todayStart.setDate(todayStart.getDate() - 1);
+    const totalSecs = Math.floor(((now - todayStart) / 1000) * 2);
+    const h = Math.floor(totalSecs / 14400) % 12;
+    const m = Math.floor((totalSecs / 120) % 120);
+    const s = totalSecs % 120;
+    clockEl.textContent = `${toBase12(h)}.${toBase12(m)}.${toBase12(s)}`;
+    dateEl.textContent = calculateCustomDate(now).base12;
 }
 
 setInterval(updateTime, 100);
+updateTime();
 renderDropdowns("Alfabe");
