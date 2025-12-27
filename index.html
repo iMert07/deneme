@@ -15,6 +15,11 @@
             darkMode: "class",
             theme: { extend: { colors: { "primary": "#137fec", "background-dark": "#101922" } } }
         }
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
     </script>
     <style>
         html, body { min-height: 100%; overflow-y: auto; margin: 0; padding: 0; }
@@ -24,27 +29,40 @@
         .active-tab span { color: white !important; }
         .inactive-tab { background-color: transparent; color: #94a3b8; }
         .dark .inactive-tab { color: #64748b; }
-        .dropdown-panel { display: none; position: absolute; top: calc(100% + 5px); left: 0; min-width: 140px; background: white; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid #e2e8f0; z-index: 100; overflow: hidden; }
+        
+        .dropdown-panel {
+            display: none; position: absolute; top: calc(100% + 5px); left: 0;
+            min-width: 140px; background: white; border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid #e2e8f0;
+            z-index: 100; overflow: hidden;
+        }
         .dark .dropdown-panel { background: #1e293b; border-color: #334155; }
         .dropdown-panel.show { display: block; animation: dropdownFade 0.15s ease-out; }
         @keyframes dropdownFade { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-        .dropdown-item { padding: 10px 16px; font-size: 11px; font-weight: 700; color: #475569; cursor: pointer; transition: all 0.2s; text-transform: uppercase; }
+
+        .dropdown-item {
+            padding: 10px 16px; font-size: 11px; font-weight: 700; color: #475569;
+            cursor: pointer; transition: all 0.2s; text-transform: uppercase;
+        }
         .dark .dropdown-item { color: #94a3b8; }
         .dropdown-item:hover { background: #f1f5f9; color: #137fec; }
         .dark .dropdown-item:hover { background: #334155; color: white; }
-        .unit-pill { display: flex; align-items: center; justify-content: center; padding: 6px 16px; background: #e2e8f0; color: #475569; border-radius: 9999px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.2s; cursor: pointer; border: 1px solid transparent; user-select: none; -webkit-user-select: none; max-width: 180px; }
+
+        .unit-pill {
+            display: flex; align-items: center; justify-content: center;
+            padding: 6px 16px; background: #e2e8f0; color: #475569;
+            border-radius: 9999px; font-size: 10px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.05em;
+            transition: all 0.2s; cursor: pointer; border: 1px solid transparent;
+            user-select: none; -webkit-user-select: none; max-width: 180px;
+        }
         .dark .unit-pill { background: #1e293b; color: #94a3b8; border-color: #334155; }
         .unit-pill:hover { background: #137fec; color: white; transform: translateY(-1px); }
 
-        /* ÖZEL TARİH SEÇİCİ STİLLERİ */
-        .picker-select {
-            -webkit-appearance: none; appearance: none;
-            background: #f1f5f9; border: none; border-radius: 10px;
-            padding: 10px; font-weight: 700; font-size: 14px; text-align: center;
-            cursor: pointer; width: 100%; transition: all 0.2s;
+        @media (min-width: 1024px) {
+            textarea { font-size: 1.5rem !important; }
+            h2 { font-size: 1.5rem !important; }
         }
-        .dark .picker-select { background: #111a22; color: white; }
-        .picker-select:hover { background: #137fec; color: white; }
 
         @media (max-width: 768px) {
             .keyboard { width: 97% !important; max-width: 550px !important; margin: 0 0 0 auto !important; padding: 8px !important; border-radius: 1rem !important; }
@@ -69,12 +87,22 @@
             <span class="material-symbols-outlined text-[26px]">globe_book</span>
         </button>
     </div>
+
     <div class="flex items-center gap-2 px-4 pb-1.5 overflow-x-auto no-scrollbar scroll-smooth select-none">
-        <button class="nav-tab active-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all cursor-pointer" data-value="Alfabe">Alfabe</button>
-        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all cursor-pointer" data-value="Sayı">Sayı</button>
-        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all cursor-pointer" data-value="Takvim">Takvim</button>
-        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all cursor-pointer" data-value="Para">Para</button>
-        <button class="nav-tab inactive-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all cursor-pointer" data-value="Uzunluk">Uzunluk</button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all active-tab cursor-pointer" data-value="Alfabe"><span class="material-symbols-outlined text-[18px]">translate</span><span class="text-sm font-medium">Alfabe</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Sayı"><span class="material-symbols-outlined text-[18px]">123</span><span class="text-sm font-medium">Sayı</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Takvim"><span class="material-symbols-outlined text-[18px]">calendar_month</span><span class="text-sm font-medium">Takvim</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Zaman"><span class="material-symbols-outlined text-[18px]">schedule</span><span class="text-sm font-medium">Zaman</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Uzunluk"><span class="material-symbols-outlined text-[18px]">straighten</span><span class="text-sm font-medium">Uzunluk</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Kütle"><span class="material-symbols-outlined text-[18px]">fitness_center</span><span class="text-sm font-medium">Kütle</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Sıcaklık"><span class="material-symbols-outlined text-[18px]">thermostat</span><span class="text-sm font-medium">Sıcaklık</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Hacim"><span class="material-symbols-outlined text-[18px]">opacity</span><span class="text-sm font-medium">Hacim</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Hız"><span class="material-symbols-outlined text-[18px]">speed</span><span class="text-sm font-medium">Hız</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Alan"><span class="material-symbols-outlined text-[18px]">texture</span><span class="text-sm font-medium">Alan</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Veri"><span class="material-symbols-outlined text-[18px]">database</span><span class="text-sm font-medium">Veri</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Meridyen"><span class="material-symbols-outlined text-[18px]">explore</span><span class="text-sm font-medium">Meridyen</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Paralel"><span class="material-symbols-outlined text-[18px]">language</span><span class="text-sm font-medium">Paralel</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Para"><span class="material-symbols-outlined text-[18px]">payments</span><span class="text-sm font-medium">Para</span></button>
     </div>
 </header>
 
@@ -85,16 +113,6 @@
                 <div class="unit-pill" id="pill-input-label" onclick="toggleDropdown('input')">Eski Alfabe</div>
                 <div id="dropdown-input" class="dropdown-panel select-none"></div>
             </div>
-            
-            <div id="custom-date-picker" class="hidden grid grid-cols-3 gap-2 p-4 bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm">
-                <select id="p-day" class="picker-select"></select>
-                <select id="p-month" class="picker-select"></select>
-                <input type="number" id="p-year" class="picker-select" value="2024">
-                <select id="p-hour" class="picker-select"></select>
-                <select id="p-min" class="picker-select"></select>
-                <button id="p-now" class="bg-primary text-white rounded-lg font-bold text-[10px] uppercase">ŞİMDİ</button>
-            </div>
-
             <textarea id="input-area" class="w-full h-[180px] lg:h-[300px] p-5 bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm focus:ring-2 focus:ring-primary/50 resize-none text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
         </div>
 
@@ -110,14 +128,14 @@
     <section id="kb-container" class="select-none">
         <div class="keyboard !my-0" id="mainKeyboard">
             <div class="row"><div class="key">θ</div><div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">Φ</div><div class="key">Λ</div></div>
-            <div class="row flex justify-center gap-1">
-                <div class="key wide fn-key px-4 bg-slate-300 dark:bg-slate-700 rounded cursor-pointer" data-action="reset">Sıfırla</div>
-                <div class="key flex-1 bg-white dark:bg-slate-800 rounded cursor-pointer text-center py-2" data-action="space">Boşluk</div>
-                <div class="key wide fn-key px-4 bg-slate-300 dark:bg-slate-700 rounded cursor-pointer" data-action="delete">⌫</div>
-            </div>
+            <div class="row"><div class="key">Ϙ</div><div class="key">Ш</div><div class="key">E</div><div class="key">R</div><div class="key">T</div><div class="key">Y</div><div class="key">U</div><div class="key">Ͱ</div><div class="key">Ω</div><div class="key">P</div><div class="key">Γ</div><div class="key">Σ</div></div>
+            <div class="row"><div class="key fn-key">,</div><div class="key">A</div><div class="key">S</div><div class="key">D</div><div class="key">F</div><div class="key">G</div><div class="key">H</div><div class="key">J</div><div class="key">K</div><div class="key">L</div><div class="key">Ь</div><div class="key fn-key">.</div></div>
+            <div class="row"><div class="key wide fn-key" data-action="shift">Shift</div><div class="key">Z</div><div class="key">Ψ</div><div class="key">C</div><div class="key">V</div><div class="key">B</div><div class="key">N</div><div class="key">M</div><div class="key">Π</div><div class="key wide fn-key" data-action="delete"><span class="material-symbols-outlined">backspace</span></div></div>
+            <div class="row"><div class="key wide fn-key" data-action="reset">Sıfırla</div><div class="key extra-wide" data-action="space">Boşluk</div><div class="key wide fn-key" data-action="enter">Enter</div></div>
         </div>
     </section>
 </main>
+
 <script src="script.js"></script>
 </body>
 </html>
