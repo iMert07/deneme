@@ -1,3 +1,4 @@
+// --- ELEMENT SEÇİCİLER ---
 const inputArea = document.getElementById('input-area');
 const outputArea = document.getElementById('output-area');
 const pillInputLabel = document.getElementById('pill-input-label');
@@ -26,7 +27,6 @@ const unitData = {
     "Paralel": ["Standart Paralel", "Anatolya Enlemi"]
 };
 
-// Alfabe Sözlüğü
 const toGreek = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
 const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
 
@@ -48,7 +48,7 @@ function performConversion() {
             outputArea.value = text;
         }
     } else {
-        // Diğer modlar için hesaplama şablonu (Sayı, Uzunluk vb.)
+        // Diğer modlar için hesaplama şablonu
         outputArea.value = `[${mode}] Dönüşüm yapılıyor: ${currentInputUnit} -> ${currentOutputUnit}`;
     }
 }
@@ -80,7 +80,7 @@ function selectUnit(type, value) {
         if (currentOutputUnit === currentInputUnit) currentInputUnit = options.find(o => o !== value) || options[0];
     }
     renderPills();
-    performConversion(); // Birim değişince hesapla
+    performConversion();
 }
 
 function renderDropdowns(mode) {
@@ -91,7 +91,7 @@ function renderDropdowns(mode) {
     dropdownInput.innerHTML = options.map(opt => `<div class="dropdown-item" onclick="selectUnit('input', '${opt}')">${opt}</div>`).join('');
     dropdownOutput.innerHTML = options.map(opt => `<div class="dropdown-item" onclick="selectUnit('output', '${opt}')">${opt}</div>`).join('');
     renderPills();
-    performConversion(); // Sekme değişince hesapla
+    performConversion();
 }
 
 function renderPills() {
@@ -112,6 +112,7 @@ document.querySelectorAll('.key').forEach(key => {
         if(action === 'delete') inputArea.value = inputArea.value.slice(0,-1);
         else if(action === 'reset') { inputArea.value = ''; outputArea.value = ''; }
         else if(action === 'space') inputArea.value += ' ';
+        else if(action === 'enter') inputArea.value += '\n';
         else if(!key.classList.contains('fn-key')) inputArea.value += key.innerText;
         performConversion();
     });
@@ -127,9 +128,10 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
 
 document.getElementById('themeToggle').addEventListener('click', function() {
     document.documentElement.classList.toggle('dark');
+    localStorage.setItem('color-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
 });
 
-// Zaman Fonksiyonları
+// --- ÖZEL ZAMAN FONKSİYONLARI (ANATOLYA) ---
 function toBase12(n, pad = 2) {
     const digits = "θ123456789ΦΛ";
     if (n === 0) return "θ".repeat(pad);
@@ -138,12 +140,38 @@ function toBase12(n, pad = 2) {
     return res.padStart(pad, 'θ');
 }
 
-function updateTime() {
-    const now = new Date();
-    document.getElementById('clock').textContent = now.toLocaleTimeString('tr-TR');
-    document.getElementById('date').textContent = now.toLocaleDateString('tr-TR');
+function calculateCustomDate(now) {
+    const gregBase = new Date(1071, 2, 21);
+    const diff = now - gregBase;
+    const daysPassed = Math.floor(diff / 86400000);
+    let year = 0; let daysCounter = 0;
+    while (true) {
+        let yearDays = 365;
+        let nextYear = year + 1;
+        if (nextYear % 20 === 0 && nextYear % 640 !== 0) yearDays += 5;
+        if (daysCounter + yearDays > daysPassed) break;
+        daysCounter += yearDays; year++;
+    }
+    const dayOfYear = daysPassed - daysCounter;
+    const month = Math.floor(dayOfYear / 30) + 1;
+    const day = (dayOfYear % 30) + 1;
+    const base12Year = year + 1 + 10368;
+    return { base12: `${toBase12(day)}.${toBase12(month)}.${toBase12(base12Year, 4)}` };
 }
 
-setInterval(updateTime, 1000);
+function updateTime() {
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 30, 0);
+    if (now < todayStart) todayStart.setDate(todayStart.getDate() - 1);
+    const totalSecs = Math.floor(((now - todayStart) / 1000) * 2);
+    const h = Math.floor(totalSecs / 14400) % 12;
+    const m = Math.floor((totalSecs / 120) % 120);
+    const s = totalSecs % 120;
+    document.getElementById('clock').textContent = `${toBase12(h)}.${toBase12(m)}.${toBase12(s)}`;
+    document.getElementById('date').textContent = calculateCustomDate(now).base12;
+}
+
+// Başlatıcılar
+setInterval(updateTime, 100);
 updateTime();
 renderDropdowns("Alfabe");
