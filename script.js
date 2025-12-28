@@ -92,15 +92,12 @@ function updateText(lang) {
     });
 }
 
-// Sayaçları ayrı bir kartta cümle olarak hesaplayan fonksiyon
 function calculateStats() {
     const statsSentence = document.getElementById('stats-sentence');
     if (!statsSentence) return;
-
     const validEntries = allWords.filter(row => row.Sözcük && row.Sözcük.trim() !== "");
     const entryCount = validEntries.length;
     let totalWordCount = 0;
-
     validEntries.forEach(row => {
         totalWordCount += 1;
         if (row['Eş Anlamlılar']) {
@@ -108,11 +105,8 @@ function calculateStats() {
             totalWordCount += synonyms.length;
         }
     });
-
     let sentence = `Şu an bu sözlükte ${entryCount} madde altında toplam ${totalWordCount} kelime bulunmaktadır.`;
     if (isGreek) sentence = convertToGreek(sentence);
-
-    // Sayıları vurgulayarak ekrana bas
     statsSentence.innerHTML = sentence
         .replace(entryCount, `<span class="text-primary font-bold">${entryCount}</span>`)
         .replace(totalWordCount, `<span class="text-primary font-bold">${totalWordCount}</span>`);
@@ -200,27 +194,38 @@ function displaySuggestions(matches) {
     .slice(0, 10).forEach(match => {
         const div = document.createElement('div');
         div.className = 'suggestion cursor-pointer p-4 hover:bg-background-light dark:hover:bg-background-dark border-b border-subtle-light dark:border-subtle-dark last:border-b-0';
+        
         let primary = match.word || match.synonym || match.value;
         let secondary = (match.type !== 'main') ? match.main : '';
+        
+        // Tıklanan kelimenin ne olduğunu saklayalım
+        const clickedText = primary;
+
         if (isGreek) { primary = convertToGreek(primary); secondary = convertToGreek(secondary); }
         div.innerHTML = `<span class="font-bold">${primary}</span> ${secondary ? `<span class="ml-2 text-sm opacity-50">${secondary}</span>` : ''}`;
+        
         div.addEventListener('mousedown', (e) => {
             e.preventDefault();
-            selectWord(match.data);
+            // selectWord'e artık tıklanan metni de gönderiyoruz
+            selectWord(match.data, clickedText);
         });
         suggestionsDiv.appendChild(div);
     });
     container.classList.remove('hidden');
 }
 
-function selectWord(word) {
+// word: Veri satırı, clickedText: Kullanıcının gördüğü ve tıkladığı kelime
+function selectWord(word, clickedText) {
     lastSelectedWord = word;
     document.getElementById('welcome-box').classList.add('hidden');
     document.getElementById('stats-card').classList.add('hidden');
-    document.getElementById('searchInput').value = isGreek ? convertToGreek(word.Sözcük) : word.Sözcük;
+    
+    // Arama barına ana maddeyi değil, tıklanan kelimeyi (eş anlamlı olsa bile) yazıyoruz
+    document.getElementById('searchInput').value = isGreek ? convertToGreek(clickedText) : clickedText;
+    
     document.getElementById('suggestions-container').classList.add('hidden');
     showResult(word);
-    updateSearchHistory(word.Sözcük);
+    updateSearchHistory(clickedText); // Geçmişe de tıklanan kelimeyi kaydediyoruz
 }
 
 function showResult(word) {
@@ -272,7 +277,12 @@ function displaySearchHistory() {
             const div = document.createElement('div');
             div.className = 'suggestion p-4 hover:bg-background-light dark:hover:bg-background-dark border-b border-subtle-light dark:border-subtle-dark last:border-b-0 cursor-pointer';
             div.innerHTML = `<span class="font-bold">${isGreek ? convertToGreek(h) : h}</span>`;
-            div.addEventListener('mousedown', (e) => { e.preventDefault(); const word = allWords.find(r => r.Sözcük === h); if (word) selectWord(word); });
+            div.addEventListener('mousedown', (e) => { 
+                e.preventDefault(); 
+                // Geçmişten tıklanırken ana maddeyi bulmak için allWords'ü kontrol etmeliyiz
+                const word = allWords.find(r => r.Sözcük === h || (r['Eş Anlamlılar'] && r['Eş Anlamlılar'].includes(h)) || r.Bilimsel === h);
+                if (word) selectWord(word, h); 
+            });
             suggestionsDiv.appendChild(div);
         });
         container.classList.remove('hidden');
@@ -287,6 +297,9 @@ function setupAlphabetToggle() {
         updateText(isGreek ? 'gr' : 'tr');
         calculateStats(); 
         if (lastSelectedWord) {
+            // Arama barındaki mevcut metni Rumca'ya çevirelim
+            const currentVal = document.getElementById('searchInput').value;
+            // showResult zaten isGreek'e göre çalışıyor
             showResult(lastSelectedWord);
         } else {
             document.getElementById('result').innerHTML = '';
