@@ -1,255 +1,400 @@
-// --- ELEMENT SEÇİCİLER ---
-const inputArea = document.getElementById('input-area');
-const outputArea = document.getElementById('output-area');
-const pillInputLabel = document.getElementById('pill-input-label');
-const pillOutputLabel = document.getElementById('pill-output-label');
-const dropdownInput = document.getElementById('dropdown-input');
-const dropdownOutput = document.getElementById('dropdown-output');
+// --- TEMA YÖNETİMİ ---
+const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+const themeToggleButton = document.getElementById('theme-toggle');
 
-let currentInputUnit = "Eski Alfabe";
-let currentOutputUnit = "Yeni Alfabe";
-
-// --- VERİ SETLERİ ---
-const unitData = {
-    "Alfabe": ["Eski Alfabe", "Yeni Alfabe"],
-    "Sayı": ["İkilik (2)", "Onluk (10)", "Anatolya (12)", "On Altılık (16)"],
-    "Para": ["Lira", "Akçe", "Dollar", "Euro", "Altın (Ons)", "Gümüş (Ons)"],
-    "Zaman": [
-        "Milisaniye", "Salise (Anatolya)", "Salise", 
-        "Saniye (Anatolya)", "Saniye", "Dakika", 
-        "Saat", "Saat (Anatolya)", "Gün", 
-        "Hafta (Anatolya)", "Hafta", "Ay", "Yıl (Anatolya)", "Yıl (Gregoryen)"
-    ],
-    "Uzunluk": [
-        "Kerrab (12⁻³)", "Milimetre (10⁻³)", "Rubu (12⁻²)", "Santimetre (10⁻²)", 
-        "İnç", "Endaze (12⁻¹)", "Fit (ft)", "Arşın (12⁰)", 
-        "Yard", "Metre (10⁰)", "Berid (12¹)", "Menzil (12²)", 
-        "Kilometre (10³)", "Fersah (12³)", "Mil", "Merhale (12⁴)"
-    ],
-    "Kütle": [
-        "Miligram (10⁻³)", "Dirhem (12⁻³)", "Gram (10⁰)", "Miskal (12⁻²)", 
-        "Batman (12⁻¹)", "Paund", "Okka (12⁰)", "Kilogram (10³)", 
-        "Kantar (12¹)", "Ton (10⁶)"
-    ],
-    "Konum": ["Boylam (Derece)", "Meridyen (Anatolya)"],
-    "Sıcaklık": ["Celsius", "Fahrenheit", "Kelvin", "Ilım", "Ayaz"],
-    "Veri": ["Byte", "Kilobyte", "Megabyte", "Gigabyte", "Terabyte", "Anatolya Verisi"]
-};
-
-// --- KATSAYILAR ---
-const conversionRates = {
-    "Uzunluk": {
-        "Kerrab (12⁻³)": 0.00041666666, "Milimetre (10⁻³)": 0.001, "Rubu (12⁻²)": 0.005, "Santimetre (10⁻²)": 0.01,
-        "İnç": 0.0254, "Endaze (12⁻¹)": 0.06, "Fit": 0.3048, "Arşın (12⁰)": 0.72, "Yard": 0.9144, "Metre (10⁰)": 1,
-        "Berid (12¹)": 8.64, "Menzil (12²)": 103.68, "Kilometre (10³)": 1000, "Fersah (12³)": 1244.16, "Mil": 1609.34, "Merhale (12⁴)": 14929.92
-    },
-    "Kütle": {
-        "Miligram (10⁻³)": 0.000001, "Dirhem (12⁻³)": 0.0005, "Gram (10⁰)": 0.001, "Miskal (12⁻²)": 0.006,
-        "Batman (12⁻¹)": 0.072, "Paund": 0.45359, "Okka (12⁰)": 0.864, "Kilogram (10³)": 1, "Kantar (12¹)": 10.368, "Ton (10⁶)": 1000
-    },
-    "Para": { "Lira": 1, "Akçe": 0.008333, "Dollar": 35, "Euro": 37, "Altın (Ons)": 90000, "Gümüş (Ons)": 1100 },
-    "Veri": { "Byte": 1, "Kilobyte": 1024, "Megabyte": 1048576, "Gigabyte": 1073741824, "Terabyte": 1099511627776, "Anatolya Verisi": 1200 },
-    "Zaman": { 
-        "Milisaniye": 0.001, "Salise (Anatolya)": 1/240, "Salise": 1/60, "Saniye (Anatolya)": 0.5, "Saniye": 1, 
-        "Dakika": 60, "Saat": 3600, "Saat (Anatolya)": 7200, "Gün": 86400, "Hafta (Anatolya)": 432000, "Hafta": 604800, "Ay": 2592000
-    }
-};
-
-const toGreek = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Ğ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
-const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
-
-// --- TABAN DÖNÜŞTÜRÜCÜLER ---
-function toBase12(n, pad = 1, isAnatolya = true) {
-    const digits = isAnatolya ? "θ123456789ΦΛ" : "0123456789AB";
-    let num = Math.abs(Math.floor(n));
-    let res = "";
-    if (num === 0) res = digits[0];
-    else { while (num > 0) { res = digits[num % 12] + res; num = Math.floor(num / 12); } }
-    return res.padStart(pad, digits[0]);
+if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    themeToggleLightIcon?.classList.remove('hidden');
+} else {
+    themeToggleDarkIcon?.classList.remove('hidden');
 }
 
-function toBase12Float(n, isAnatolya = true) {
-    const digits = isAnatolya ? "θ123456789ΦΛ" : "0123456789AB";
-    let integerPart = Math.floor(Math.abs(n));
-    let fractionPart = Math.abs(n) - integerPart;
-    let res = toBase12(integerPart, 1, isAnatolya);
-    if (fractionPart > 0.0001) {
-        res += ",";
-        for (let i = 0; i < 3; i++) { fractionPart *= 12; let d = Math.floor(fractionPart); res += digits[d]; fractionPart -= d; if (fractionPart < 0.0001) break; }
-    }
-    return res;
-}
-
-// --- ARTIK YIL SİMÜLATÖRLERİ ---
-function getGregorianDays(years) {
-    let totalDays = 0;
-    for (let i = 1; i <= Math.floor(years); i++) {
-        if ((i % 4 === 0 && i % 100 !== 0) || (i % 400 === 0)) totalDays += 366;
-        else totalDays += 365;
-    }
-    totalDays += (years % 1) * 365.2425;
-    return totalDays;
-}
-
-function getAnatolyaDays(years) {
-    let totalDays = 0;
-    for (let i = 1; i <= Math.floor(years); i++) {
-        if (i % 20 === 0 && i % 640 !== 0) totalDays += 370;
-        else totalDays += 365;
-    }
-    totalDays += (years % 1) * 365.25; 
-    return totalDays;
-}
-
-function normalizeInput(text) { return text.toUpperCase().replace(/θ/g, '0').replace(/Φ/g, 'A').replace(/Λ/g, 'B'); }
-
-function isValidInput(text, unit) {
-    const anaDigits = "θΦΛ";
-    let allowedChars = "";
-    const isSpecial = ["Anatolya", "Gün", "Ay", "Yıl", "Arşın", "Menzil", "Endaze", "Rubu", "Kerrab", "Berid", "Fersah", "Merhale", "Okka", "Kantar", "Batman", "Miskal", "Dirhem", "Akçe", "Meridyen"].some(s => unit.includes(s));
-    if (unit.includes("(2)")) allowedChars = "01,.";
-    else if (unit.includes("(10)") || unit === "Boylam (Derece)") allowedChars = "0123456789,.-";
-    else if (isSpecial) allowedChars = "0123456789AB" + anaDigits + ",.";
-    else if (unit.includes("(16)")) allowedChars = "0123456789ABCDEF,.";
-    else return true;
-    for (let char of text.toUpperCase()) { if (!allowedChars.includes(char)) return false; }
-    return true;
-}
-
-function performConversion() {
-    const activeTab = document.querySelector('.active-tab');
-    if (!activeTab) return;
-    const mode = activeTab.dataset.value;
-    const text = inputArea.value.trim();
-    if (!text) { outputArea.value = ""; return; }
-
-    if (mode === "Alfabe") {
-        outputArea.value = (currentInputUnit === "Eski Alfabe") ? text.split('').map(ch => toGreek[ch] || ch).join('') : text.split('').map(ch => toLatin[ch] || ch).join('');
-    } 
-    else if (mode === "Sayı") {
-        const stdDigits = "0123456789ABCDEF";
-        const getBase = (u) => u.includes("(2)")?2:u.includes("Anatolya")?12:u.includes("(16)")?16:10;
-        let input = normalizeInput(text.toUpperCase()).replace(',', '.');
-        const fromBase = getBase(currentInputUnit); const toBase = getBase(currentOutputUnit);
-        let dec = parseInt(input.split('.')[0], fromBase);
-        if (input.includes('.')) {
-            let frac = input.split('.')[1];
-            for (let i=0; i<frac.length; i++) dec += stdDigits.indexOf(frac[i]) * Math.pow(fromBase, -(i+1));
-        }
-        if (currentOutputUnit.includes("Anatolya")) {
-            const a = toBase12Float(dec, true), s = toBase12Float(dec, false);
-            outputArea.value = (a === s) ? a : `${a} (${s})`;
-        } else outputArea.value = dec.toString(toBase).toUpperCase().replace('.',',');
-    }
-    else if (mode === "Konum") {
-        let val = parseFloat(text.replace(',','.'));
-        if (currentInputUnit === "Boylam (Derece)") {
-            if (isNaN(val)) return;
-            let res = (168.75 - val);
-            while (res < 0) res += 360; res = res % 360;
-            const a = toBase12Float(res, true), s = toBase12Float(res, false);
-            outputArea.value = `${a} (${s}) [${res.toFixed(2)}]`;
+themeToggleButton?.addEventListener('click', function() {
+    themeToggleDarkIcon.classList.toggle('hidden');
+    themeToggleLightIcon.classList.toggle('hidden');
+    
+    if (localStorage.getItem('color-theme')) {
+        if (localStorage.getItem('color-theme') === 'light') {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('color-theme', 'dark');
         } else {
-            let input = normalizeInput(text.toUpperCase());
-            let dec = parseInt(input.split('.')[0], 12);
-            let res = 168.75 - dec;
-            while (res < -180) res += 360; while (res > 180) res -= 360;
-            outputArea.value = res.toFixed(4).replace('.',',');
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('color-theme', 'light');
+        }
+    } else {
+        if (document.documentElement.classList.contains('dark')) {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('color-theme', 'light');
+        } else {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('color-theme', 'dark');
         }
     }
-    else if (conversionRates[mode] || mode === "Zaman") {
-        if (!isValidInput(text, currentInputUnit)) { outputArea.value = "Geçersiz Karakter"; return; }
-        let numericValue;
-        const specialUnits = ["Anatolya", "Gün", "Ay", "Yıl", "Arşın", "Menzil", "Endaze", "Rubu", "Kerrab", "Berid", "Fersah", "Merhale", "Okka", "Kantar", "Batman", "Miskal", "Dirhem", "Akçe"];
-        const isInputSpecial = specialUnits.some(s => currentInputUnit.includes(s));
-        if (isInputSpecial) {
-            const normalizedText = normalizeInput(text.toUpperCase()).replace(',','.');
-            const parts = normalizedText.split('.');
-            numericValue = parseInt(parts[0], 12);
-            if (parts[1]) {
-                const stdDigits = "0123456789ABCDEF";
-                for (let i = 0; i < parts[1].length; i++) numericValue += stdDigits.indexOf(parts[1][i]) * Math.pow(12, -(i+1));
+});
+
+// --- DEĞİŞKENLER VE AYARLAR ---
+let allWords = [];
+let lastSelectedWord = null;
+let searchHistory = JSON.parse(localStorage.getItem('searchHistory')) || [];
+let isGreek = false;
+
+const latinToGreekMap = {
+    "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν",
+    "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ",
+    "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R",
+    "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β",
+    "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G",
+    "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J",
+    "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F",
+    "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ"
+};
+
+const translations = {
+    'tr': {
+        'title': 'Orum Dili',
+        'about_page_text': 'Hakkında',
+        'feedback_button_text': 'Geri Bildirim',
+        'search_placeholder': 'Kelime ara...',
+        'about_title': 'Hakkında',
+        'about_text_1': 'Bu sözlük, Orum Diline ait kelimeleri ve kökenlerini keşfetmeniz için hazırlanmıştır. Bu dil, Anadolu Türkçesinin özleştirilmesiyle ve kolaylaştırılmasıyla ve ayrıca Azerbaycan Türkçesinden esintilerle oluşturulan yapay bir dildir. Amacım, dilimizin öz zenginliğini kanıtlamaktır. Ancak yapay etkiler görebileceğinizi de unutmayın.',
+        'about_text_2': 'Herhangi bir geri bildiriminiz, öneriniz veya yeni sözcük ekleme isteğiniz varsa; lütfen yukarıdaki menüden "Geri Bildirim" butonunu kullanarak bana ulaşın. Katkılarınızla bu sözlüğü daha da zenginleştirebiliriz!',
+        'feedback_title': 'Geri Bildirim',
+        'feedback_placeholder': 'Geri bildiriminizi buraya yazın...',
+        'feedback_cancel': 'İptal',
+        'feedback_send': 'Gönder',
+        'word_title': 'Sözcük',
+        'synonyms_title': 'Eş Anlamlılar',
+        'description_title': 'Açıklama',
+        'type_title': 'Tür',
+        'example_title': 'Örnek',
+        'etymology_title': 'Köken',
+        'no_result': 'Sonuç bulunamadı'
+    },
+    'gr': {}
+};
+
+// --- FONKSİYONLAR ---
+
+function normalizeString(str) {
+    if (!str) return '';
+    return str.toLocaleLowerCase('tr-TR');
+}
+
+function updateText(lang) {
+    const textElements = document.querySelectorAll('[data-key]');
+    textElements.forEach(el => {
+        const key = el.getAttribute('data-key');
+        if (translations[lang][key]) {
+            el.textContent = translations[lang][key];
+        } else if (lang === 'gr' && translations['tr'][key]) {
+            el.textContent = convertToGreek(translations['tr'][key]);
+        }
+    });
+
+    const placeholderElements = document.querySelectorAll('[data-key][placeholder]');
+    placeholderElements.forEach(el => {
+        const key = el.getAttribute('data-key');
+        if (translations[lang][key]) {
+            el.placeholder = translations[lang][key];
+        } else if (lang === 'gr' && translations['tr'][key]) {
+            el.placeholder = convertToGreek(translations['tr'][key]);
+        }
+    });
+}
+
+async function fetchWords() {
+    const sheetId = '1R01aIajx6dzHlO-KBiUXUmld2AEvxjCQkUTFGYB3EDM';
+    const sheetName = 'Sözlük';
+    const url = `https://opensheet.elk.sh/${sheetId}/${sheetName}`;
+
+    try {
+        const response = await fetch(url);
+        allWords = await response.json();
+        setupSearch();
+        setupAlphabetToggle();
+        showPage('home');
+        updateText('tr');
+    } catch (error) {
+        console.error('VERİ ÇEKME HATASI:', error);
+        document.getElementById('result').innerHTML = '<p style="color: red;">VERİLER YÜKLENİRKEN HATA OLUŞTU. LÜTFEN SAYFAYI YENİLEYİN.</p>';
+    }
+}
+
+function showPage(pageId) {
+    const homeContent = document.getElementById('home-content');
+    const aboutContent = document.getElementById('about-content');
+    const searchInput = document.getElementById('searchInput');
+
+    homeContent.classList.add('hidden');
+    aboutContent.classList.add('hidden');
+    searchInput.disabled = true;
+
+    if (pageId === 'home') {
+        homeContent.classList.remove('hidden');
+        searchInput.disabled = false;
+        clearResult();
+    } else if (pageId === 'about') {
+        aboutContent.classList.remove('hidden');
+    }
+}
+
+function setupSearch() {
+    const searchInput = document.getElementById('searchInput');
+    const suggestionsDiv = document.getElementById('suggestions');
+    const resultDiv = document.getElementById('result');
+
+    displaySearchHistory();
+
+    searchInput.addEventListener('input', function () {
+        const rawQuery = this.value.trim();
+        const query = normalizeString(rawQuery);
+
+        if (!query) {
+            suggestionsDiv.innerHTML = '';
+            resultDiv.innerHTML = '';
+            displaySearchHistory();
+            return;
+        }
+
+        const matches = [];
+        allWords.forEach(row => {
+            const mainWord = row.Sözcük || '';
+            const mainNorm = normalizeString(mainWord);
+            const synonyms = row['Eş Anlamlılar'] ? row['Eş Anlamlılar'].split(',').map(s => s.trim()) : [];
+            const types = row.Tür ? row.Tür.split(',').map(s => s.trim()) : [];
+
+            let alreadyMatched = false;
+
+            if (mainNorm.startsWith(query)) {
+                matches.push({ type: 'main', word: mainWord, data: row });
+                alreadyMatched = true;
+                return;
             }
-        } else { numericValue = parseFloat(text.replace(',', '.')); }
-        if (isNaN(numericValue)) { outputArea.value = "Hata"; return; }
-        let baseValue;
-        const currentModeRates = conversionRates[mode] || (mode === "Zaman" ? conversionRates["Zaman"] : null);
-        if (!currentModeRates) return;
-        if (currentInputUnit === "Yıl (Gregoryen)") baseValue = getGregorianDays(numericValue) * 86400;
-        else if (currentInputUnit === "Yıl (Anatolya)") baseValue = getAnatolyaDays(numericValue) * 86400;
-        else baseValue = numericValue * (currentModeRates[currentInputUnit] || 1);
-        let result;
-        if (currentOutputUnit === "Yıl (Gregoryen)") result = baseValue / (365.2425 * 86400);
-        else if (currentOutputUnit === "Yıl (Anatolya)") result = baseValue / (365.25 * 86400);
-        else result = baseValue / (currentModeRates[currentOutputUnit] || 1);
-        const isOutputSpecial = specialUnits.some(s => currentOutputUnit.includes(s)) || currentOutputUnit.includes("Anatolya");
-        if (isOutputSpecial) {
-            const anaVal = toBase12Float(result, true), stdVal = toBase12Float(result, false), decStr = Number(result.toFixed(2)).toLocaleString('tr-TR');
-            let resStr = anaVal;
-            if (anaVal !== stdVal) resStr += ` (${stdVal})`;
-            resStr += ` [${decStr}]`;
-            outputArea.value = resStr;
-        } else { outputArea.value = Number(result.toFixed(5)).toLocaleString('tr-TR'); }
+            
+            let synonymMatch = false;
+            synonyms.forEach(syn => {
+                if (normalizeString(syn).startsWith(query)) {
+                    if (!synonymMatch) {
+                         matches.push({ type: 'synonym', synonym: syn, main: mainWord, data: row });
+                         synonymMatch = true;
+                         alreadyMatched = true;
+                    }
+                }
+            });
+            
+            if (alreadyMatched) return;
+
+            types.forEach(typeValue => {
+                if (normalizeString(typeValue).startsWith(query)) {
+                     if (!alreadyMatched) {
+                        matches.push({ type: 'type', word: mainWord, typeValue: typeValue, data: row });
+                        alreadyMatched = true;
+                    }
+                }
+            });
+        });
+
+        displaySuggestions(matches, query);
+    });
+
+    searchInput.addEventListener('focus', () => {
+        if (!searchInput.value.trim()) displaySearchHistory();
+    });
+
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const firstSuggestion = suggestionsDiv.querySelector('.suggestion');
+            if (firstSuggestion) firstSuggestion.click();
+        }
+    });
+
+    if (lastSelectedWord) showResult(lastSelectedWord);
+}
+
+function setupAlphabetToggle() {
+    const toggleButton = document.getElementById('alphabet-toggle');
+    toggleButton?.addEventListener('click', toggleAlphabet);
+}
+
+function toggleAlphabet() {
+    isGreek = !isGreek;
+    document.getElementById('alphabet-toggle-latin').classList.toggle('hidden', isGreek);
+    document.getElementById('alphabet-toggle-cyrillic').classList.toggle('hidden', !isGreek);
+    const lang = isGreek ? 'gr' : 'tr';
+    updateText(lang);
+    if (lastSelectedWord) showResult(lastSelectedWord);
+    displaySearchHistory();
+}
+
+function displaySuggestions(matches, query) {
+    const suggestionsDiv = document.getElementById('suggestions');
+    const suggestionsContainer = document.getElementById('suggestions-container');
+    suggestionsDiv.innerHTML = '';
+
+    if (matches.length === 0) {
+        const noResultText = isGreek ? convertToGreek(translations.tr.no_result) : translations.tr.no_result;
+        suggestionsDiv.innerHTML = `<div class="p-4 text-muted-light dark:text-muted-dark">${noResultText}</div>`;
+        suggestionsContainer.classList.remove('hidden');
+        return;
+    }
+
+    matches.sort((a, b) => normalizeString(a.data.Sözcük).localeCompare(normalizeString(b.data.Sözcük)))
+    .slice(0, 12).forEach(match => {
+        const suggestion = document.createElement('div');
+        suggestion.className = 'suggestion cursor-pointer p-4 hover:bg-background-light dark:hover:bg-background-dark transition-colors border-b border-subtle-light dark:border-subtle-dark last:border-b-0';
+
+        let primaryMatchText = '';
+        let secondaryInfo = '';
+
+        if (match.type === 'main') {
+            primaryMatchText = match.word;
+        } else if (match.type === 'synonym') {
+            primaryMatchText = match.synonym; 
+            secondaryInfo = match.main;
+        } else if (match.type === 'type') {
+            primaryMatchText = match.typeValue;
+            secondaryInfo = match.word;
+        }
+
+        if (isGreek) {
+            primaryMatchText = convertToGreek(primaryMatchText);
+            secondaryInfo = convertToGreek(secondaryInfo);
+        }
+        
+        if (match.type === 'main') {
+            suggestion.innerHTML = `<span class="font-bold">${primaryMatchText}</span>`;
+        } else {
+             suggestion.innerHTML = `<span class="font-bold">${primaryMatchText}</span><span class="text-muted-light dark:text-muted-dark ml-2 text-sm">${secondaryInfo}</span>`;
+        }
+
+        suggestion.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            selectWord(match.data);
+            document.getElementById('searchInput').focus();
+        });
+        suggestionsDiv.appendChild(suggestion);
+    });
+
+    suggestionsContainer.classList.remove('hidden');
+}
+
+function selectWord(word) {
+    lastSelectedWord = word;
+    document.getElementById('searchInput').value = isGreek ? convertToGreek(word.Sözcük) : word.Sözcük;
+    document.getElementById('suggestions').innerHTML = '';
+    document.getElementById('suggestions-container').classList.add('hidden');
+    showResult(word);
+    updateSearchHistory(word.Sözcük);
+}
+
+function showResult(word) {
+    const resultDiv = document.getElementById('result');
+    
+    let fields = {
+        word: word.Sözcük || '',
+        synonyms: word['Eş Anlamlılar'] || '',
+        desc: word.Açıklama || '',
+        type: word.Tür || '',
+        example: word.Örnek || '',
+        ety: word.Köken || ''
+    };
+
+    if (isGreek) {
+        Object.keys(fields).forEach(key => fields[key] = convertToGreek(fields[key]));
+    }
+
+    const t = (key) => isGreek ? convertToGreek(translations.tr[key]) : translations.tr[key];
+
+    resultDiv.innerHTML = `
+        <div class="bg-subtle-light dark:bg-subtle-dark rounded-lg sm:rounded-xl overflow-hidden p-4 sm:p-6">
+            <h2 class="text-3xl font-bold mb-4">${fields.word}</h2>
+            ${fields.type ? `<p class="text-sm text-muted-light dark:text-muted-dark mb-4">${fields.type}</p>` : ''}
+            <hr class="border-t border-subtle-light dark:border-subtle-dark my-4">
+            ${fields.desc ? `<div class="mb-4"><span class="font-bold text-lg">${t('description_title')}</span><p class="text-base mt-1">${fields.desc}</p></div>` : ''}
+            <hr class="border-t border-subtle-light dark:border-subtle-dark my-4">
+            ${fields.ety ? `<div class="mb-4"><span class="font-bold text-lg">${t('etymology_title')}</span><p class="text-base mt-1">${fields.ety}</p></div>` : ''}
+            <hr class="border-t border-subtle-light dark:border-subtle-dark my-4">
+            ${fields.example ? `<div class="mb-4"><span class="font-bold text-lg">${t('example_title')}</span><p class="text-base mt-1">${fields.example}</p></div>` : ''}
+            <hr class="border-t border-subtle-light dark:border-subtle-dark my-4">
+            ${fields.synonyms ? `<div class="mb-4"><span class="font-bold text-lg">${t('synonyms_title')}</span><p class="text-base mt-1">${fields.synonyms}</p></div>` : ''}
+        </div>`;
+}
+
+function clearResult() {
+    document.getElementById('result').innerHTML = '';
+    document.getElementById('searchInput').value = '';
+    document.getElementById('suggestions-container').classList.add('hidden');
+    displaySearchHistory();
+}
+
+function updateSearchHistory(query) {
+    const historyIndex = searchHistory.indexOf(query);
+    if (historyIndex > -1) searchHistory.splice(historyIndex, 1);
+    searchHistory.unshift(query);
+    if (searchHistory.length > 12) searchHistory.pop();
+    localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+}
+
+function displaySearchHistory() {
+    const suggestionsDiv = document.getElementById('suggestions');
+    const suggestionsContainer = document.getElementById('suggestions-container');
+    const searchInput = document.getElementById('searchInput');
+
+    if (searchInput === document.activeElement && !searchInput.value.trim() && searchHistory.length > 0) {
+        suggestionsDiv.innerHTML = '';
+        searchHistory.slice(0, 12).forEach(history => {
+            const suggestion = document.createElement('div');
+            suggestion.className = 'suggestion cursor-pointer p-4 hover:bg-background-light dark:hover:bg-background-dark transition-colors border-b border-subtle-light dark:border-subtle-dark last:border-b-0';
+            let historyToDisplay = isGreek ? convertToGreek(history) : history;
+            suggestion.innerHTML = `<span class="font-bold">${historyToDisplay}</span>`;
+            suggestion.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                const selectedWord = allWords.find(row => row.Sözcük === history);
+                if (selectedWord) selectWord(selectedWord);
+            });
+            suggestionsDiv.appendChild(suggestion);
+        });
+        suggestionsContainer.classList.remove('hidden');
     }
 }
 
-// --- UI FONKSİYONLARI ---
-function selectUnit(type, value) {
-    if (type === 'input') { if (value === currentOutputUnit) currentOutputUnit = currentInputUnit; currentInputUnit = value; }
-    else { if (value === currentInputUnit) currentInputUnit = currentOutputUnit; currentOutputUnit = value; }
-    renderPills(); performConversion();
+function toggleFeedbackForm() {
+    document.getElementById('feedbackModal').classList.toggle('hidden');
 }
 
-function renderDropdowns(mode) {
-    const options = unitData[mode] || [];
-    if (mode === "Sayı") { currentInputUnit = "Onluk (10)"; currentOutputUnit = "Anatolya (12)"; }
-    else if (mode === "Zaman") { currentInputUnit = "Dakika"; currentOutputUnit = "Gün"; }
-    else if (mode === "Uzunluk") { currentInputUnit = "Metre (10⁰)"; currentOutputUnit = "Arşın (12⁰)"; }
-    else if (mode === "Kütle") { currentInputUnit = "Kilogram (10³)"; currentOutputUnit = "Okka (12⁰)"; }
-    else if (mode === "Konum") { currentInputUnit = "Boylam (Derece)"; currentOutputUnit = "Meridyen (Anatolya)"; }
-    else { currentInputUnit = options[0]; currentOutputUnit = options[1] || options[0]; }
-    const createItems = (type) => options.map(opt => `<div class="dropdown-item" onclick="selectUnit('${type}', '${opt}')">${opt}</div>`).join('');
-    dropdownInput.innerHTML = createItems('input'); dropdownOutput.innerHTML = createItems('output');
-    renderPills(); performConversion();
+function submitFeedback() {
+    const feedbackText = document.getElementById('feedbackText').value.trim();
+    if (!feedbackText) { alert('Lütfen geri bildirim yazın.'); return; }
+    const tarih = new Date().toLocaleString('tr-TR');
+    fetch('https://sheetdb.io/api/v1/mt09gl0tun8di', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: { "Tarih": tarih, "Mesaj": feedbackText } })
+    })
+    .then(response => response.json())
+    .then(() => {
+        alert('Geri bildiriminiz alındı, teşekkür ederiz!');
+        toggleFeedbackForm();
+    })
+    .catch(error => {
+        console.error('Hata:', error);
+        alert('Bir hata oluştu, lütfen tekrar deneyin.');
+    });
 }
 
-function renderPills() { pillInputLabel.innerText = currentInputUnit; pillOutputLabel.innerText = currentOutputUnit; dropdownInput.classList.remove('show'); dropdownOutput.classList.remove('show'); }
-function toggleDropdown(type) { const el = type === 'input' ? dropdownInput : dropdownOutput; const other = type === 'input' ? dropdownOutput : dropdownInput; other.classList.remove('show'); el.classList.toggle('show'); }
-window.onclick = function(event) { if (!event.target.closest('.unit-pill')) { dropdownInput.classList.remove('show'); dropdownOutput.classList.remove('show'); } }
+function toggleMobileMenu() {
+    document.getElementById('mobile-menu').classList.toggle('hidden');
+}
 
-inputArea.addEventListener('input', performConversion);
-document.querySelectorAll('.key').forEach(key => { key.addEventListener('click', () => {
-    const action = key.dataset.action;
-    if(action === 'delete') inputArea.value = inputArea.value.slice(0,-1);
-    else if(action === 'reset') { inputArea.value = ''; outputArea.value = ''; }
-    else if(!key.classList.contains('fn-key')) inputArea.value += key.innerText;
-    performConversion();
-}); });
-document.querySelectorAll('.nav-tab').forEach(tab => { tab.addEventListener('click', function() {
-    document.querySelectorAll('.nav-tab').forEach(t => t.classList.replace('active-tab', 'inactive-tab'));
-    this.classList.replace('inactive-tab', 'active-tab'); renderDropdowns(this.dataset.value);
-}); });
-document.getElementById('themeToggle').addEventListener('click', () => document.documentElement.classList.toggle('dark'));
-
-// --- HEADER SAAT VE TAKVİM ---
-function updateHeader() {
-    const now = new Date();
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 30, 0);
-    if (now < todayStart) todayStart.setDate(todayStart.getDate() - 1);
-    const totalSecs = Math.floor(((now - todayStart) / 1000) * 2);
-    const h = Math.floor(totalSecs / 14400) % 12, m = Math.floor((totalSecs / 120) % 120), s = totalSecs % 120;
-    document.getElementById('clock').textContent = `${toBase12(h, 2, true)}.${toBase12(m, 2, true)}.${toBase12(s, 2, true)}`;
-    const gregBase = new Date(1071, 2, 21), diff = now - gregBase, daysPassed = Math.floor(diff / 86400000);
-    let year = 0, daysCounter = 0;
-    while (true) {
-        let yearDays = ((year + 1) % 20 === 0 && (year + 1) % 640 !== 0) ? 370 : 365;
-        if (daysCounter + yearDays > daysPassed) break;
-        daysCounter += yearDays; year++;
+function convertToGreek(text) {
+    if (!text) return '';
+    let convertedText = '';
+    for (let char of text) {
+        const greekChar = latinToGreekMap[char];
+        convertedText += greekChar || char;
     }
-    const day = (daysPassed - daysCounter) % 30 + 1, month = Math.floor((daysPassed - daysCounter) / 30) + 1;
-    document.getElementById('date').textContent = `${toBase12(day, 2, true)}.${toBase12(month, 2, true)}.${toBase12(year + 10369, 4, true)}`;
+    return convertedText;
 }
 
-setInterval(updateHeader, 500);
-updateHeader();
-renderDropdowns("Alfabe");
+// Başlat
+fetchWords();
