@@ -20,10 +20,11 @@ const translations = {
         'title': 'Orum Dili',
         'about_page_text': 'Çeviri',
         'feedback_button_text': 'Geri Bildirim',
-        'search_placeholder': 'Kelime ara...',
+        'search_placeholder': 'Veriler yükleniyor, lütfen bekleyin...',
+        'search_ready': 'Kelime ara...',
         'about_title': 'Hoş Geldiniz',
-        'about_text_1': 'Bu sözlük, Orum Diline ait kelimeleri ve kökenlerini keşfetmeniz için hazırlanmıştır. Bu dil, Anadolu Türkçesinin özleştirilmesiyle ve kolaylaştırılmasıyla ve ayrıca Azerbaycan Türkçesinden esintilerle oluşturulan yapay bir dildir. Amacım, dilimizin öz zenginliğini kanıtlamaktır. Ancak yapay etkiler görebileceğinizi de unutmayın.',
-        'about_text_2': 'Herhangi bir geri bildiriminiz, öneriniz veya yeni sözcük ekleme isteğiniz varsa; lütfen yukarıdaki menüden "Geri Bildirim" butonunu kullanarak bana ulaşın. Katkılarınızla bu sözlüğü daha da zenginleştirebiliriz!',
+        'about_text_1': 'Bu sözlük, Orum Diline ait kelimeleri ve kökenlerini keşfetmeniz için hazırlanmıştır. Bu dil, Anadolu Türkçesinin özleştirilmesiyle ve kolaylaştırılmasıyla oluşturulan yapay bir dildir.',
+        'about_text_2': 'Geri bildiriminiz varsa "Geri Bildirim" butonunu kullanın.',
         'feedback_title': 'Geri Bildirim',
         'feedback_placeholder': 'Geri bildiriminizi buraya yazın...',
         'feedback_cancel': 'İptal',
@@ -38,27 +39,29 @@ const translations = {
 };
 
 // --- TEMA YÖNETİMİ ---
-const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
-const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
-const themeToggleButton = document.getElementById('theme-toggle');
+function setupTheme() {
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const themeToggleButton = document.getElementById('theme-toggle');
 
-if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-    themeToggleLightIcon?.classList.remove('hidden');
-} else {
-    themeToggleDarkIcon?.classList.remove('hidden');
-}
-
-themeToggleButton?.addEventListener('click', function() {
-    themeToggleDarkIcon.classList.toggle('hidden');
-    themeToggleLightIcon.classList.toggle('hidden');
-    if (localStorage.getItem('color-theme') === 'light') {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('color-theme', 'dark');
+    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        themeToggleLightIcon?.classList.remove('hidden');
     } else {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('color-theme', 'light');
+        themeToggleDarkIcon?.classList.remove('hidden');
     }
-});
+
+    themeToggleButton?.addEventListener('click', function() {
+        themeToggleDarkIcon.classList.toggle('hidden');
+        themeToggleLightIcon.classList.toggle('hidden');
+        if (document.documentElement.classList.contains('dark')) {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('color-theme', 'light');
+        } else {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('color-theme', 'dark');
+        }
+    });
+}
 
 // --- TEMEL FONKSİYONLAR ---
 
@@ -93,15 +96,19 @@ async function fetchWords() {
     const sheetId = '1R01aIajx6dzHlO-KBiUXUmld2AEvxjCQkUTFGYB3EDM';
     const sheetName = 'Sözlük';
     const url = `https://opensheet.elk.sh/${sheetId}/${sheetName}`;
+    const searchInput = document.getElementById('searchInput');
 
     try {
         const response = await fetch(url);
+        if (!response.ok) throw new Error('Sunucu hatası');
         allWords = await response.json();
-        setupSearch();
-        setupAlphabetToggle();
-        updateText('tr');
+        
+        // Veri yüklendiğinde arama barını aktifleştir
+        searchInput.placeholder = isGreek ? convertToGreek(translations.tr.search_ready) : translations.tr.search_ready;
+        console.log("Veriler başarıyla yüklendi.");
     } catch (error) {
-        console.error('Hata:', error);
+        console.error('Veri çekilemedi:', error);
+        searchInput.placeholder = "Hata: Veriler yüklenemedi.";
     }
 }
 
@@ -118,32 +125,19 @@ function setupSearch() {
             suggestionsDiv.innerHTML = '';
             resultDiv.innerHTML = '';
             welcomeBox.classList.remove('hidden');
-            displaySearchHistory();
             return;
         }
+
+        if (allWords.length === 0) return;
 
         const matches = [];
         allWords.forEach(row => {
             const mainWord = row.Sözcük || '';
-            const synonyms = row['Eş Anlamlılar'] ? row['Eş Anlamlılar'].split(',').map(s => s.trim()) : [];
-            const types = row.Tür ? row.Tür.split(',').map(s => s.trim()) : [];
-
             if (normalizeString(mainWord).startsWith(query)) {
                 matches.push({ type: 'main', word: mainWord, data: row });
-            } else {
-                synonyms.forEach(syn => {
-                    if (normalizeString(syn).startsWith(query)) matches.push({ type: 'synonym', synonym: syn, main: mainWord, data: row });
-                });
-                types.forEach(t => {
-                    if (normalizeString(t).startsWith(query)) matches.push({ type: 'type', typeValue: t, word: mainWord, data: row });
-                });
             }
         });
         displaySuggestions(matches, query);
-    });
-
-    searchInput.addEventListener('focus', () => {
-        if (!searchInput.value.trim()) displaySearchHistory();
     });
 }
 
@@ -161,10 +155,8 @@ function displaySuggestions(matches, query) {
     matches.slice(0, 10).forEach(match => {
         const div = document.createElement('div');
         div.className = 'suggestion cursor-pointer p-4 hover:bg-background-light dark:hover:bg-background-dark border-b border-subtle-light dark:border-subtle-dark';
-        
-        let text = match.word || match.synonym || match.typeValue;
+        let text = match.word;
         if (isGreek) text = convertToGreek(text);
-        
         div.innerHTML = `<span class="font-bold">${text}</span>`;
         div.addEventListener('mousedown', (e) => {
             e.preventDefault();
@@ -190,15 +182,10 @@ function showResult(word) {
     resultDiv.innerHTML = `
         <div class="bg-subtle-light dark:bg-subtle-dark rounded-xl p-6 shadow-lg">
             <h2 class="text-3xl font-bold mb-4 text-primary">${convert(word.Sözcük)}</h2>
-            <p class="text-sm opacity-70 mb-4">${convert(word.Tür || '')}</p>
             <div class="space-y-4">
                 ${word.Açıklama ? `<div><span class="font-bold">${t('description_title')}:</span> <p>${convert(word.Açıklama)}</p></div>` : ''}
-                ${word.Köken ? `<div><span class="font-bold">${t('etymology_title')}:</span> <p>${convert(word.Köken)}</p></div>` : ''}
-                ${word.Örnek ? `<div><span class="font-bold">${t('example_title')}:</span> <p class="italic">"${convert(word.Örnek)}"</p></div>` : ''}
-                ${word['Eş Anlamlılar'] ? `<div><span class="font-bold">${t('synonyms_title')}:</span> <p>${convert(word['Eş Anlamlılar'])}</p></div>` : ''}
             </div>
-        </div>
-    `;
+        </div>`;
 }
 
 function setupAlphabetToggle() {
@@ -207,6 +194,10 @@ function setupAlphabetToggle() {
         document.getElementById('alphabet-toggle-latin').classList.toggle('hidden');
         document.getElementById('alphabet-toggle-cyrillic').classList.toggle('hidden');
         updateText(isGreek ? 'gr' : 'tr');
+        const searchInput = document.getElementById('searchInput');
+        if (allWords.length > 0) {
+            searchInput.placeholder = isGreek ? convertToGreek(translations.tr.search_ready) : translations.tr.search_ready;
+        }
     };
 }
 
@@ -218,12 +209,12 @@ function toggleMobileMenu() {
     document.getElementById('mobile-menu').classList.toggle('hidden');
 }
 
-function showPage(page) {
-    if(page === 'home') {
-        document.getElementById('result').innerHTML = '';
-        document.getElementById('searchInput').value = '';
-        document.getElementById('welcome-box').classList.remove('hidden');
-    }
+function init() {
+    setupTheme();
+    setupAlphabetToggle();
+    setupSearch();
+    updateText('tr');
+    fetchWords();
 }
 
-fetchWords();
+init();
