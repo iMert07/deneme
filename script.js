@@ -66,6 +66,7 @@ const translations = {
         'synonyms_title': 'Eş Anlamlılar',
         'description_title': 'Açıklama',
         'type_title': 'Tür',
+        'scientific_title': 'Bilimsel',
         'example_title': 'Örnek',
         'etymology_title': 'Köken',
         'no_result': 'Sonuç bulunamadı'
@@ -146,7 +147,7 @@ function setupSearch() {
         if (!query) {
             suggestionsDiv.innerHTML = '';
             resultDiv.innerHTML = '';
-            welcomeBox.classList.remove('hidden'); // Geri silince kutuyu geri getir
+            welcomeBox.classList.remove('hidden');
             displaySearchHistory();
             return;
         }
@@ -156,24 +157,22 @@ function setupSearch() {
             const mainWord = row.Sözcük || '';
             const mainNorm = normalizeString(mainWord);
             const synonyms = row['Eş Anlamlılar'] ? row['Eş Anlamlılar'].split(',').map(s => s.trim()) : [];
-            const types = row.Tür ? row.Tür.split(',').map(s => s.trim()) : [];
+            const scientific = row['Bilimsel'] || ''; // Yeni Bilimsel sütunu
 
             let alreadyMatched = false;
 
-            // 1. Ana Kelime Eşleşmesi
+            // 1. Sözcük
             if (mainNorm.startsWith(query)) {
                 matches.push({ type: 'main', word: mainWord, data: row });
                 alreadyMatched = true;
                 return;
             }
             
-            // 2. Eş Anlamlı Eşleşmesi
-            let synonymMatch = false;
+            // 2. Eş Anlamlılar
             synonyms.forEach(syn => {
                 if (normalizeString(syn).startsWith(query)) {
-                    if (!synonymMatch) {
+                    if (!alreadyMatched) {
                          matches.push({ type: 'synonym', synonym: syn, main: mainWord, data: row });
-                         synonymMatch = true;
                          alreadyMatched = true;
                     }
                 }
@@ -181,15 +180,11 @@ function setupSearch() {
             
             if (alreadyMatched) return;
 
-            // 3. Tür Eşleşmesi
-            types.forEach(typeValue => {
-                if (normalizeString(typeValue).startsWith(query)) {
-                     if (!alreadyMatched) {
-                        matches.push({ type: 'type', word: mainWord, typeValue: typeValue, data: row });
-                        alreadyMatched = true;
-                    }
-                }
-            });
+            // 3. Bilimsel (Tür araması yerine bu yapılıyor)
+            if (scientific && normalizeString(scientific).startsWith(query)) {
+                matches.push({ type: 'scientific', word: mainWord, scientificValue: scientific, data: row });
+                alreadyMatched = true;
+            }
         });
 
         displaySuggestions(matches, query);
@@ -249,8 +244,8 @@ function displaySuggestions(matches, query) {
         } else if (match.type === 'synonym') {
             primaryMatchText = match.synonym; 
             secondaryInfo = match.main;
-        } else if (match.type === 'type') {
-            primaryMatchText = match.typeValue;
+        } else if (match.type === 'scientific') {
+            primaryMatchText = match.scientificValue;
             secondaryInfo = match.word;
         }
 
@@ -278,7 +273,7 @@ function displaySuggestions(matches, query) {
 
 function selectWord(word) {
     lastSelectedWord = word;
-    document.getElementById('welcome-box').classList.add('hidden'); // Seçince kutuyu gizle
+    document.getElementById('welcome-box').classList.add('hidden');
     document.getElementById('searchInput').value = isGreek ? convertToGreek(word.Sözcük) : word.Sözcük;
     document.getElementById('suggestions').innerHTML = '';
     document.getElementById('suggestions-container').classList.add('hidden');
@@ -294,6 +289,7 @@ function showResult(word) {
         synonyms: word['Eş Anlamlılar'] || '',
         desc: word.Açıklama || '',
         type: word.Tür || '',
+        scientific: word['Bilimsel'] || '',
         example: word.Örnek || '',
         ety: word.Köken || ''
     };
@@ -305,17 +301,19 @@ function showResult(word) {
     const t = (key) => isGreek ? convertToGreek(translations.tr[key]) : translations.tr[key];
 
     resultDiv.innerHTML = `
-        <div class="bg-subtle-light dark:bg-subtle-dark rounded-lg sm:rounded-xl overflow-hidden p-4 sm:p-6">
-            <h2 class="text-3xl font-bold mb-4 text-primary">${fields.word}</h2>
-            ${fields.type ? `<p class="text-sm text-muted-light dark:text-muted-dark mb-4">${fields.type}</p>` : ''}
-            <hr class="border-t border-subtle-light dark:border-subtle-dark my-4">
-            ${fields.desc ? `<div class="mb-4"><span class="font-bold text-lg">${t('description_title')}</span><p class="text-base mt-1">${fields.desc}</p></div>` : ''}
-            <hr class="border-t border-subtle-light dark:border-subtle-dark my-4">
-            ${fields.ety ? `<div class="mb-4"><span class="font-bold text-lg">${t('etymology_title')}</span><p class="text-base mt-1">${fields.ety}</p></div>` : ''}
-            <hr class="border-t border-subtle-light dark:border-subtle-dark my-4">
-            ${fields.example ? `<div class="mb-4"><span class="font-bold text-lg">${t('example_title')}</span><p class="text-base mt-1 italic">"${fields.example}"</p></div>` : ''}
-            <hr class="border-t border-subtle-light dark:border-subtle-dark my-4">
-            ${fields.synonyms ? `<div class="mb-4"><span class="font-bold text-lg">${t('synonyms_title')}</span><p class="text-base mt-1">${fields.synonyms}</p></div>` : ''}
+        <div class="bg-subtle-light dark:bg-subtle-dark rounded-lg sm:rounded-xl overflow-hidden p-4 sm:p-6 shadow-md">
+            <h2 class="text-4xl font-bold text-primary">${fields.word}</h2>
+            ${fields.scientific ? `<p class="text-xl italic opacity-70 mt-1">${fields.scientific}</p>` : ''}
+            ${fields.type ? `<p class="text-xs font-medium uppercase tracking-widest text-muted-light dark:text-muted-dark mt-2">${fields.type}</p>` : ''}
+            
+            <hr class="border-t border-subtle-light dark:border-subtle-dark my-5">
+            
+            <div class="space-y-6">
+                ${fields.desc ? `<div><span class="font-bold text-lg">${t('description_title')}</span><p class="text-base mt-1">${fields.desc}</p></div>` : ''}
+                ${fields.ety ? `<div><span class="font-bold text-lg text-primary/80">${t('etymology_title')}</span><p class="text-base mt-1 italic opacity-80">${fields.ety}</p></div>` : ''}
+                ${fields.example ? `<div><span class="font-bold text-lg">${t('example_title')}</span><p class="text-base mt-1 border-l-4 border-primary/20 pl-4">"${fields.example}"</p></div>` : ''}
+                ${fields.synonyms ? `<div><span class="font-bold text-lg">${t('synonyms_title')}</span><p class="text-base mt-1 opacity-90">${fields.synonyms}</p></div>` : ''}
+            </div>
         </div>`;
 }
 
@@ -323,7 +321,7 @@ function clearResult() {
     document.getElementById('result').innerHTML = '';
     document.getElementById('searchInput').value = '';
     document.getElementById('suggestions-container').classList.add('hidden');
-    document.getElementById('welcome-box').classList.remove('hidden'); // Sıfırlayınca kutu geri gelsin
+    document.getElementById('welcome-box').classList.remove('hidden');
     displaySearchHistory();
 }
 
