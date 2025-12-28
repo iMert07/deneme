@@ -62,11 +62,8 @@ const translations = {
         'feedback_placeholder': 'Geri bildiriminizi buraya yazın...',
         'feedback_cancel': 'İptal',
         'feedback_send': 'Gönder',
-        'word_title': 'Sözcük',
         'synonyms_title': 'Eş Anlamlılar',
         'description_title': 'Açıklama',
-        'type_title': 'Tür',
-        'scientific_title': 'Bilimsel',
         'example_title': 'Örnek',
         'etymology_title': 'Köken',
         'no_result': 'Sonuç bulunamadı'
@@ -117,7 +114,6 @@ async function fetchWords() {
         updateText('tr');
     } catch (error) {
         console.error('VERİ ÇEKME HATASI:', error);
-        document.getElementById('result').innerHTML = '<p style="color: red;">VERİLER YÜKLENİRKEN HATA OLUŞTU. LÜTFEN SAYFAYI YENİLEYİN.</p>';
     }
 }
 
@@ -157,18 +153,16 @@ function setupSearch() {
             const mainWord = row.Sözcük || '';
             const mainNorm = normalizeString(mainWord);
             const synonyms = row['Eş Anlamlılar'] ? row['Eş Anlamlılar'].split(',').map(s => s.trim()) : [];
-            const scientific = row['Bilimsel'] || ''; // Yeni Bilimsel sütunu
+            const scientific = row['Bilimsel'] || '';
 
             let alreadyMatched = false;
 
-            // 1. Sözcük
             if (mainNorm.startsWith(query)) {
                 matches.push({ type: 'main', word: mainWord, data: row });
                 alreadyMatched = true;
                 return;
             }
             
-            // 2. Eş Anlamlılar
             synonyms.forEach(syn => {
                 if (normalizeString(syn).startsWith(query)) {
                     if (!alreadyMatched) {
@@ -178,12 +172,11 @@ function setupSearch() {
                 }
             });
             
-            if (alreadyMatched) return;
-
-            // 3. Bilimsel (Tür araması yerine bu yapılıyor)
             if (scientific && normalizeString(scientific).startsWith(query)) {
-                matches.push({ type: 'scientific', word: mainWord, scientificValue: scientific, data: row });
-                alreadyMatched = true;
+                if (!alreadyMatched) {
+                    matches.push({ type: 'scientific', scientificValue: scientific, word: mainWord, data: row });
+                    alreadyMatched = true;
+                }
             }
         });
 
@@ -202,21 +195,6 @@ function setupSearch() {
     });
 
     if (lastSelectedWord) showResult(lastSelectedWord);
-}
-
-function setupAlphabetToggle() {
-    const toggleButton = document.getElementById('alphabet-toggle');
-    toggleButton?.addEventListener('click', toggleAlphabet);
-}
-
-function toggleAlphabet() {
-    isGreek = !isGreek;
-    document.getElementById('alphabet-toggle-latin').classList.toggle('hidden', isGreek);
-    document.getElementById('alphabet-toggle-cyrillic').classList.toggle('hidden', !isGreek);
-    const lang = isGreek ? 'gr' : 'tr';
-    updateText(lang);
-    if (lastSelectedWord) showResult(lastSelectedWord);
-    displaySearchHistory();
 }
 
 function displaySuggestions(matches, query) {
@@ -283,7 +261,9 @@ function selectWord(word) {
 
 function showResult(word) {
     const resultDiv = document.getElementById('result');
-    
+    const t = (key) => isGreek ? convertToGreek(translations.tr[key]) : translations.tr[key];
+    const convert = (val) => isGreek ? convertToGreek(val) : val;
+
     let fields = {
         word: word.Sözcük || '',
         synonyms: word['Eş Anlamlılar'] || '',
@@ -294,25 +274,21 @@ function showResult(word) {
         ety: word.Köken || ''
     };
 
-    if (isGreek) {
-        Object.keys(fields).forEach(key => fields[key] = convertToGreek(fields[key]));
-    }
-
-    const t = (key) => isGreek ? convertToGreek(translations.tr[key]) : translations.tr[key];
-
     resultDiv.innerHTML = `
-        <div class="bg-subtle-light dark:bg-subtle-dark rounded-lg sm:rounded-xl overflow-hidden p-4 sm:p-6 shadow-md">
-            <h2 class="text-4xl font-bold text-primary">${fields.word}</h2>
-            ${fields.scientific ? `<p class="text-xl italic opacity-70 mt-1">${fields.scientific}</p>` : ''}
-            ${fields.type ? `<p class="text-xs font-medium uppercase tracking-widest text-muted-light dark:text-muted-dark mt-2">${fields.type}</p>` : ''}
+        <div class="bg-subtle-light dark:bg-subtle-dark rounded-lg sm:rounded-xl overflow-hidden p-4 sm:p-6 shadow-md border border-subtle-light dark:border-subtle-dark">
+            <div class="mb-5">
+                <h2 class="text-4xl font-bold text-primary">${convert(fields.word)}</h2>
+                ${fields.scientific ? `<p class="text-xl italic text-muted-light dark:text-muted-dark mt-1">${convert(fields.scientific)}</p>` : ''}
+                ${fields.type ? `<p class="text-sm opacity-70 mt-1">${convert(fields.type)}</p>` : ''}
+            </div>
             
             <hr class="border-t border-subtle-light dark:border-subtle-dark my-5">
             
             <div class="space-y-6">
-                ${fields.desc ? `<div><span class="font-bold text-lg">${t('description_title')}</span><p class="text-base mt-1">${fields.desc}</p></div>` : ''}
-                ${fields.ety ? `<div><span class="font-bold text-lg text-primary/80">${t('etymology_title')}</span><p class="text-base mt-1 italic opacity-80">${fields.ety}</p></div>` : ''}
-                ${fields.example ? `<div><span class="font-bold text-lg">${t('example_title')}</span><p class="text-base mt-1 border-l-4 border-primary/20 pl-4">"${fields.example}"</p></div>` : ''}
-                ${fields.synonyms ? `<div><span class="font-bold text-lg">${t('synonyms_title')}</span><p class="text-base mt-1 opacity-90">${fields.synonyms}</p></div>` : ''}
+                ${fields.desc ? `<div><h3 class="text-primary font-bold text-lg mb-1">${t('description_title')}</h3><p class="text-base leading-relaxed">${convert(fields.desc)}</p></div>` : ''}
+                ${fields.ety ? `<div><h3 class="text-primary font-bold text-lg mb-1">${t('etymology_title')}</h3><p class="text-base leading-relaxed">${convert(fields.ety)}</p></div>` : ''}
+                ${fields.example ? `<div><h3 class="text-primary font-bold text-lg mb-1">${t('example_title')}</h3><p class="text-base italic border-l-4 border-primary/40 pl-4 py-1">"${convert(fields.example)}"</p></div>` : ''}
+                ${fields.synonyms ? `<div><h3 class="text-primary font-bold text-lg mb-1">${t('synonyms_title')}</h3><p class="text-base">${convert(fields.synonyms)}</p></div>` : ''}
             </div>
         </div>`;
 }
@@ -342,7 +318,7 @@ function displaySearchHistory() {
         suggestionsDiv.innerHTML = '';
         searchHistory.slice(0, 12).forEach(history => {
             const suggestion = document.createElement('div');
-            suggestion.className = 'suggestion cursor-pointer p-4 hover:bg-background-light dark:hover:bg-background-dark transition-colors border-b border-subtle-light dark:border-subtle-dark last:border-b-0';
+            suggestion.className = 'suggestion cursor-pointer p-4 hover:bg-background-light dark:hover:bg-background-dark border-b border-subtle-light dark:border-subtle-dark last:border-b-0';
             let historyToDisplay = isGreek ? convertToGreek(history) : history;
             suggestion.innerHTML = `<span class="font-bold">${historyToDisplay}</span>`;
             suggestion.addEventListener('mousedown', (e) => {
@@ -356,28 +332,33 @@ function displaySearchHistory() {
     }
 }
 
+function setupAlphabetToggle() {
+    const toggleButton = document.getElementById('alphabet-toggle');
+    toggleButton?.addEventListener('click', toggleAlphabet);
+}
+
+function toggleAlphabet() {
+    isGreek = !isGreek;
+    document.getElementById('alphabet-toggle-latin').classList.toggle('hidden', isGreek);
+    document.getElementById('alphabet-toggle-cyrillic').classList.toggle('hidden', !isGreek);
+    updateText(isGreek ? 'gr' : 'tr');
+    if (lastSelectedWord) showResult(lastSelectedWord);
+}
+
 function toggleFeedbackForm() {
     document.getElementById('feedbackModal').classList.toggle('hidden');
 }
 
 function submitFeedback() {
     const feedbackText = document.getElementById('feedbackText').value.trim();
-    if (!feedbackText) { alert('Lütfen geri bildirim yazın.'); return; }
+    if (!feedbackText) return;
     const tarih = new Date().toLocaleString('tr-TR');
     fetch('https://sheetdb.io/api/v1/mt09gl0tun8di', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: { "Tarih": tarih, "Mesaj": feedbackText } })
     })
-    .then(response => response.json())
-    .then(() => {
-        alert('Geri bildiriminiz alındı, teşekkür ederiz!');
-        toggleFeedbackForm();
-    })
-    .catch(error => {
-        console.error('Hata:', error);
-        alert('Bir hata oluştu, lütfen tekrar deneyin.');
-    });
+    .then(() => toggleFeedbackForm());
 }
 
 function toggleMobileMenu() {
