@@ -146,7 +146,7 @@ function setupSearch() {
         if (!query) {
             suggestionsDiv.innerHTML = '';
             resultDiv.innerHTML = '';
-            welcomeBox.classList.remove('hidden'); // Arama boşsa kutuyu göster
+            welcomeBox.classList.remove('hidden'); // Geri silince kutuyu geri getir
             displaySearchHistory();
             return;
         }
@@ -160,12 +160,14 @@ function setupSearch() {
 
             let alreadyMatched = false;
 
+            // 1. Ana Kelime Eşleşmesi
             if (mainNorm.startsWith(query)) {
                 matches.push({ type: 'main', word: mainWord, data: row });
                 alreadyMatched = true;
                 return;
             }
             
+            // 2. Eş Anlamlı Eşleşmesi
             let synonymMatch = false;
             synonyms.forEach(syn => {
                 if (normalizeString(syn).startsWith(query)) {
@@ -179,6 +181,7 @@ function setupSearch() {
             
             if (alreadyMatched) return;
 
+            // 3. Tür Eşleşmesi
             types.forEach(typeValue => {
                 if (normalizeString(typeValue).startsWith(query)) {
                      if (!alreadyMatched) {
@@ -275,7 +278,7 @@ function displaySuggestions(matches, query) {
 
 function selectWord(word) {
     lastSelectedWord = word;
-    document.getElementById('welcome-box').classList.add('hidden'); // Kelime seçilince kutuyu gizle
+    document.getElementById('welcome-box').classList.add('hidden'); // Seçince kutuyu gizle
     document.getElementById('searchInput').value = isGreek ? convertToGreek(word.Sözcük) : word.Sözcük;
     document.getElementById('suggestions').innerHTML = '';
     document.getElementById('suggestions-container').classList.add('hidden');
@@ -320,7 +323,7 @@ function clearResult() {
     document.getElementById('result').innerHTML = '';
     document.getElementById('searchInput').value = '';
     document.getElementById('suggestions-container').classList.add('hidden');
-    document.getElementById('welcome-box').classList.remove('hidden'); // Temizlenince kutuyu göster
+    document.getElementById('welcome-box').classList.remove('hidden'); // Sıfırlayınca kutu geri gelsin
     displaySearchHistory();
 }
 
@@ -393,5 +396,4 @@ function convertToGreek(text) {
     return convertedText;
 }
 
-// Başlat
 fetchWords();
