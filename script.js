@@ -1,3 +1,9 @@
+/**
+ * ANATOLYA DÖNÜŞTÜRÜCÜ SİSTEMİ - TAM KOD
+ * Amaç: Alfabe, Sayı, Para, Zaman, Uzunluk, Kütle ve Konum dönüşümlerini yönetir.
+ * Meridyen: Floransa merkezli (Antimeridyen 0), Batıya doğru 360 birim artış.
+ */
+
 // --- ELEMENT SEÇİCİLER ---
 const inputArea = document.getElementById('input-area');
 const outputArea = document.getElementById('output-area');
@@ -73,9 +79,15 @@ function toBase12Float(n, isAnatolya = true) {
     let integerPart = Math.floor(Math.abs(n));
     let fractionPart = Math.abs(n) - integerPart;
     let res = toBase12(integerPart, 1, isAnatolya);
-    if (fractionPart > 0.0001) {
+    if (fractionPart > 0.00001) {
         res += ",";
-        for (let i = 0; i < 3; i++) { fractionPart *= 12; let d = Math.floor(fractionPart); res += digits[d]; fractionPart -= d; if (fractionPart < 0.0001) break; }
+        for (let i = 0; i < 4; i++) { 
+            fractionPart *= 12; 
+            let d = Math.floor(fractionPart); 
+            res += digits[d]; 
+            fractionPart -= d; 
+            if (fractionPart < 0.00001) break; 
+        }
     }
     return res;
 }
@@ -101,7 +113,9 @@ function getAnatolyaDays(years) {
     return totalDays;
 }
 
-function normalizeInput(text) { return text.toUpperCase().replace(/θ/g, '0').replace(/Φ/g, 'A').replace(/Λ/g, 'B'); }
+function normalizeInput(text) { 
+    return text.toUpperCase().replace(/θ/g, '0').replace(/Φ/g, 'A').replace(/Λ/g, 'B'); 
+}
 
 function isValidInput(text, unit) {
     const anaDigits = "θΦΛ";
@@ -145,6 +159,7 @@ function universalNumberConvert(text, fromUnit, toUnit) {
     return dec.toString(toBase).toUpperCase().replace('.', ',');
 }
 
+// --- ANA DÖNÜŞTÜRÜCÜ MANTIK ---
 function performConversion() {
     const activeTab = document.querySelector('.active-tab');
     if (!activeTab) return;
@@ -157,20 +172,29 @@ function performConversion() {
     } 
     else if (mode === "Sayı") { outputArea.value = universalNumberConvert(text, currentInputUnit, currentOutputUnit); }
     else if (mode === "Konum") {
-        let val = parseFloat(text.replace(',','.'));
+        let val = parseFloat(text.replace(',', '.'));
+        const referenceLongitude = 11.25 - 180; // Floransa zıt boylamı
+
         if (currentInputUnit === "Boylam (Derece)") {
             if (isNaN(val)) return;
-            // Floransa 11.25, Başlangıç Floransa'nın 180 zıttı: -168.75. Batıya doğru artıyor.
-            let res = (168.75 - val);
-            while (res < 0) res += 360; res = res % 360;
+            let res = (referenceLongitude - val);
+            while (res < 0) res += 360; 
+            res = res % 360;
             const anaVal = toBase12Float(res, true), stdVal = toBase12Float(res, false);
             outputArea.value = `${anaVal} (${stdVal}) [${res.toFixed(2)}]`;
         } else {
-            let input = normalizeInput(text.toUpperCase());
-            let dec = parseInt(input.split('.')[0], 12); // Basitçe onluğa çek
-            let res = 168.75 - dec;
-            while (res < -180) res += 360; while (res > 180) res -= 360;
-            outputArea.value = res.toFixed(4).replace('.',',');
+            let input = normalizeInput(text.toUpperCase()).replace(',', '.');
+            const parts = input.split('.');
+            let dec = parseInt(parts[0], 12);
+            if (parts[1]) {
+                const stdDigits = "0123456789ABCDEF";
+                for (let i = 0; i < parts[1].length; i++) dec += stdDigits.indexOf(parts[1][i]) * Math.pow(12, -(i + 1));
+            }
+            if (isNaN(dec)) { outputArea.value = "Hata"; return; }
+            let longitude = referenceLongitude - dec;
+            while (longitude <= -180) longitude += 360;
+            while (longitude > 180) longitude -= 360;
+            outputArea.value = longitude.toFixed(4).replace('.', ',');
         }
     }
     else if (conversionRates[mode] || mode === "Zaman") {
@@ -178,6 +202,7 @@ function performConversion() {
         let numericValue;
         const specialUnits = ["Anatolya", "Gün", "Ay", "Yıl", "Arşın", "Menzil", "Endaze", "Rubu", "Kerrab", "Berid", "Fersah", "Merhale", "Okka", "Kantar", "Batman", "Miskal", "Dirhem", "Akçe"];
         const isInputSpecial = specialUnits.some(s => currentInputUnit.includes(s));
+        
         if (isInputSpecial) {
             const normalizedText = normalizeInput(text.toUpperCase()).replace(',','.');
             const parts = normalizedText.split('.');
@@ -187,17 +212,22 @@ function performConversion() {
                 for (let i = 0; i < parts[1].length; i++) numericValue += stdDigits.indexOf(parts[1][i]) * Math.pow(12, -(i+1));
             }
         } else { numericValue = parseFloat(text.replace(',', '.')); }
+        
         if (isNaN(numericValue)) { outputArea.value = "Hata"; return; }
+        
         let baseValue;
         const currentModeRates = conversionRates[mode] || (mode === "Zaman" ? conversionRates["Zaman"] : null);
         if (!currentModeRates) return;
+        
         if (currentInputUnit === "Yıl (Gregoryen)") baseValue = getGregorianDays(numericValue) * 86400;
         else if (currentInputUnit === "Yıl (Anatolya)") baseValue = getAnatolyaDays(numericValue) * 86400;
         else baseValue = numericValue * (currentModeRates[currentInputUnit] || 1);
+        
         let result;
         if (currentOutputUnit === "Yıl (Gregoryen)") result = baseValue / (365.2425 * 86400);
         else if (currentOutputUnit === "Yıl (Anatolya)") result = baseValue / (365.25 * 86400);
         else result = baseValue / (currentModeRates[currentOutputUnit] || 1);
+        
         const isOutputSpecial = specialUnits.some(s => currentOutputUnit.includes(s)) || currentOutputUnit.includes("Anatolya");
         if (isOutputSpecial) {
             const anaVal = toBase12Float(result, true), stdVal = toBase12Float(result, false), decStr = Number(result.toFixed(2)).toLocaleString('tr-TR');
@@ -209,7 +239,7 @@ function performConversion() {
     }
 }
 
-// --- UI FONKSİYONLARI ---
+// --- UI VE DROPDOWN YÖNETİMİ ---
 function selectUnit(type, value) {
     if (type === 'input') { if (value === currentOutputUnit) currentOutputUnit = currentInputUnit; currentInputUnit = value; }
     else { if (value === currentInputUnit) currentInputUnit = currentOutputUnit; currentOutputUnit = value; }
@@ -229,25 +259,32 @@ function renderDropdowns(mode) {
     renderPills(); performConversion();
 }
 
-function renderPills() { pillInputLabel.innerText = currentInputUnit; pillOutputLabel.innerText = currentOutputUnit; dropdownInput.classList.remove('show'); dropdownOutput.classList.remove('show'); }
-function toggleDropdown(type) { const el = type === 'input' ? dropdownInput : dropdownOutput; const other = type === 'input' ? dropdownOutput : dropdownInput; other.classList.remove('show'); el.classList.toggle('show'); }
+function renderPills() { 
+    pillInputLabel.innerText = currentInputUnit; 
+    pillOutputLabel.innerText = currentOutputUnit; 
+    dropdownInput.classList.remove('show'); 
+    dropdownOutput.classList.remove('show'); 
+}
+
+function toggleDropdown(type) { 
+    const el = type === 'input' ? dropdownInput : dropdownOutput; 
+    const other = type === 'input' ? dropdownOutput : dropdownInput; 
+    other.classList.remove('show'); 
+    el.classList.toggle('show'); 
+}
+
 window.onclick = function(event) { if (!event.target.closest('.unit-pill')) { dropdownInput.classList.remove('show'); dropdownOutput.classList.remove('show'); } }
 
+// --- EVENT LISTENERS ---
 inputArea.addEventListener('input', performConversion);
-document.querySelectorAll('.key').forEach(key => { key.addEventListener('click', () => {
-    const action = key.dataset.action;
-    if(action === 'delete') inputArea.value = inputArea.value.slice(0,-1);
-    else if(action === 'reset') { inputArea.value = ''; outputArea.value = ''; }
-    else if(!key.classList.contains('fn-key')) inputArea.value += key.innerText;
-    performConversion();
-}); });
+
 document.querySelectorAll('.nav-tab').forEach(tab => { tab.addEventListener('click', function() {
     document.querySelectorAll('.nav-tab').forEach(t => t.classList.replace('active-tab', 'inactive-tab'));
-    this.classList.replace('inactive-tab', 'active-tab'); renderDropdowns(this.dataset.value);
+    this.classList.replace('inactive-tab', 'active-tab'); 
+    renderDropdowns(this.dataset.value);
 }); });
-document.getElementById('themeToggle').addEventListener('click', () => document.documentElement.classList.toggle('dark'));
 
-// --- HEADER SAAT VE TAKVİM (DÜZELTİLDİ) ---
+// --- HEADER SAAT VE TAKVİM ---
 function updateHeader() {
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 30, 0);
@@ -271,7 +308,6 @@ function updateHeader() {
     }
     const day = (daysPassed - daysCounter) % 30 + 1;
     const month = Math.floor((daysPassed - daysCounter) / 30) + 1;
-    // Yıl hatası düzeltildi: year + 10369
     document.getElementById('date').textContent = `${toBase12(day, 2, true)}.${toBase12(month, 2, true)}.${toBase12(year + 10369, 4, true)}`;
 }
 
