@@ -74,7 +74,6 @@ function updateText(lang) {
         if (translations[lang][key]) {
             if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
                 el.placeholder = translations[lang][key];
-                // Focus olunca placeholder'ı silme özelliği
                 el.onfocus = () => { el.dataset.tempPlaceholder = el.placeholder; el.placeholder = ''; };
                 el.onblur = () => { if (el.placeholder === '') el.placeholder = el.dataset.tempPlaceholder; };
             } else {
@@ -93,24 +92,34 @@ function updateText(lang) {
     });
 }
 
-// Sayaçları hesaplayan fonksiyon
+// Sayaçları cümle olarak hesaplayan fonksiyon
 function calculateStats() {
-    const entryCount = allWords.length;
+    const statsContainer = document.getElementById('stats-container');
+    
+    // Boş satırları filtrele (Sadece "Sözcük" sütunu dolu olanları say)
+    const validEntries = allWords.filter(row => row.Sözcük && row.Sözcük.trim() !== "");
+    
+    const entryCount = validEntries.length;
     let totalWordCount = 0;
 
-    allWords.forEach(row => {
-        totalWordCount += 1; // Ana kelime
+    validEntries.forEach(row => {
+        totalWordCount += 1; // Ana kelimeyi say
         if (row['Eş Anlamlılar']) {
+            // Virgülle ayrılmış eş anlamlıları say (boşlukları temizle)
             const synonyms = row['Eş Anlamlılar'].split(',').filter(s => s.trim() !== '');
             totalWordCount += synonyms.length;
         }
     });
 
-    const entryLabel = isGreek ? convertToGreek("Madde") : "Madde";
-    const wordLabel = isGreek ? convertToGreek("Kelime") : "Kelime";
+    // Cümle Kurulumu
+    let sentence = `Şu an bu sözlükte ${entryCount} madde altında toplam ${totalWordCount} kelime keşfedilmeyi bekliyor.`;
+    
+    if (isGreek) {
+        sentence = convertToGreek(sentence);
+    }
 
-    document.getElementById('entry-count').textContent = `${entryCount} ${entryLabel}`;
-    document.getElementById('word-count').textContent = `${totalWordCount} ${wordLabel}`;
+    // HTML içine bas (Daha şık görünmesi için sayıları kalın yapabiliriz)
+    statsContainer.innerHTML = sentence.replace(entryCount, `<b class="text-primary">${entryCount}</b>`).replace(totalWordCount, `<b class="text-primary">${totalWordCount}</b>`);
 }
 
 async function fetchWords() {
@@ -124,7 +133,7 @@ async function fetchWords() {
         setupAlphabetToggle();
         showPage('home');
         updateText('tr');
-        calculateStats(); // Veriler gelince sayaçları çalıştır
+        calculateStats(); // Veriler gelince sayaç cümlesini kur
     } catch (error) {
         console.error('Hata:', error);
     }
@@ -152,7 +161,8 @@ function setupSearch() {
         }
 
         const matches = [];
-        allWords.forEach(row => {
+        // Arama yaparken de sadece geçerli kelimeleri tara
+        allWords.filter(row => row.Sözcük).forEach(row => {
             const word = row.Sözcük || '';
             const scientific = row.Bilimsel || '';
             const synonyms = row['Eş Anlamlılar'] ? row['Eş Anlamlılar'].split(',').map(s => s.trim()) : [];
@@ -276,7 +286,7 @@ function setupAlphabetToggle() {
         document.getElementById('alphabet-toggle-latin').classList.toggle('hidden');
         document.getElementById('alphabet-toggle-cyrillic').classList.toggle('hidden');
         updateText(isGreek ? 'gr' : 'tr');
-        calculateStats(); // Alfabe değişince sayaç dilini de güncelle
+        calculateStats(); 
         if (lastSelectedWord) {
             showResult(lastSelectedWord);
         } else {
@@ -289,7 +299,7 @@ function toggleFeedbackForm() {
     const modal = document.getElementById('feedbackModal');
     modal.classList.toggle('hidden');
     if (!modal.classList.contains('hidden')) {
-        document.getElementById('feedbackText').value = ''; // Modal her açıldığında temizle
+        document.getElementById('feedbackText').value = ''; 
     }
 }
 
