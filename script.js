@@ -92,34 +92,30 @@ function updateText(lang) {
     });
 }
 
-// Sayaçları cümle olarak hesaplayan fonksiyon
+// Sayaçları ayrı bir kartta cümle olarak hesaplayan fonksiyon
 function calculateStats() {
-    const statsContainer = document.getElementById('stats-container');
-    
-    // Boş satırları filtrele (Sadece "Sözcük" sütunu dolu olanları say)
+    const statsSentence = document.getElementById('stats-sentence');
+    if (!statsSentence) return;
+
     const validEntries = allWords.filter(row => row.Sözcük && row.Sözcük.trim() !== "");
-    
     const entryCount = validEntries.length;
     let totalWordCount = 0;
 
     validEntries.forEach(row => {
-        totalWordCount += 1; // Ana kelimeyi say
+        totalWordCount += 1;
         if (row['Eş Anlamlılar']) {
-            // Virgülle ayrılmış eş anlamlıları say (boşlukları temizle)
             const synonyms = row['Eş Anlamlılar'].split(',').filter(s => s.trim() !== '');
             totalWordCount += synonyms.length;
         }
     });
 
-    // Cümle Kurulumu
-    let sentence = `Şu an bu sözlükte ${entryCount} madde altında toplam ${totalWordCount} kelime keşfedilmeyi bekliyor.`;
-    
-    if (isGreek) {
-        sentence = convertToGreek(sentence);
-    }
+    let sentence = `Şu an bu sözlükte ${entryCount} madde altında toplam ${totalWordCount} kelime bulunmaktadır.`;
+    if (isGreek) sentence = convertToGreek(sentence);
 
-    // HTML içine bas (Daha şık görünmesi için sayıları kalın yapabiliriz)
-    statsContainer.innerHTML = sentence.replace(entryCount, `<b class="text-primary">${entryCount}</b>`).replace(totalWordCount, `<b class="text-primary">${totalWordCount}</b>`);
+    // Sayıları vurgulayarak ekrana bas
+    statsSentence.innerHTML = sentence
+        .replace(entryCount, `<span class="text-primary font-bold">${entryCount}</span>`)
+        .replace(totalWordCount, `<span class="text-primary font-bold">${totalWordCount}</span>`);
 }
 
 async function fetchWords() {
@@ -133,7 +129,7 @@ async function fetchWords() {
         setupAlphabetToggle();
         showPage('home');
         updateText('tr');
-        calculateStats(); // Veriler gelince sayaç cümlesini kur
+        calculateStats();
     } catch (error) {
         console.error('Hata:', error);
     }
@@ -149,6 +145,7 @@ function setupSearch() {
     const searchInput = document.getElementById('searchInput');
     const suggestionsDiv = document.getElementById('suggestions');
     const welcomeBox = document.getElementById('welcome-box');
+    const statsCard = document.getElementById('stats-card');
 
     searchInput.addEventListener('input', function () {
         const query = normalizeString(this.value.trim());
@@ -156,12 +153,12 @@ function setupSearch() {
             suggestionsDiv.innerHTML = '';
             document.getElementById('result').innerHTML = '';
             welcomeBox.classList.remove('hidden');
+            statsCard.classList.remove('hidden');
             displaySearchHistory();
             return;
         }
 
         const matches = [];
-        // Arama yaparken de sadece geçerli kelimeleri tara
         allWords.filter(row => row.Sözcük).forEach(row => {
             const word = row.Sözcük || '';
             const scientific = row.Bilimsel || '';
@@ -219,6 +216,7 @@ function displaySuggestions(matches) {
 function selectWord(word) {
     lastSelectedWord = word;
     document.getElementById('welcome-box').classList.add('hidden');
+    document.getElementById('stats-card').classList.add('hidden');
     document.getElementById('searchInput').value = isGreek ? convertToGreek(word.Sözcük) : word.Sözcük;
     document.getElementById('suggestions-container').classList.add('hidden');
     showResult(word);
@@ -253,6 +251,7 @@ function clearResult() {
     document.getElementById('searchInput').value = '';
     document.getElementById('suggestions-container').classList.add('hidden');
     document.getElementById('welcome-box').classList.remove('hidden');
+    document.getElementById('stats-card').classList.remove('hidden');
 }
 
 function updateSearchHistory(query) {
