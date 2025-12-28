@@ -1,8 +1,3 @@
-/* Gelecekte eklemek isteyeceğiniz özel animasyonlar veya CSS kuralları için */
-.suggestion:last-child {
-    border-bottom: none;
-}
-
 /* Scrollbar özelleştirme */
 #suggestions::-webkit-scrollbar {
     width: 6px;
@@ -13,4 +8,13 @@
 #suggestions::-webkit-scrollbar-thumb {
     background: #1193d4;
     border-radius: 10px;
+}
+
+/* Animasyonlu geçişler */
+.suggestion {
+    transition: all 0.2s ease;
+}
+
+#welcome-box {
+    transition: opacity 0.3s ease-in-out;
 }
