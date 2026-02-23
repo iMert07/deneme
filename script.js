@@ -81,7 +81,7 @@ function showPage(pageId) {
     }
 }
 
-// --- 3. KÖKEN DAĞILIMI (GELİŞTİRİLMİŞ & YÜZDELİ) ---
+// --- 3. KÖKEN DAĞILIMI (TAMAMEN DÜZELTİLMİŞ) ---
 function renderEtymologyStats() {
     const container = document.getElementById('ety-container');
     if (!container) return;
@@ -97,25 +97,34 @@ function renderEtymologyStats() {
         let etyText = w.Köken ? w.Köken.trim() : "";
 
         if (etyText !== "") {
-            if (etyText.includes("kökenli")) {
-                let parts = etyText.split("kökenli");
-                origin = parts[parts.length - 1].trim();
-                if (origin === "") origin = parts[parts.length - 2].trim().split(" ").pop();
+            if (etyText.toLowerCase().includes("kökenli")) {
+                // "kökenli"den sonrasını blok olarak al
+                let parts = etyText.split(/kökenli/i);
+                let after = parts[parts.length - 1].trim();
+                
+                if (after !== "") {
+                    origin = after;
+                } else {
+                    // "kökenli" ile bitiyorsa, öncesindeki son kelimeyi al
+                    let before = parts[parts.length - 2].trim();
+                    origin = before.split(" ").pop();
+                }
             } else {
+                // "kökenli" geçmiyorsa direkt son kelimeye/tamlamaya bak
                 origin = etyText;
             }
-            let words = origin.split(" ");
-            if (words[words.length - 1].toLowerCase() === "dili" && words.length > 1) {
-                origin = words[words.length - 2] + " " + words[words.length - 1];
-            } else if (words.length > 1 && !etyText.includes("kökenli")) {
-                origin = words[words.length - 1];
-            }
+            
+            // "Türkçe" kelimesini "Türkçe (Melez)"e çevir
             if (origin.toLowerCase() === "türkçe") origin = "Türkçe (Melez)";
         }
         etyMap[origin] = (etyMap[origin] || 0) + 1;
     });
 
-    let etyData = Object.keys(etyMap).map(key => ({ label: key, count: etyMap[key], percent: (etyMap[key] / totalValidEntries * 100).toFixed(1) }));
+    let etyData = Object.keys(etyMap).map(key => ({ 
+        label: key, 
+        count: etyMap[key], 
+        percent: (etyMap[key] / totalValidEntries * 100).toFixed(1) 
+    }));
 
     etyData.sort((a, b) => {
         if (etySortConfig.key === 'label') return etySortConfig.direction === 'asc' ? a.label.localeCompare(b.label, 'tr') : b.label.localeCompare(a.label, 'tr');
@@ -139,8 +148,14 @@ function renderEtymologyStats() {
         box.innerHTML = `
             <div class="bg-primary text-white text-center py-2 font-bold text-sm truncate px-2">${isGreek ? convertToGreek(item.label) : item.label}</div>
             <div class="flex divide-x divide-subtle-light dark:divide-subtle-dark text-center">
-                <div class="flex-1 py-3"><p class="text-[10px] opacity-50 uppercase font-bold">${isGreek ? convertToGreek('Adet') : 'Adet'}</p><p class="text-lg font-bold text-primary">${item.count}</p></div>
-                <div class="flex-1 py-3"><p class="text-[10px] opacity-50 uppercase font-bold">${isGreek ? convertToGreek('Oran') : 'Oran'}</p><p class="text-lg font-bold">%${item.percent}</p></div>
+                <div class="flex-1 py-3 leading-tight">
+                    <p class="text-[10px] opacity-50 uppercase font-bold mb-1">${isGreek ? convertToGreek('Adet') : 'Adet'}</p>
+                    <p class="text-lg font-bold text-primary">${item.count}</p>
+                </div>
+                <div class="flex-1 py-3 leading-tight">
+                    <p class="text-[10px] opacity-50 uppercase font-bold mb-1">${isGreek ? convertToGreek('Oran') : 'Oran'}</p>
+                    <p class="text-lg font-bold">%${item.percent}</p>
+                </div>
             </div>
         `;
         container.appendChild(box);
