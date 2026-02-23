@@ -25,11 +25,10 @@ themeToggleButton?.addEventListener('click', function() {
 let allWords = [];
 let lastSelectedWord = null;
 let lastClickedText = ""; 
-let searchHistory = JSON.parse(localStorage.getItem('searchHistory')) || [];
 let isGreek = false;
 
 const customAlphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVX YZ".split("");
-const PAGE_SIZE = 36; // 12 satır * 3 sütun
+const PAGE_SIZE = 36;
 
 const latinToGreekMap = {
     "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν",
@@ -52,8 +51,7 @@ const translations = {
         'feedback_cancel': 'İptal', 'feedback_send': 'Gönder',
         'synonyms_title': 'Eş Anlamlılar', 'description_title': 'Açıklama',
         'example_title': 'Örnek', 'etymology_title': 'Köken', 'no_result': 'Sonuç bulunamadı'
-    },
-    'gr': {}
+    }
 };
 
 function normalizeString(str) {
@@ -84,13 +82,18 @@ function updateText(lang) {
     });
 }
 
-// --- HARF MENÜSÜ VE SAYFALAMA ---
-function toggleAlphabetMenu() {
-    const menu = document.getElementById('alphabet-menu');
-    menu.classList.toggle('hidden');
-    if (!menu.classList.contains('hidden')) {
-        renderAlphabet();
-    }
+// --- KELİMELER SAYFASI YÖNETİMİ ---
+function showKelimelerPage() {
+    // Ana sayfa elemanlarını gizle
+    document.getElementById('welcome-box').classList.add('hidden');
+    document.getElementById('stats-card').classList.add('hidden');
+    document.getElementById('result').innerHTML = '';
+    
+    // Arama barı dışındaki her şeyi temizle ve kelimeler bölümünü aç
+    document.getElementById('alphabet-section').classList.remove('hidden');
+    document.getElementById('letter-results').innerHTML = '';
+    
+    renderAlphabet();
 }
 
 function renderAlphabet() {
@@ -111,7 +114,6 @@ function showLetterResults(harf, page, showAll = false) {
     const pagDiv = document.getElementById('alphabet-pagination');
     resultsDiv.innerHTML = "";
     pagDiv.innerHTML = "";
-    resultsDiv.classList.remove('hidden');
 
     const filtered = allWords.filter(w => w.Sözcük && normalizeString(w.Sözcük).startsWith(normalizeString(harf)))
                              .sort((a,b) => a.Sözcük.localeCompare(b.Sözcük, 'tr'));
@@ -124,11 +126,10 @@ function showLetterResults(harf, page, showAll = false) {
         const b = document.createElement('button');
         b.className = "text-left p-3 rounded bg-white/5 border border-subtle-light dark:border-subtle-dark hover:border-primary transition-all truncate font-semibold text-sm";
         b.innerText = isGreek ? convertToGreek(item.Sözcük) : item.Sözcük;
-        b.onclick = () => selectWord(item, item.Sözcük, "");
+        b.onclick = () => selectWord(item, item.Sözcük);
         resultsDiv.appendChild(b);
     });
 
-    // Sayfalama Numaraları
     if (filtered.length > PAGE_SIZE && !showAll) {
         pagDiv.classList.remove('hidden');
         const pageCount = Math.ceil(filtered.length / PAGE_SIZE);
@@ -139,33 +140,28 @@ function showLetterResults(harf, page, showAll = false) {
             pBtn.onclick = () => showLetterResults(harf, i);
             pagDiv.appendChild(pBtn);
         }
-        // Tümünü Göster Butonu
-        const allBtn = document.createElement('button');
-        allBtn.className = "px-3 py-1 rounded bg-primary/20 text-primary font-bold";
-        allBtn.innerText = "Tümünü Göster";
-        allBtn.onclick = () => showLetterResults(harf, 0, true);
-        pagDiv.appendChild(allBtn);
     } else {
         pagDiv.classList.add('hidden');
     }
 }
 
-// --- ORİJİNAL FONKSİYONLAR ---
-function calculateStats() {
-    const statsSentence = document.getElementById('stats-sentence');
-    if (!statsSentence) return;
-    const validEntries = allWords.filter(row => row.Sözcük && row.Sözcük.trim() !== "");
-    const entryCount = validEntries.length;
-    let totalWordCount = 0;
-    validEntries.forEach(row => {
-        totalWordCount += 1;
-        if (row['Eş Anlamlılar']) {
-            totalWordCount += row['Eş Anlamlılar'].split(',').filter(s => s.trim() !== '').length;
-        }
-    });
-    let sentence = `Şu an bu sözlükte ${entryCount} madde altında toplam ${totalWordCount} kelime bulunmaktadır.`;
-    if (isGreek) sentence = convertToGreek(sentence);
-    statsSentence.innerHTML = sentence.replace(entryCount, `<span class="text-primary font-bold">${entryCount}</span>`).replace(totalWordCount, `<span class="text-primary font-bold">${totalWordCount}</span>`);
+// --- GENEL FONKSİYONLAR ---
+function showPage(pageId) {
+    if (pageId === 'home') {
+        clearResult();
+    }
+}
+
+function clearResult() {
+    lastSelectedWord = null;
+    document.getElementById('result').innerHTML = '';
+    document.getElementById('searchInput').value = '';
+    document.getElementById('suggestions-container').classList.add('hidden');
+    
+    // Kelimeler bölümünü kapat, Ana sayfa bölümlerini aç
+    document.getElementById('alphabet-section').classList.add('hidden');
+    document.getElementById('welcome-box').classList.remove('hidden');
+    document.getElementById('stats-card').classList.remove('hidden');
 }
 
 async function fetchWords() {
@@ -175,34 +171,23 @@ async function fetchWords() {
         allWords = await response.json();
         setupSearch();
         setupAlphabetToggle();
-        showPage('home');
-        updateText('tr');
         calculateStats();
+        updateText('tr');
     } catch (error) { console.error('Hata:', error); }
 }
-
-function showPage(pageId) { if (pageId === 'home') clearResult(); }
 
 function setupSearch() {
     const searchInput = document.getElementById('searchInput');
     searchInput.addEventListener('input', function () {
         const query = normalizeString(this.value.trim());
         if (!query) {
-            document.getElementById('suggestions').innerHTML = '';
-            document.getElementById('result').innerHTML = '';
-            document.getElementById('welcome-box').classList.remove('hidden');
-            document.getElementById('stats-card').classList.remove('hidden');
-            displaySearchHistory();
+            document.getElementById('suggestions-container').classList.add('hidden');
             return;
         }
-        document.getElementById('alphabet-menu').classList.add('hidden');
-        document.getElementById('letter-results').classList.add('hidden');
-        const matches = [];
-        allWords.filter(row => row.Sözcük).forEach(row => {
-            if (normalizeString(row.Sözcük).startsWith(query)) {
-                matches.push({ type: 'main', primary: row.Sözcük, secondary: '', data: row });
-            }
-        });
+        // Arama yapılırken kelime listesini gizle, sadece önerileri göster
+        document.getElementById('alphabet-section').classList.add('hidden');
+        
+        const matches = allWords.filter(row => row.Sözcük && normalizeString(row.Sözcük).startsWith(query));
         displaySuggestions(matches);
     });
 }
@@ -211,25 +196,31 @@ function displaySuggestions(matches) {
     const suggestionsDiv = document.getElementById('suggestions');
     const container = document.getElementById('suggestions-container');
     suggestionsDiv.innerHTML = '';
+    
     if (matches.length === 0) {
-        suggestionsDiv.innerHTML = `<div class="p-4 text-sm opacity-50">${isGreek ? convertToGreek('Sonuç bulunamadı') : 'Sonuç bulunamadı'}</div>`;
+        suggestionsDiv.innerHTML = `<div class="p-4 text-sm opacity-50">Sonuç bulunamadı</div>`;
         container.classList.remove('hidden');
         return;
     }
-    matches.sort((a,b) => normalizeString(a.primary).localeCompare(normalizeString(b.primary))).slice(0, 12).forEach(match => {
+    
+    matches.slice(0, 10).forEach(match => {
         const div = document.createElement('div');
         div.className = 'suggestion cursor-pointer p-4 hover:bg-background-light dark:hover:bg-background-dark border-b border-subtle-light dark:border-subtle-dark last:border-b-0';
-        div.innerHTML = `<span class="font-bold">${isGreek ? convertToGreek(match.primary) : match.primary}</span>`;
-        div.addEventListener('mousedown', (e) => { e.preventDefault(); selectWord(match.data, match.primary, ""); });
+        div.innerHTML = `<span class="font-bold">${isGreek ? convertToGreek(match.Sözcük) : match.Sözcük}</span>`;
+        div.addEventListener('mousedown', (e) => { 
+            e.preventDefault(); 
+            selectWord(match, match.Sözcük); 
+        });
         suggestionsDiv.appendChild(div);
     });
     container.classList.remove('hidden');
 }
 
-function selectWord(wordData, pText, sText) {
-    lastSelectedWord = wordData; lastClickedText = pText;
+function selectWord(wordData, pText) {
+    lastSelectedWord = wordData;
     document.getElementById('welcome-box').classList.add('hidden');
     document.getElementById('stats-card').classList.add('hidden');
+    document.getElementById('alphabet-section').classList.add('hidden');
     document.getElementById('searchInput').value = isGreek ? convertToGreek(pText) : pText;
     document.getElementById('suggestions-container').classList.add('hidden');
     showResult(wordData);
@@ -239,7 +230,7 @@ function showResult(word) {
     const resultDiv = document.getElementById('result');
     const t = (key) => isGreek ? convertToGreek(translations['tr'][key]) : translations['tr'][key];
     const convert = (val) => isGreek ? convertToGreek(val) : val;
-    // Orijinal kart yapın
+
     resultDiv.innerHTML = `
         <div class="bg-subtle-light dark:bg-subtle-dark rounded-lg sm:rounded-xl overflow-hidden p-4 sm:p-6 shadow-md border border-subtle-light dark:border-subtle-dark">
             <div class="mb-5">
@@ -255,17 +246,15 @@ function showResult(word) {
                 ${word['Eş Anlamlılar'] ? `<div><h3 class="text-primary font-bold text-lg mb-1">${t('synonyms_title')}</h3><p class="text-base">${convert(word['Eş Anlamlılar'])}</p></div>` : ''}
             </div>
         </div>`;
-    resultDiv.scrollIntoView({ behavior: 'smooth' });
 }
 
-function clearResult() {
-    lastSelectedWord = null; lastClickedText = "";
-    document.getElementById('result').innerHTML = '';
-    document.getElementById('searchInput').value = '';
-    document.getElementById('alphabet-menu').classList.add('hidden');
-    document.getElementById('letter-results').classList.add('hidden');
-    document.getElementById('welcome-box').classList.remove('hidden');
-    document.getElementById('stats-card').classList.remove('hidden');
+function calculateStats() {
+    const statsSentence = document.getElementById('stats-sentence');
+    const validEntries = allWords.filter(row => row.Sözcük && row.Sözcük.trim() !== "");
+    const entryCount = validEntries.length;
+    let sentence = `Şu an bu sözlükte ${entryCount} madde bulunmaktadır.`;
+    if (isGreek) sentence = convertToGreek(sentence);
+    statsSentence.innerHTML = sentence.replace(entryCount, `<span class="text-primary font-bold">${entryCount}</span>`);
 }
 
 function setupAlphabetToggle() {
@@ -275,7 +264,6 @@ function setupAlphabetToggle() {
         document.getElementById('alphabet-toggle-cyrillic').classList.toggle('hidden');
         updateText(isGreek ? 'gr' : 'tr');
         if (lastSelectedWord) showResult(lastSelectedWord);
-        if (!document.getElementById('alphabet-menu').classList.contains('hidden')) renderAlphabet();
     };
 }
 
