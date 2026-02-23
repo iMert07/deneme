@@ -53,12 +53,8 @@ function showKelimelerPage() {
     
     document.getElementById('alphabet-section').classList.remove('hidden');
     document.getElementById('letter-results').innerHTML = '';
-    
-    // Pagination alanını temizle ve göster
-    const pagDiv = document.getElementById('alphabet-pagination');
-    pagDiv.innerHTML = '';
-    pagDiv.classList.add('hidden');
-    // Pagination'ı harf kutusundan çıkarıp listenin altına alıyoruz (HTML'de yeri zaten letter-results altındaydı)
+    document.getElementById('alphabet-pagination').innerHTML = '';
+    document.getElementById('alphabet-pagination').classList.add('hidden');
     
     renderAlphabet();
 }
@@ -70,6 +66,7 @@ function renderAlphabet() {
     customAlphabet.forEach(harf => {
         if(harf === " ") return;
         const btn = document.createElement('button');
+        // Orijinal tasarım sınıfları geri getirildi
         btn.className = "w-10 h-10 flex items-center justify-center font-bold rounded bg-subtle-light/50 dark:bg-subtle-dark hover:bg-primary hover:text-white transition-all";
         btn.innerText = isGreek ? convertToGreek(harf) : harf;
         btn.onclick = () => {
@@ -101,40 +98,43 @@ function showLetterResults(harf, page, showAll = false) {
         resultsDiv.appendChild(b);
     });
 
-    // --- PAGINATION VE TÜMÜNÜ GÖSTER (LİSTENİN SONUNDA) ---
+    // --- PAGINATION (KELİME LİSTESİNİN EN ALTI) ---
     if (filtered.length > 0) {
         pagDiv.classList.remove('hidden');
-        pagDiv.className = "mt-8 flex flex-wrap justify-center items-center gap-4 py-6 border-t border-subtle-light dark:border-subtle-dark";
+        // Liste sonu tasarımı
+        pagDiv.className = "mt-12 mb-8 flex flex-col items-center gap-6 py-8 border-t border-subtle-light dark:border-subtle-dark";
 
-        // Sayfa Numaraları (Sadece showAll değilse göster)
+        let contentWrap = document.createElement('div');
+        contentWrap.className = "flex flex-wrap justify-center items-center gap-4";
+
+        // Sayfa Numaraları
         if (!showAll && filtered.length > PAGE_SIZE) {
-            const numContainer = document.createElement('div');
-            numContainer.className = "flex gap-2";
             const pageCount = Math.ceil(filtered.length / PAGE_SIZE);
             for (let i = 0; i < pageCount; i++) {
                 const pBtn = document.createElement('button');
-                pBtn.className = `w-8 h-8 flex items-center justify-center rounded font-bold transition-all ${i === page ? 'bg-primary text-white' : 'bg-subtle-light dark:bg-subtle-dark opacity-60 hover:opacity-100'}`;
+                pBtn.className = `w-10 h-10 flex items-center justify-center rounded font-bold transition-all ${i === page ? 'bg-primary text-white shadow-lg scale-110' : 'bg-subtle-light/50 dark:bg-subtle-dark hover:bg-primary/20'}`;
                 pBtn.innerText = i + 1;
                 pBtn.onclick = () => {
                     showLetterResults(harf, i);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 };
-                numContainer.appendChild(pBtn);
+                contentWrap.appendChild(pBtn);
             }
-            pagDiv.appendChild(numContainer);
         }
 
         // Tümünü Göster / Daralt Butonu
         if (filtered.length > PAGE_SIZE) {
             const toggleBtn = document.createElement('button');
-            toggleBtn.className = "px-6 py-2 rounded-full bg-primary text-white font-bold text-sm hover:bg-primary/80 transition-all shadow-md";
-            toggleBtn.innerText = showAll ? (isGreek ? convertToGreek("Daralt") : "Daralt") : (isGreek ? convertToGreek("Tümünü Göster") : "Tümünü Göster");
+            toggleBtn.className = "px-6 py-2 rounded-xl bg-primary/10 text-primary border border-primary/30 font-bold text-sm hover:bg-primary hover:text-white transition-all";
+            toggleBtn.innerText = showAll ? "Daha Az Göster" : "Tümünü Göster";
             toggleBtn.onclick = () => {
                 showLetterResults(harf, 0, !showAll);
                 if(showAll) window.scrollTo({ top: 0, behavior: 'smooth' });
             };
-            pagDiv.appendChild(toggleBtn);
+            contentWrap.appendChild(toggleBtn);
         }
+        
+        pagDiv.appendChild(contentWrap);
     }
 }
 
