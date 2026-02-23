@@ -27,8 +27,8 @@ let lastSelectedWord = null;
 let lastClickedText = ""; 
 let isGreek = false;
 
+const PAGE_SIZE = 36; // 12 satır * 3 sütun
 const customAlphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVX YZ".split("");
-const PAGE_SIZE = 36;
 
 const latinToGreekMap = {
     "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν",
@@ -54,7 +54,7 @@ const translations = {
     }
 };
 
-// --- FONKSİYONLAR ---
+// --- YARDIMCI FONKSİYONLAR ---
 
 function normalizeString(str) {
     if (!str) return '';
@@ -84,13 +84,12 @@ function updateText(lang) {
     });
 }
 
-// --- KELİMELER SEKSİYONU YÖNETİMİ ---
+// --- KELİMELER BÖLÜMÜ YÖNETİMİ ---
 function openWordsSection() {
-    document.getElementById('main-landing').classList.add('hidden'); // Hoş geldin gizle
-    document.getElementById('result').innerHTML = ''; // Eski kartı temizle
-    document.getElementById('words-section').classList.remove('hidden'); // Kelimeler alanını aç
+    document.getElementById('landing-page').classList.add('hidden');
+    document.getElementById('result').innerHTML = '';
+    document.getElementById('words-section').classList.remove('hidden');
     renderAlphabet();
-    // İlk harf olarak A'yı otomatik gösterelim istersen:
     showLetterResults('A', 0);
 }
 
@@ -100,7 +99,7 @@ function renderAlphabet() {
     customAlphabet.forEach(harf => {
         if(harf === " ") return;
         const btn = document.createElement('button');
-        btn.className = "w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-bold rounded bg-subtle-light dark:bg-subtle-dark border border-subtle-dark/10 hover:bg-primary hover:text-white transition-all";
+        btn.className = "w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-bold rounded border border-subtle-dark/20 dark:border-subtle-light/10 hover:bg-primary hover:text-white transition-all";
         btn.innerText = isGreek ? convertToGreek(harf) : harf;
         btn.onclick = () => showLetterResults(harf, 0);
         list.appendChild(btn);
@@ -121,12 +120,12 @@ function showLetterResults(harf, page, showAll = false) {
     const currentList = filtered.slice(start, end);
 
     if (currentList.length === 0) {
-        resultsDiv.innerHTML = `<p class="col-span-full opacity-50 italic py-4 text-center font-bold underline">"${harf}" harfi ile başlayan kelime yok.</p>`;
+        resultsDiv.innerHTML = `<p class="col-span-full opacity-50 py-10 text-center font-bold italic underline">"${harf}" ile başlayan kelime yok.</p>`;
     }
 
     currentList.forEach(item => {
         const b = document.createElement('button');
-        b.className = "text-left p-3 rounded-lg bg-white/5 border border-subtle-light dark:border-subtle-dark hover:border-primary transition-all truncate font-semibold text-sm";
+        b.className = "text-left p-3 rounded-lg bg-subtle-light dark:bg-subtle-dark border border-subtle-dark/5 hover:border-primary transition-all truncate font-semibold text-sm";
         b.innerText = isGreek ? convertToGreek(item.Sözcük) : item.Sözcük;
         b.onclick = () => selectWord(item, item.Sözcük);
         resultsDiv.appendChild(b);
@@ -144,7 +143,7 @@ function showLetterResults(harf, page, showAll = false) {
         }
         const allBtn = document.createElement('button');
         allBtn.className = "px-4 h-8 rounded bg-primary/20 text-primary font-bold text-xs uppercase";
-        allBtn.innerText = "Tümünü Gör";
+        allBtn.innerText = "TÜMÜNÜ GÖR";
         allBtn.onclick = () => showLetterResults(harf, 0, true);
         pagDiv.appendChild(allBtn);
     } else {
@@ -152,14 +151,33 @@ function showLetterResults(harf, page, showAll = false) {
     }
 }
 
-// --- ANA SAYFAYA DÖNÜŞ (LOGO İÇİN) ---
+// --- ANA SAYFAYA DÖNÜŞ (LOGO) ---
 function showPage(pageId) {
     if (pageId === 'home') {
-        document.getElementById('main-landing').classList.remove('hidden');
+        document.getElementById('landing-page').classList.remove('hidden');
         document.getElementById('words-section').classList.add('hidden');
         document.getElementById('result').innerHTML = '';
         document.getElementById('searchInput').value = '';
         calculateStats();
+    }
+}
+
+// --- VERİ ÇEKME VE BAŞLATMA ---
+async function fetchWords() {
+    const url = `https://opensheet.elk.sh/1R01aIajx6dzHlO-KBiUXUmld2AEvxjCQkUTFGYB3EDM/Sözlük`;
+    try {
+        const response = await fetch(url);
+        if(!response.ok) throw new Error("Ağ hatası");
+        allWords = await response.json();
+        
+        setupSearch();
+        setupAlphabetToggle();
+        calculateStats();
+        updateText('tr');
+        console.log("Sözlük hazır.");
+    } catch (error) { 
+        console.error('Hata:', error);
+        document.getElementById('stats-sentence').innerText = "Veriler şu an yüklenemiyor. Lütfen sayfayı yenileyin.";
     }
 }
 
@@ -173,61 +191,38 @@ function calculateStats() {
     statsSentence.innerHTML = sentence.replace(entryCount, `<span class="text-primary font-bold">${entryCount}</span>`);
 }
 
-async function fetchWords() {
-    const url = `https://opensheet.elk.sh/1R01aIajx6dzHlO-KBiUXUmld2AEvxjCQkUTFGYB3EDM/Sözlük`;
-    try {
-        const response = await fetch(url);
-        allWords = await response.json();
-        setupSearch();
-        setupAlphabetToggle();
-        updateText('tr');
-        calculateStats();
-    } catch (error) { console.error('Hata:', error); }
-}
-
 function setupSearch() {
-    const searchInput = document.getElementById('searchInput');
-    searchInput.addEventListener('input', function () {
-        const query = normalizeString(this.value.trim());
-        if (!query) {
+    const input = document.getElementById('searchInput');
+    input.addEventListener('input', function() {
+        const q = normalizeString(this.value.trim());
+        if (!q) {
             document.getElementById('suggestions-container').classList.add('hidden');
             return;
         }
-        // Arama yapılırken menüleri kapatmaya gerek yok, suggestions üstte açılır
-        const matches = allWords.filter(row => row.Sözcük && normalizeString(row.Sözcük).startsWith(query));
+        const matches = allWords.filter(row => row.Sözcük && normalizeString(row.Sözcük).startsWith(q));
         displaySuggestions(matches);
     });
 }
 
 function displaySuggestions(matches) {
-    const suggestionsDiv = document.getElementById('suggestions');
+    const div = document.getElementById('suggestions');
     const container = document.getElementById('suggestions-container');
-    suggestionsDiv.innerHTML = '';
+    div.innerHTML = '';
     if (matches.length === 0) {
-        suggestionsDiv.innerHTML = `<div class="p-4 text-sm opacity-50">Sonuç yok</div>`;
+        div.innerHTML = `<div class="p-4 text-sm opacity-50">Sonuç bulunamadı</div>`;
         container.classList.remove('hidden');
         return;
     }
     matches.slice(0, 10).forEach(match => {
-        const div = document.createElement('div');
-        div.className = 'suggestion cursor-pointer p-4 hover:bg-background-light dark:hover:bg-background-dark border-b border-subtle-dark/5 last:border-0';
-        div.innerHTML = `<span class="font-bold">${isGreek ? convertToGreek(match.Sözcük) : match.Sözcük}</span>`;
-        div.onclick = () => selectWord(match, match.Sözcük);
-        suggestionsDiv.appendChild(div);
+        const s = document.createElement('div');
+        s.className = 'suggestion cursor-pointer p-4 hover:bg-background-light dark:hover:bg-background-dark border-b border-subtle-dark/5 last:border-0';
+        s.innerHTML = `<span class="font-bold">${isGreek ? convertToGreek(match.Sözcük) : match.Sözcük}</span>`;
+        s.onclick = () => selectWord(match, match.Sözcük);
+        div.appendChild(s);
     });
     container.classList.remove('hidden');
 }
 
 function selectWord(wordData, pText) {
-    lastSelectedWord = wordData; lastClickedText = pText;
-    document.getElementById('searchInput').value = isGreek ? convertToGreek(pText) : pText;
-    document.getElementById('suggestions-container').classList.add('hidden');
-    showResult(wordData);
-}
-
-function showResult(word) {
-    const resultDiv = document.getElementById('result');
-    const convert = (val) => isGreek ? convertToGreek(val) : val;
-    // Orijinal kart tasarımın
-    resultDiv.innerHTML = `
-        <div class="bg-subtle-light dark:bg-subtle-dark rounded-lg sm:rounded-xl overflow-hidden p-4 sm:p-6 shadow-md border border-subtle-light dark:border-subtle-dark mt-
+    lastSelectedWord = wordData;
+    document.getElementById('searchInput').value = isGreek ? convertToGreek(pText) :
