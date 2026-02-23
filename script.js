@@ -4,7 +4,7 @@ let lastSelectedWord = null;
 let isGreek = false;
 let currentSelectedLetter = null;
 let sortConfig = { key: 'harf', direction: 'asc' }; 
-let etySortConfig = { key: 'count', direction: 'asc' }; 
+let etySortConfig = { key: 'label', direction: 'asc' }; // Varsayılan: Dil (Alfabetik) seçili
 
 const PAGE_SIZE = 36;
 const customAlphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVX YZ".split("");
@@ -95,26 +95,22 @@ function renderEtymologyStats() {
 
         if (etyText !== "") {
             if (etyText.includes("kökenli")) {
-                // "kökenli"den sonrasını al
                 let parts = etyText.split("kökenli");
-                origin = parts[parts.length - 1].trim();
-                // Eğer sonrası boşsa öncesindeki son kelimeyi al
-                if (origin === "") origin = parts[parts.length - 2].trim().split(" ").pop();
+                let potential = parts[parts.length - 1].trim();
+                // "kökenli"den sonrası boşsa, öncesindeki son tamlamayı almaya çalış
+                if (potential === "") {
+                    let before = parts[parts.length - 2].trim();
+                    origin = before.split(" ").pop();
+                } else {
+                    origin = potential;
+                }
             } else {
-                // "kökenli" yoksa direkt son kelimeyi al
                 origin = etyText;
             }
 
-            // "Dili" kontrolü: Eğer "dili" ile bitiyorsa bir önceki kelimeyi de dahil et
-            let words = origin.split(" ");
-            if (words[words.length - 1].toLowerCase() === "dili" && words.length > 1) {
-                origin = words[words.length - 2] + " " + words[words.length - 1];
-            } else if (words.length > 1 && !etyText.includes("kökenli")) {
-                origin = words[words.length - 1];
-            }
-
-            // İsimlendirme kuralı
-            if (origin.toLowerCase() === "türkçe") origin = "Türkçe (Melez)";
+            // Temizleme: Gereksiz son ekleri ve bağlaçları temizle, sadece dile odaklan
+            // Ancak "Hint-Avrupa ana dili" gibi yapıları koru.
+            if (origin.toLowerCase().includes("türkçe")) origin = "Türkçe (Melez)";
         }
         
         etyMap[origin] = (etyMap[origin] || 0) + 1;
