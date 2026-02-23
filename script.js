@@ -10,9 +10,8 @@ const PAGE_SIZE = 36;
 const latinToGreekMap = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","Q":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
 const translations = { 'tr': { 'title': 'Orum Dili', 'about_page_text': 'Çeviri', 'feedback_button_text': 'Geri Bildirim', 'search_placeholder': 'Kelime ara...', 'about_title': 'Hoş Geldiniz', 'about_text_1': 'Bu sözlük, Orum Diline ait kelimeleri ve kökenlerini keşfetmeniz için hazırlanmıştır...', 'about_text_2': 'Herhangi bir geri bildiriminiz varsa bize ulaşın!', 'feedback_title': 'Geri Bildirim', 'feedback_placeholder': 'Mesajınız...', 'feedback_cancel': 'İptal', 'feedback_send': 'Gönder', 'synonyms_title': 'Eş Anlamlılar', 'description_title': 'Açıklama', 'example_title': 'Örnek', 'etymology_title': 'Köken', 'no_result': 'Sonuç bulunamadı' } };
 
-// --- 1. ETKİLEŞİMLİ BUTONLAR (TEMA & ÇEVİRİ) ---
+// --- 1. ETKİLEŞİMLİ BUTONLAR ---
 function initButtons() {
-    // TEMA BUTONU
     const themeBtn = document.getElementById('theme-toggle');
     themeBtn?.addEventListener('click', () => {
         document.documentElement.classList.toggle('dark');
@@ -21,7 +20,6 @@ function initButtons() {
         updateThemeIcons();
     });
 
-    // ÇEVİRİ BUTONU
     const alphabetBtn = document.getElementById('alphabet-toggle');
     alphabetBtn?.addEventListener('click', () => {
         isGreek = !isGreek;
@@ -45,17 +43,23 @@ function updateThemeIcons() {
     document.getElementById('theme-toggle-light-icon')?.classList.toggle('hidden', !isDark);
 }
 
-// --- 2. KELİMELER SAYFASI VE HARF LİSTESİ ---
+// --- 2. KELİMELER SAYFASI YÖNETİMİ ---
 function showKelimelerPage() {
     currentSelectedLetter = null;
     lastSelectedWord = null;
     document.getElementById('welcome-box').classList.add('hidden');
     document.getElementById('stats-card').classList.add('hidden');
     document.getElementById('result').innerHTML = '';
+    
     document.getElementById('alphabet-section').classList.remove('hidden');
     document.getElementById('letter-results').innerHTML = '';
-    document.getElementById('alphabet-pagination').innerHTML = '';
-    document.getElementById('alphabet-pagination').classList.add('hidden');
+    
+    // Pagination alanını temizle ve göster
+    const pagDiv = document.getElementById('alphabet-pagination');
+    pagDiv.innerHTML = '';
+    pagDiv.classList.add('hidden');
+    // Pagination'ı harf kutusundan çıkarıp listenin altına alıyoruz (HTML'de yeri zaten letter-results altındaydı)
+    
     renderAlphabet();
 }
 
@@ -97,34 +101,44 @@ function showLetterResults(harf, page, showAll = false) {
         resultsDiv.appendChild(b);
     });
 
-    // Sayfalama ve Tümünü Göster butonu (Listenin Altında)
-    if (filtered.length > PAGE_SIZE) {
+    // --- PAGINATION VE TÜMÜNÜ GÖSTER (LİSTENİN SONUNDA) ---
+    if (filtered.length > 0) {
         pagDiv.classList.remove('hidden');
-        
-        // Sayfa numaraları
-        if (!showAll) {
+        pagDiv.className = "mt-8 flex flex-wrap justify-center items-center gap-4 py-6 border-t border-subtle-light dark:border-subtle-dark";
+
+        // Sayfa Numaraları (Sadece showAll değilse göster)
+        if (!showAll && filtered.length > PAGE_SIZE) {
+            const numContainer = document.createElement('div');
+            numContainer.className = "flex gap-2";
             const pageCount = Math.ceil(filtered.length / PAGE_SIZE);
             for (let i = 0; i < pageCount; i++) {
                 const pBtn = document.createElement('button');
-                pBtn.className = `px-3 py-1 rounded ${i === page ? 'bg-primary text-white' : 'bg-subtle-light dark:bg-subtle-dark opacity-50'}`;
+                pBtn.className = `w-8 h-8 flex items-center justify-center rounded font-bold transition-all ${i === page ? 'bg-primary text-white' : 'bg-subtle-light dark:bg-subtle-dark opacity-60 hover:opacity-100'}`;
                 pBtn.innerText = i + 1;
-                pBtn.onclick = () => showLetterResults(harf, i);
-                pagDiv.appendChild(pBtn);
+                pBtn.onclick = () => {
+                    showLetterResults(harf, i);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+                numContainer.appendChild(pBtn);
             }
+            pagDiv.appendChild(numContainer);
         }
 
         // Tümünü Göster / Daralt Butonu
-        const toggleBtn = document.createElement('button');
-        toggleBtn.className = "px-4 py-1 rounded bg-primary/20 text-primary font-bold ml-2";
-        toggleBtn.innerText = showAll ? "Daha Az Göster" : "Tümünü Göster";
-        toggleBtn.onclick = () => showLetterResults(harf, 0, !showAll);
-        pagDiv.appendChild(toggleBtn);
-    } else {
-        pagDiv.classList.add('hidden');
+        if (filtered.length > PAGE_SIZE) {
+            const toggleBtn = document.createElement('button');
+            toggleBtn.className = "px-6 py-2 rounded-full bg-primary text-white font-bold text-sm hover:bg-primary/80 transition-all shadow-md";
+            toggleBtn.innerText = showAll ? (isGreek ? convertToGreek("Daralt") : "Daralt") : (isGreek ? convertToGreek("Tümünü Göster") : "Tümünü Göster");
+            toggleBtn.onclick = () => {
+                showLetterResults(harf, 0, !showAll);
+                if(showAll) window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+            pagDiv.appendChild(toggleBtn);
+        }
     }
 }
 
-// --- 3. ANA SİSTEM VE YARDIMCILAR ---
+// --- 3. DİĞER FONKSİYONLAR ---
 function clearResult() {
     lastSelectedWord = null;
     currentSelectedLetter = null;
@@ -205,7 +219,7 @@ function submitFeedback() { toggleFeedbackForm(); }
 function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
 
 // --- BAŞLATMA ---
-initButtons(); // Butonları sayfa açılır açılmaz kur
+initButtons();
 
 async function fetchWords() {
     const url = `https://opensheet.elk.sh/1R01aIajx6dzHlO-KBiUXUmld2AEvxjCQkUTFGYB3EDM/Sözlük`;
