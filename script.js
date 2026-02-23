@@ -3,8 +3,8 @@ let allWords = [];
 let lastSelectedWord = null;
 let isGreek = false;
 let currentSelectedLetter = null;
-let sortConfig = { key: 'harf', direction: 'asc' }; // Harf dağılımı için
-let etySortConfig = { key: 'count', direction: 'asc' }; // Köken dağılımı için
+let sortConfig = { key: 'harf', direction: 'asc' }; 
+let etySortConfig = { key: 'count', direction: 'asc' }; 
 
 const PAGE_SIZE = 36;
 const customAlphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVX YZ".split("");
@@ -81,7 +81,7 @@ function showPage(pageId) {
     }
 }
 
-// --- 3. KÖKEN DAĞILIMI (YENİ) ---
+// --- 3. KÖKEN DAĞILIMI (GELİŞTİRİLMİŞ) ---
 function renderEtymologyStats() {
     const container = document.getElementById('ety-container');
     if (!container) return;
@@ -91,17 +91,30 @@ function renderEtymologyStats() {
         if (!w.Sözcük || w.Sözcük.trim() === "") return;
         
         let origin = "Türkçe";
-        const etyText = w.Köken ? w.Köken.trim() : "";
+        let etyText = w.Köken ? w.Köken.trim() : "";
 
         if (etyText !== "") {
             if (etyText.includes("kökenli")) {
-                const parts = etyText.split("kökenli");
+                // "kökenli"den sonrasını al
+                let parts = etyText.split("kökenli");
                 origin = parts[parts.length - 1].trim();
-                if (origin === "") origin = parts[parts.length - 2].split(" ").pop().trim();
+                // Eğer sonrası boşsa öncesindeki son kelimeyi al
+                if (origin === "") origin = parts[parts.length - 2].trim().split(" ").pop();
             } else {
-                origin = etyText.split(" ").pop().trim();
+                // "kökenli" yoksa direkt son kelimeyi al
+                origin = etyText;
             }
-            if (origin.toLowerCase() === "türkçe") origin = "Melez Türkçe";
+
+            // "Dili" kontrolü: Eğer "dili" ile bitiyorsa bir önceki kelimeyi de dahil et
+            let words = origin.split(" ");
+            if (words[words.length - 1].toLowerCase() === "dili" && words.length > 1) {
+                origin = words[words.length - 2] + " " + words[words.length - 1];
+            } else if (words.length > 1 && !etyText.includes("kökenli")) {
+                origin = words[words.length - 1];
+            }
+
+            // İsimlendirme kuralı
+            if (origin.toLowerCase() === "türkçe") origin = "Türkçe (Melez)";
         }
         
         etyMap[origin] = (etyMap[origin] || 0) + 1;
@@ -131,7 +144,7 @@ function renderEtymologyStats() {
 
     etyData.forEach(item => {
         const div = document.createElement('div');
-        div.className = "bg-subtle-light dark:bg-subtle-dark p-4 rounded-xl border border-subtle-light dark:border-subtle-dark flex justify-between items-center shadow-sm select-none";
+        div.className = "bg-subtle-light dark:bg-subtle-dark p-4 rounded-xl border border-subtle-light dark:border-subtle-dark flex justify-between items-center shadow-sm select-none hover:border-primary/50 transition-colors";
         div.innerHTML = `<span class="font-bold text-sm">${isGreek ? convertToGreek(item.label) : item.label}</span><span class="bg-primary/20 text-primary font-bold px-3 py-1 rounded-lg text-xs">${item.count}</span>`;
         container.appendChild(div);
     });
@@ -232,7 +245,7 @@ function showLetterResults(harf, page, showAll = false) {
     }
 }
 
-// YARDIMCI FONKSİYONLAR
+// YARDIMCI VE ÇEKİRDEK FONKSİYONLAR
 function selectWord(wordData, pText) { lastSelectedWord = wordData; document.getElementById('searchInput').value = isGreek ? convertToGreek(pText) : pText; document.getElementById('suggestions-container').classList.add('hidden'); showResult(wordData); setTimeout(() => { const res = document.getElementById('result'); if (res) res.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100); }
 function showResult(word) { const resultDiv = document.getElementById('result'); const t = (key) => isGreek ? convertToGreek(translations['tr'][key]) : translations['tr'][key]; const convert = (val) => isGreek ? convertToGreek(val) : val; resultDiv.innerHTML = `<div class="bg-subtle-light dark:bg-subtle-dark rounded-lg sm:rounded-xl overflow-hidden p-4 sm:p-6 shadow-md border border-subtle-light dark:border-subtle-dark mt-8"><div class="mb-5"><h2 class="text-4xl font-bold text-primary">${convert(word.Sözcük)}</h2>${word.Bilimsel ? `<p class="text-base text-muted-light dark:text-muted-dark opacity-70 mt-1">${convert(word.Bilimsel)}</p>` : ''}${word.Tür ? `<p class="text-sm opacity-60 mt-0.5">${convert(word.Tür)}</p>` : ''}</div><hr class="border-t border-subtle-light dark:border-subtle-dark my-5"><div class="space-y-6">${word.Açıklama ? `<div><h3 class="text-primary font-bold text-lg mb-1">${t('description_title')}</h3><p class="text-base leading-relaxed">${convert(word.Açıklama)}</p></div>` : ''}${word.Köken ? `<div><h3 class="text-primary font-bold text-lg mb-1">${t('etymology_title')}</h3><p class="text-base leading-relaxed">${convert(word.Köken)}</p></div>` : ''}${word.Örnek ? `<div><h3 class="text-primary font-bold text-lg mb-1">${t('example_title')}</h3><p class="text-base border-l-4 border-primary/40 pl-4 py-1">${convert(word.Örnek)}</p></div>` : ''}${word['Eş Anlamlılar'] ? `<div><h3 class="text-primary font-bold text-lg mb-1">${t('synonyms_title')}</h3><p class="text-base">${convert(word['Eş Anlamlılar'])}</p></div>` : ''}</div></div>`; }
 function setupSearch() { const input = document.getElementById('searchInput'); input?.addEventListener('input', function () { const q = normalizeString(this.value.trim()); if (!q) { document.getElementById('suggestions-container').classList.add('hidden'); return; } hideAllSections(); const matches = allWords.filter(row => row.Sözcük && normalizeString(row.Sözcük).startsWith(q)); displaySuggestions(matches); }); }
