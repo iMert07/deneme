@@ -1,24 +1,47 @@
-// --- TEMA YÖNETİMİ VE DEĞİŞKENLER ---
-const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
-const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
-const themeToggleButton = document.getElementById('theme-toggle');
-
-// Diğer değişkenler
+// --- DEĞİŞKENLER VE AYARLAR ---
 let allWords = [];
 let lastSelectedWord = null;
 let isGreek = false;
-let currentSelectedLetter = null; // Seçili harfi takip etmek için yeni değişken
+let currentSelectedLetter = null;
 
 const customAlphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVX YZ".split("");
 const PAGE_SIZE = 36;
 
-// ... (latinToGreekMap ve translations aynı kalıyor) ...
-const latinToGreekMap = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
+const latinToGreekMap = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","Q":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
 const translations = { 'tr': { 'title': 'Orum Dili', 'about_page_text': 'Çeviri', 'feedback_button_text': 'Geri Bildirim', 'search_placeholder': 'Kelime ara...', 'about_title': 'Hoş Geldiniz', 'about_text_1': 'Bu sözlük, Orum Diline ait kelimeleri ve kökenlerini keşfetmeniz için hazırlanmıştır...', 'about_text_2': 'Herhangi bir geri bildiriminiz varsa bize ulaşın!', 'feedback_title': 'Geri Bildirim', 'feedback_placeholder': 'Mesajınız...', 'feedback_cancel': 'İptal', 'feedback_send': 'Gönder', 'synonyms_title': 'Eş Anlamlılar', 'description_title': 'Açıklama', 'example_title': 'Örnek', 'etymology_title': 'Köken', 'no_result': 'Sonuç bulunamadı' } };
 
-// --- KELİMELER SAYFASI YÖNETİMİ (GÜNCELLENDİ) ---
+// --- 1. TEMA YÖNETİMİ (KESİN ÇÖZÜM) ---
+function setupTheme() {
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const themeToggleButton = document.getElementById('theme-toggle');
+
+    // Başlangıç ikonu ayarı
+    if (document.documentElement.classList.contains('dark')) {
+        themeToggleLightIcon?.classList.remove('hidden');
+        themeToggleDarkIcon?.classList.add('hidden');
+    } else {
+        themeToggleDarkIcon?.classList.remove('hidden');
+        themeToggleLightIcon?.classList.add('hidden');
+    }
+
+    // Tıklama olayı
+    themeToggleButton?.addEventListener('click', function() {
+        themeToggleDarkIcon.classList.toggle('hidden');
+        themeToggleLightIcon.classList.toggle('hidden');
+        
+        if (document.documentElement.classList.contains('dark')) {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('color-theme', 'light');
+        } else {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('color-theme', 'dark');
+        }
+    });
+}
+
+// --- 2. KELİMELER SAYFASI YÖNETİMİ ---
 function showKelimelerPage() {
-    // 1. Her şeyi temizle ve sıfırla
     currentSelectedLetter = null; 
     lastSelectedWord = null; 
     
@@ -26,7 +49,6 @@ function showKelimelerPage() {
     document.getElementById('stats-card').classList.add('hidden');
     document.getElementById('result').innerHTML = '';
     
-    // 2. Sayfalama ve sonuç listesini tamamen boşalt (Bug Fix)
     document.getElementById('alphabet-section').classList.remove('hidden');
     document.getElementById('letter-results').innerHTML = '';
     document.getElementById('alphabet-pagination').innerHTML = ''; 
@@ -44,7 +66,7 @@ function renderAlphabet() {
         btn.className = "w-10 h-10 flex items-center justify-center font-bold rounded bg-subtle-light/50 dark:bg-subtle-dark hover:bg-primary hover:text-white transition-all";
         btn.innerText = isGreek ? convertToGreek(harf) : harf;
         btn.onclick = () => {
-            currentSelectedLetter = harf; // Seçilen harfi kaydet
+            currentSelectedLetter = harf;
             showLetterResults(harf, 0);
         };
         list.appendChild(btn);
@@ -87,65 +109,20 @@ function showLetterResults(harf, page, showAll = false) {
     }
 }
 
-// --- ANA SAYFAYA DÖNÜŞ (GÜNCELLENDİ) ---
+// --- 3. ANA SAYFA VE ARAMA ---
+function showPage(pageId) { if (pageId === 'home') clearResult(); }
+
 function clearResult() {
     lastSelectedWord = null;
-    currentSelectedLetter = null; // Harf seçimini temizle
+    currentSelectedLetter = null;
     document.getElementById('result').innerHTML = '';
     document.getElementById('searchInput').value = '';
     document.getElementById('suggestions-container').classList.add('hidden');
     document.getElementById('alphabet-section').classList.add('hidden');
-    
-    // Pagination'ı da temizle
     document.getElementById('alphabet-pagination').innerHTML = '';
     document.getElementById('alphabet-pagination').classList.add('hidden');
-
     document.getElementById('welcome-box').classList.remove('hidden');
     document.getElementById('stats-card').classList.remove('hidden');
-}
-
-// --- HARF DÖNÜŞTÜRÜCÜ (BUG FIX) ---
-function setupAlphabetToggle() {
-    document.getElementById('alphabet-toggle').onclick = () => {
-        isGreek = !isGreek;
-        document.getElementById('alphabet-toggle-latin').classList.toggle('hidden');
-        document.getElementById('alphabet-toggle-cyrillic').classList.toggle('hidden');
-        updateText(isGreek ? 'gr' : 'tr');
-        calculateStats();
-
-        // BUG FIX: Sadece bir kelime seçiliyse sonucu güncelle
-        if (lastSelectedWord) {
-            showResult(lastSelectedWord);
-        }
-
-        // Kelimeler sayfası açıksa listeyi ve harfleri güncelle
-        if (!document.getElementById('alphabet-section').classList.contains('hidden')) {
-            renderAlphabet();
-            // Eğer bir harf seçiliyse o harfin listesini de güncelle
-            if (currentSelectedLetter) {
-                showLetterResults(currentSelectedLetter, 0);
-            }
-        }
-    };
-}
-
-// --- DİĞER FONKSİYONLAR ---
-// (fetchWords, setupSearch, displaySuggestions, selectWord, showResult, calculateStats, vb. bir önceki mesajdakiyle aynıdır)
-
-function normalizeString(str) { if (!str) return ''; return str.toLocaleLowerCase('tr-TR'); }
-function updateText(lang) { const textElements = document.querySelectorAll('[data-key]'); textElements.forEach(el => { const key = el.getAttribute('data-key'); if (translations['tr'][key]) { let finalStr = translations['tr'][key]; if (lang === 'gr') finalStr = convertToGreek(finalStr); if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') { el.placeholder = finalStr; } else { el.textContent = finalStr; } } }); }
-function showPage(pageId) { if (pageId === 'home') clearResult(); }
-
-async function fetchWords() {
-    const url = `https://opensheet.elk.sh/1R01aIajx6dzHlO-KBiUXUmld2AEvxjCQkUTFGYB3EDM/Sözlük`;
-    try {
-        const response = await fetch(url);
-        allWords = await response.json();
-        setupSearch();
-        setupAlphabetToggle();
-        calculateStats();
-        updateText('tr');
-    } catch (error) { console.error('Hata:', error); }
 }
 
 function setupSearch() {
@@ -174,6 +151,25 @@ function displaySuggestions(matches) {
     container.classList.remove('hidden');
 }
 
+// --- 4. ALFABE DÖNÜŞTÜRÜCÜ ---
+function setupAlphabetToggle() {
+    document.getElementById('alphabet-toggle').onclick = () => {
+        isGreek = !isGreek;
+        document.getElementById('alphabet-toggle-latin').classList.toggle('hidden');
+        document.getElementById('alphabet-toggle-cyrillic').classList.toggle('hidden');
+        updateText(isGreek ? 'gr' : 'tr');
+        calculateStats();
+
+        if (lastSelectedWord) showResult(lastSelectedWord);
+
+        if (!document.getElementById('alphabet-section').classList.contains('hidden')) {
+            renderAlphabet();
+            if (currentSelectedLetter) showLetterResults(currentSelectedLetter, 0);
+        }
+    };
+}
+
+// --- 5. DİĞER YARDIMCI FONKSİYONLAR ---
 function selectWord(wordData, pText) {
     lastSelectedWord = wordData;
     document.getElementById('welcome-box').classList.add('hidden');
@@ -209,8 +205,24 @@ function calculateStats() {
     statsSentence.innerHTML = sentence.replace(entryCount, `<span class="text-primary font-bold">${entryCount}</span>`).replace(totalWordCount, `<span class="text-primary font-bold">${totalWordCount}</span>`);
 }
 
+function normalizeString(str) { if (!str) return ''; return str.toLocaleLowerCase('tr-TR'); }
+function updateText(lang) { const textElements = document.querySelectorAll('[data-key]'); textElements.forEach(el => { const key = el.getAttribute('data-key'); if (translations['tr'][key]) { let finalStr = translations['tr'][key]; if (lang === 'gr') finalStr = convertToGreek(finalStr); if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') { el.placeholder = finalStr; } else { el.textContent = finalStr; } } }); }
 function toggleFeedbackForm() { document.getElementById('feedbackModal').classList.toggle('hidden'); }
 function submitFeedback() { toggleFeedbackForm(); }
 function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
+
+// --- BAŞLATMA ---
+async function fetchWords() {
+    const url = `https://opensheet.elk.sh/1R01aIajx6dzHlO-KBiUXUmld2AEvxjCQkUTFGYB3EDM/Sözlük`;
+    try {
+        const response = await fetch(url);
+        allWords = await response.json();
+        setupTheme(); // Tema butonunu aktifleştir
+        setupSearch();
+        setupAlphabetToggle();
+        calculateStats();
+        updateText('tr');
+    } catch (error) { console.error('Hata:', error); }
+}
 
 fetchWords();
