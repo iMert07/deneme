@@ -55,7 +55,7 @@ function showKelimelerPage() {
     document.getElementById('letter-results').innerHTML = '';
     
     const pagDiv = document.getElementById('alphabet-pagination');
-    if (pagDiv) {
+    if(pagDiv) {
         pagDiv.innerHTML = '';
         pagDiv.classList.add('hidden');
     }
@@ -85,7 +85,7 @@ function showLetterResults(harf, page, showAll = false) {
     const pagDiv = document.getElementById('alphabet-pagination');
     
     resultsDiv.innerHTML = "";
-    pagDiv.innerHTML = ""; // Sayfa numaralarını temizle
+    pagDiv.innerHTML = "";
 
     const filtered = allWords.filter(w => w.Sözcük && normalizeString(w.Sözcük).startsWith(normalizeString(harf)))
                              .sort((a,b) => a.Sözcük.localeCompare(b.Sözcük, 'tr'));
@@ -102,14 +102,9 @@ function showLetterResults(harf, page, showAll = false) {
         resultsDiv.appendChild(b);
     });
 
-    // --- PAGINATION (KELİME LİSTESİNİN ALTINA TAŞINDI) ---
+    // --- SAYFALAR VE BUTON (Artık kelimelerin altında çıkacak) ---
     if (filtered.length > 0) {
         pagDiv.classList.remove('hidden');
-        // Liste sonu tasarımı
-        pagDiv.className = "mt-10 flex flex-col items-center gap-4 py-6 border-t border-subtle-light dark:border-subtle-dark";
-
-        let controlsWrap = document.createElement('div');
-        controlsWrap.className = "flex flex-wrap justify-center items-center gap-3";
 
         // Sayfa Numaraları
         if (!showAll && filtered.length > PAGE_SIZE) {
@@ -122,23 +117,21 @@ function showLetterResults(harf, page, showAll = false) {
                     showLetterResults(harf, i);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 };
-                controlsWrap.appendChild(pBtn);
+                pagDiv.appendChild(pBtn);
             }
         }
 
         // Tümünü Göster / Daralt Butonu
         if (filtered.length > PAGE_SIZE) {
             const toggleBtn = document.createElement('button');
-            toggleBtn.className = "px-5 py-2 rounded-lg bg-primary/10 text-primary border border-primary/20 font-bold text-xs hover:bg-primary hover:text-white transition-all";
-            toggleBtn.innerText = showAll ? "DARALT" : "TÜMÜNÜ GÖSTER";
+            toggleBtn.className = "px-6 py-2 rounded-lg bg-primary/10 text-primary border border-primary/20 font-bold text-sm hover:bg-primary hover:text-white transition-all ml-4";
+            toggleBtn.innerText = showAll ? "Daralt" : "Tümünü Göster";
             toggleBtn.onclick = () => {
                 showLetterResults(harf, 0, !showAll);
                 if(showAll) window.scrollTo({ top: 0, behavior: 'smooth' });
             };
-            controlsWrap.appendChild(toggleBtn);
+            pagDiv.appendChild(toggleBtn);
         }
-        
-        pagDiv.appendChild(controlsWrap);
     }
 }
 
