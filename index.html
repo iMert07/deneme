@@ -51,7 +51,7 @@
                             <h1 class="text-xl font-bold" data-key="title"></h1>
                         </div>
                         <nav class="hidden md:flex items-center gap-8">
-                            <a class="text-base font-medium hover:text-primary transition-colors cursor-pointer" onclick="toggleAlphabetMenu()">Kelimeler</a>
+                            <a class="text-base font-medium hover:text-primary transition-colors cursor-pointer" onclick="openWordsSection()">Kelimeler</a>
                             <a class="text-base font-medium hover:text-primary transition-colors cursor-pointer" href="https://cevirici.vercel.app/" target="_blank" data-key="about_page_text"></a>
                             <a class="text-base font-medium hover:text-primary transition-colors cursor-pointer" onclick="toggleFeedbackForm()" data-key="feedback_button_text"></a>
                         </nav>
@@ -84,7 +84,7 @@
                 </div>
             </div>
             <div id="mobile-menu" class="md:hidden hidden bg-subtle-light dark:bg-subtle-dark border-b border-subtle-light dark:border-subtle-dark py-2 px-4">
-                <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" onclick="toggleAlphabetMenu(); toggleMobileMenu();">Kelimeler</a>
+                <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" onclick="openWordsSection(); toggleMobileMenu();">Kelimeler</a>
                 <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" href="https://cevirici.vercel.app/" target="_blank" data-key="about_page_text"></a>
                 <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" onclick="toggleFeedbackForm(); toggleMobileMenu();" data-key="feedback_button_text"></a>
             </div>
@@ -92,13 +92,6 @@
 
         <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
             <div id="home-content" class="max-w-4xl mx-auto">
-                <div id="alphabet-menu" class="hidden mb-8 p-6 bg-subtle-light dark:bg-subtle-dark rounded-xl shadow-sm border border-subtle-light dark:border-subtle-dark">
-                    <div id="alphabet-list" class="flex flex-wrap justify-center gap-2"></div>
-                    <div id="alphabet-pagination" class="mt-4 flex flex-wrap justify-center gap-2 border-t border-subtle-light dark:border-subtle-dark pt-4 hidden"></div>
-                </div>
-
-                <div id="letter-results" class="hidden mb-8 grid grid-cols-2 md:grid-cols-3 gap-4"></div>
-
                 <div class="relative mb-8 md:mb-12">
                     <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
                         <svg class="h-5 w-5 sm:h-6 sm:w-6 text-primary" fill="currentColor" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
@@ -111,14 +104,24 @@
                     </div>
                 </div>
 
-                <div id="welcome-box" class="mb-6 p-6 bg-subtle-light dark:bg-subtle-dark rounded-lg sm:rounded-xl border-l-4 border-primary shadow-sm">
-                    <h2 class="text-xl font-bold mb-3 text-primary" data-key="about_title"></h2>
-                    <p class="text-base leading-relaxed mb-4" data-key="about_text_1"></p>
-                    <p class="text-sm text-muted-light dark:text-muted-dark italic" data-key="about_text_2"></p>
+                <div id="words-section" class="hidden animate-in fade-in duration-500">
+                    <div id="alphabet-container" class="mb-6 p-4 bg-subtle-light dark:bg-subtle-dark rounded-xl border border-subtle-light dark:border-subtle-dark shadow-sm">
+                        <div id="alphabet-list" class="flex flex-wrap justify-center gap-2"></div>
+                        <div id="alphabet-pagination" class="mt-4 flex flex-wrap justify-center gap-2 border-t border-subtle-light dark:border-subtle-dark pt-4 hidden"></div>
+                    </div>
+                    <div id="letter-results" class="mb-8 grid grid-cols-2 md:grid-cols-3 gap-4"></div>
                 </div>
 
-                <div id="stats-card" class="mb-8 p-4 bg-subtle-light/50 dark:bg-subtle-dark/50 rounded-lg sm:rounded-xl border border-subtle-light dark:border-subtle-dark text-center shadow-sm">
-                    <p id="stats-sentence" class="text-sm sm:text-base font-medium opacity-90"></p>
+                <div id="main-landing">
+                    <div id="welcome-box" class="mb-6 p-6 bg-subtle-light dark:bg-subtle-dark rounded-lg sm:rounded-xl border-l-4 border-primary shadow-sm">
+                        <h2 class="text-xl font-bold mb-3 text-primary" data-key="about_title"></h2>
+                        <p class="text-base leading-relaxed mb-4" data-key="about_text_1"></p>
+                        <p class="text-sm text-muted-light dark:text-muted-dark italic" data-key="about_text_2"></p>
+                    </div>
+
+                    <div id="stats-card" class="mb-8 p-4 bg-subtle-light/50 dark:bg-subtle-dark/50 rounded-lg sm:rounded-xl border border-subtle-light dark:border-subtle-dark text-center shadow-sm">
+                        <p id="stats-sentence" class="text-sm sm:text-base font-medium opacity-90"></p>
+                    </div>
                 </div>
 
                 <div id="result" class="mb-8 md:mb-12"></div>
