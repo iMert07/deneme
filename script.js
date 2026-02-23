@@ -53,8 +53,12 @@ function showKelimelerPage() {
     
     document.getElementById('alphabet-section').classList.remove('hidden');
     document.getElementById('letter-results').innerHTML = '';
-    document.getElementById('alphabet-pagination').innerHTML = '';
-    document.getElementById('alphabet-pagination').classList.add('hidden');
+    
+    const pagDiv = document.getElementById('alphabet-pagination');
+    if (pagDiv) {
+        pagDiv.innerHTML = '';
+        pagDiv.classList.add('hidden');
+    }
     
     renderAlphabet();
 }
@@ -66,7 +70,6 @@ function renderAlphabet() {
     customAlphabet.forEach(harf => {
         if(harf === " ") return;
         const btn = document.createElement('button');
-        // Orijinal tasarım sınıfları geri getirildi
         btn.className = "w-10 h-10 flex items-center justify-center font-bold rounded bg-subtle-light/50 dark:bg-subtle-dark hover:bg-primary hover:text-white transition-all";
         btn.innerText = isGreek ? convertToGreek(harf) : harf;
         btn.onclick = () => {
@@ -80,8 +83,9 @@ function renderAlphabet() {
 function showLetterResults(harf, page, showAll = false) {
     const resultsDiv = document.getElementById('letter-results');
     const pagDiv = document.getElementById('alphabet-pagination');
+    
     resultsDiv.innerHTML = "";
-    pagDiv.innerHTML = "";
+    pagDiv.innerHTML = ""; // Sayfa numaralarını temizle
 
     const filtered = allWords.filter(w => w.Sözcük && normalizeString(w.Sözcük).startsWith(normalizeString(harf)))
                              .sort((a,b) => a.Sözcük.localeCompare(b.Sözcük, 'tr'));
@@ -98,47 +102,47 @@ function showLetterResults(harf, page, showAll = false) {
         resultsDiv.appendChild(b);
     });
 
-    // --- PAGINATION (KELİME LİSTESİNİN EN ALTI) ---
+    // --- PAGINATION (KELİME LİSTESİNİN ALTINA TAŞINDI) ---
     if (filtered.length > 0) {
         pagDiv.classList.remove('hidden');
         // Liste sonu tasarımı
-        pagDiv.className = "mt-12 mb-8 flex flex-col items-center gap-6 py-8 border-t border-subtle-light dark:border-subtle-dark";
+        pagDiv.className = "mt-10 flex flex-col items-center gap-4 py-6 border-t border-subtle-light dark:border-subtle-dark";
 
-        let contentWrap = document.createElement('div');
-        contentWrap.className = "flex flex-wrap justify-center items-center gap-4";
+        let controlsWrap = document.createElement('div');
+        controlsWrap.className = "flex flex-wrap justify-center items-center gap-3";
 
         // Sayfa Numaraları
         if (!showAll && filtered.length > PAGE_SIZE) {
             const pageCount = Math.ceil(filtered.length / PAGE_SIZE);
             for (let i = 0; i < pageCount; i++) {
                 const pBtn = document.createElement('button');
-                pBtn.className = `w-10 h-10 flex items-center justify-center rounded font-bold transition-all ${i === page ? 'bg-primary text-white shadow-lg scale-110' : 'bg-subtle-light/50 dark:bg-subtle-dark hover:bg-primary/20'}`;
+                pBtn.className = `w-10 h-10 flex items-center justify-center rounded font-bold transition-all ${i === page ? 'bg-primary text-white' : 'bg-subtle-light/50 dark:bg-subtle-dark hover:bg-primary/20'}`;
                 pBtn.innerText = i + 1;
                 pBtn.onclick = () => {
                     showLetterResults(harf, i);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 };
-                contentWrap.appendChild(pBtn);
+                controlsWrap.appendChild(pBtn);
             }
         }
 
         // Tümünü Göster / Daralt Butonu
         if (filtered.length > PAGE_SIZE) {
             const toggleBtn = document.createElement('button');
-            toggleBtn.className = "px-6 py-2 rounded-xl bg-primary/10 text-primary border border-primary/30 font-bold text-sm hover:bg-primary hover:text-white transition-all";
-            toggleBtn.innerText = showAll ? "Daha Az Göster" : "Tümünü Göster";
+            toggleBtn.className = "px-5 py-2 rounded-lg bg-primary/10 text-primary border border-primary/20 font-bold text-xs hover:bg-primary hover:text-white transition-all";
+            toggleBtn.innerText = showAll ? "DARALT" : "TÜMÜNÜ GÖSTER";
             toggleBtn.onclick = () => {
                 showLetterResults(harf, 0, !showAll);
                 if(showAll) window.scrollTo({ top: 0, behavior: 'smooth' });
             };
-            contentWrap.appendChild(toggleBtn);
+            controlsWrap.appendChild(toggleBtn);
         }
         
-        pagDiv.appendChild(contentWrap);
+        pagDiv.appendChild(controlsWrap);
     }
 }
 
-// --- 3. DİĞER FONKSİYONLAR ---
+// --- 3. DİĞER YARDIMCI FONKSİYONLAR ---
 function clearResult() {
     lastSelectedWord = null;
     currentSelectedLetter = null;
