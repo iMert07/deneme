@@ -97,8 +97,8 @@ function renderAlphabet() {
     if (!list) return;
     list.innerHTML = "";
     
-    // Grid yapısı eklendi: Mobilde 5, Bilgisayarda (md) 15 sütun olacak şekilde sabitlendi.
-    list.className = "grid grid-cols-5 md:grid-cols-15 gap-2 justify-items-center";
+    // Bilgisayarda (md) 10 sütun (3x10), mobilde 5 sütun (6x5) düzeni
+    list.className = "grid grid-cols-5 md:grid-cols-10 gap-2 justify-items-center";
 
     customAlphabet.forEach(harf => {
         if(harf === " ") return;
