@@ -10,67 +10,53 @@ const PAGE_SIZE = 36;
 const latinToGreekMap = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","Q":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
 const translations = { 'tr': { 'title': 'Orum Dili', 'about_page_text': 'Çeviri', 'feedback_button_text': 'Geri Bildirim', 'search_placeholder': 'Kelime ara...', 'about_title': 'Hoş Geldiniz', 'about_text_1': 'Bu sözlük, Orum Diline ait kelimeleri ve kökenlerini keşfetmeniz için hazırlanmıştır...', 'about_text_2': 'Herhangi bir geri bildiriminiz varsa bize ulaşın!', 'feedback_title': 'Geri Bildirim', 'feedback_placeholder': 'Mesajınız...', 'feedback_cancel': 'İptal', 'feedback_send': 'Gönder', 'synonyms_title': 'Eş Anlamlılar', 'description_title': 'Açıklama', 'example_title': 'Örnek', 'etymology_title': 'Köken', 'no_result': 'Sonuç bulunamadı' } };
 
-// --- 1. HARF ÇEVİRİ (ALFABE) YÖNETİMİ (ÇÖZÜM) ---
-function setupAlphabetToggle() {
-    const toggleBtn = document.getElementById('alphabet-toggle');
-    if (!toggleBtn) return;
+// --- 1. HARF ÇEVİRİ VE TEMA BAŞLATICI ---
+function setupInteractiveButtons() {
+    // Çeviri Butonu Ayarı
+    const alphabetToggleBtn = document.getElementById('alphabet-toggle');
+    if (alphabetToggleBtn) {
+        alphabetToggleBtn.addEventListener('click', () => {
+            isGreek = !isGreek;
+            
+            // İkonları Değiştir
+            const latinIcon = document.getElementById('alphabet-toggle-latin');
+            const cyrillicIcon = document.getElementById('alphabet-toggle-cyrillic');
+            if (latinIcon) latinIcon.classList.toggle('hidden', isGreek);
+            if (cyrillicIcon) cyrillicIcon.classList.toggle('hidden', !isGreek);
+            
+            // Genel Metinleri Çevir
+            updateText(isGreek ? 'gr' : 'tr');
+            calculateStats();
 
-    // Önceki olayları temizlemek ve yenisini eklemek için
-    toggleBtn.onclick = null; 
-    toggleBtn.onclick = () => {
-        isGreek = !isGreek;
-        
-        // İkonları değiştir
-        document.getElementById('alphabet-toggle-latin')?.classList.toggle('hidden');
-        document.getElementById('alphabet-toggle-cyrillic')?.classList.toggle('hidden');
-        
-        // Metinleri ve İstatistikleri güncelle
-        updateText(isGreek ? 'gr' : 'tr');
-        calculateStats();
+            // Eğer Kelime Açıksa Onu Çevir
+            if (lastSelectedWord) showResult(lastSelectedWord);
 
-        // Eğer bir kelime detayı açıksa onu da çevir
-        if (lastSelectedWord) {
-            showResult(lastSelectedWord);
-        }
-
-        // Eğer harf listesi sayfası açıksa listeyi ve alfabeyi yeniden çiz
-        if (!document.getElementById('alphabet-section').classList.contains('hidden')) {
-            renderAlphabet();
-            if (currentSelectedLetter) {
-                showLetterResults(currentSelectedLetter, 0);
+            // Harf Listesi Açıksa Güncelle
+            if (!document.getElementById('alphabet-section').classList.contains('hidden')) {
+                renderAlphabet();
+                if (currentSelectedLetter) showLetterResults(currentSelectedLetter, 0);
             }
-        }
-    };
-}
-
-// --- 2. TEMA YÖNETİMİ ---
-function setupTheme() {
-    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
-    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
-    const themeToggleButton = document.getElementById('theme-toggle');
-
-    if (document.documentElement.classList.contains('dark')) {
-        themeToggleLightIcon?.classList.remove('hidden');
-        themeToggleDarkIcon?.classList.add('hidden');
-    } else {
-        themeToggleDarkIcon?.classList.remove('hidden');
-        themeToggleLightIcon?.classList.add('hidden');
+        });
     }
 
-    themeToggleButton?.addEventListener('click', function() {
-        themeToggleDarkIcon.classList.toggle('hidden');
-        themeToggleLightIcon.classList.toggle('hidden');
-        if (document.documentElement.classList.contains('dark')) {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('color-theme', 'light');
-        } else {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('color-theme', 'dark');
-        }
-    });
+    // Tema Butonu Ayarı
+    const themeToggleButton = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+
+    if (themeToggleButton) {
+        themeToggleButton.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
+            
+            if (themeToggleDarkIcon) themeToggleDarkIcon.classList.toggle('hidden', isDark);
+            if (themeToggleLightIcon) themeToggleLightIcon.classList.toggle('hidden', !isDark);
+        });
+    }
 }
 
-// --- 3. KELİMELER VE HARF LİSTESİ ---
+// --- 2. KELİMELER SAYFASI ---
 function showKelimelerPage() {
     currentSelectedLetter = null; 
     lastSelectedWord = null; 
@@ -86,6 +72,7 @@ function showKelimelerPage() {
 
 function renderAlphabet() {
     const list = document.getElementById('alphabet-list');
+    if (!list) return;
     list.innerHTML = "";
     customAlphabet.forEach(harf => {
         if(harf === " ") return;
@@ -136,7 +123,7 @@ function showLetterResults(harf, page, showAll = false) {
     }
 }
 
-// --- 4. GENEL SİSTEM FONKSİYONLARI ---
+// --- 3. GENEL FONKSİYONLAR ---
 function showPage(pageId) { if (pageId === 'home') clearResult(); }
 
 function clearResult() {
@@ -152,6 +139,7 @@ function clearResult() {
 
 function setupSearch() {
     const searchInput = document.getElementById('searchInput');
+    if (!searchInput) return;
     searchInput.addEventListener('input', function () {
         const query = normalizeString(this.value.trim());
         if (!query) { document.getElementById('suggestions-container').classList.add('hidden'); return; }
@@ -224,11 +212,9 @@ async function fetchWords() {
         const response = await fetch(url);
         allWords = await response.json();
         
-        // Önce Ayarları Yükle
-        setupTheme();
-        setupAlphabetToggle(); 
+        // Etkileşimli butonları kur (Tema ve Çeviri)
+        setupInteractiveButtons();
         
-        // Sonra İçeriği Güncelle
         setupSearch();
         calculateStats();
         updateText('tr');
