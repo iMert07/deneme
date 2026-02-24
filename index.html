@@ -8,6 +8,7 @@
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
     <link href="https://fonts.googleapis.com/css2?family=Clear+Sans:wght@400;700&display=swap" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="stylesheet" href="style.css">
     <script>
         tailwind.config = {
             darkMode: "class",
@@ -35,10 +36,6 @@
             document.documentElement.classList.remove('dark')
         }
     </script>
-    <style>
-        * { font-style: normal !important; }
-        .suggestion:hover { background-color: rgba(17, 147, 212, 0.05); }
-    </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display text-foreground-light dark:text-foreground-dark">
     <div class="flex flex-col min-h-screen">
@@ -62,17 +59,38 @@
                         </nav>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button class="p-2 rounded-full hover:bg-subtle-light dark:hover:bg-subtle-dark transition-colors" id="alphabet-toggle">Σ</button>
-                        <button class="p-2 rounded-full hover:bg-subtle-light dark:hover:bg-subtle-dark transition-colors" id="theme-toggle">🌓</button>
-                        <button class="md:hidden p-2 rounded-md transition-colors" onclick="toggleMobileMenu()">☰</button>
+                        <button class="p-2 rounded-full hover:bg-subtle-light dark:hover:bg-subtle-dark transition-colors" id="alphabet-toggle">
+                            <span id="alphabet-toggle-latin" class="w-6 h-6 text-lg font-bold">Σ</span>
+                            <span id="alphabet-toggle-cyrillic" class="w-6 h-6 text-lg font-bold hidden">S</span>
+                        </button>
+                        <button class="p-2 rounded-full hover:bg-subtle-light dark:hover:bg-subtle-dark transition-colors" id="theme-toggle">
+                            <svg class="w-6 h-6 text-muted-light dark:text-muted-dark hidden" fill="currentColor" id="theme-toggle-dark-icon" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                            <svg class="w-6 h-6 text-muted-light dark:text-muted-dark hidden" fill="none" id="theme-toggle-light-icon" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="5"></circle>
+                                <line x1="12" x2="12" y1="1" y2="3"></line>
+                                <line x1="12" x2="12" y1="21" y2="23"></line>
+                                <line x1="4.22" x2="5.64" y1="4.22" y2="5.64"></line>
+                                <line x1="18.36" x2="19.78" y1="18.36" y2="19.78"></line>
+                                <line x1="1" x2="3" y1="12" y2="12"></line>
+                                <line x1="21" x2="23" y1="12" y2="12"></line>
+                                <line x1="4.22" x2="5.64" y1="19.78" y2="18.36"></line>
+                                <line x1="18.36" x2="19.78" y1="5.64" y2="4.22"></line>
+                            </svg>
+                        </button>
+                        <button class="md:hidden p-2 rounded-md hover:bg-subtle-light dark:hover:bg-subtle-dark transition-colors" onclick="toggleMobileMenu()">
+                            <svg class="w-6 h-6 text-muted-light dark:text-muted-dark" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle>
+                            </svg>
+                        </button>
                     </div>
                 </div>
             </div>
-            <div id="mobile-menu" class="md:hidden hidden bg-subtle-light dark:bg-subtle-dark border-b py-2 px-4">
-                <a class="block py-2 text-base font-medium cursor-pointer" onclick="showKelimelerPage(); toggleMobileMenu();" data-key="nav_words"></a>
-                <a class="block py-2 text-base font-medium cursor-pointer" onclick="showEtyPage(); toggleMobileMenu();" data-key="nav_ety"></a>
-                <a class="block py-2 text-base font-medium cursor-pointer" onclick="showStatsPage(); toggleMobileMenu();" data-key="nav_stats"></a>
-                <a class="block py-2 text-base font-medium cursor-pointer" onclick="toggleFeedbackForm(); toggleMobileMenu();" data-key="feedback_button_text"></a>
+            <div id="mobile-menu" class="md:hidden hidden bg-subtle-light dark:bg-subtle-dark border-b border-subtle-light dark:border-subtle-dark py-2 px-4">
+                <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" onclick="showKelimelerPage(); toggleMobileMenu();" data-key="nav_words"></a>
+                <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" onclick="showEtyPage(); toggleMobileMenu();" data-key="nav_ety"></a>
+                <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" onclick="showStatsPage(); toggleMobileMenu();" data-key="nav_stats"></a>
+                <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" href="https://cevirici.vercel.app/" target="_blank" data-key="about_page_text"></a>
+                <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" onclick="toggleFeedbackForm(); toggleMobileMenu();" data-key="feedback_button_text"></a>
             </div>
         </header>
 
@@ -80,20 +98,22 @@
             <div id="home-content" class="max-w-4xl mx-auto">
                 <div class="relative mb-8 md:mb-12">
                     <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 sm:h-6 sm:w-6 text-primary" fill="currentColor" viewBox="0 0 256 256">
+                        <svg class="h-5 w-5 sm:h-6 sm:w-6 text-primary" fill="currentColor" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
                             <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
                         </svg>
                     </div>
                     <input class="w-full h-14 sm:h-16 pl-10 sm:pl-14 pr-4 text-base sm:text-lg bg-subtle-light dark:bg-subtle-dark border-0 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-primary focus:outline-none placeholder:text-foreground-light dark:placeholder:text-foreground-dark font-semibold" id="searchInput" type="search" autocomplete="off" data-key="search_placeholder">
-                    <div id="suggestions-container" class="absolute top-full left-0 right-0 z-50 mt-2 rounded-lg sm:rounded-xl bg-white dark:bg-subtle-dark border border-subtle-light dark:border-subtle-dark shadow-xl hidden overflow-hidden">
-                        <div id="suggestions" class="max-h-[20rem] overflow-y-auto"></div>
+                    <div id="suggestions-container" class="absolute top-full left-0 right-0 z-10 mt-2 rounded-lg sm:rounded-xl bg-subtle-light dark:bg-subtle-dark border border-subtle-light dark:border-subtle-dark shadow-lg hidden">
+                        <div id="suggestions" class="max-h-[20rem] overflow-y-auto p-2"></div>
                     </div>
                 </div>
 
                 <div id="alphabet-section" class="hidden">
-                    <div id="alphabet-list" class="flex flex-wrap justify-center gap-2 mb-8 p-6 bg-subtle-light dark:bg-subtle-dark rounded-xl border border-subtle-light dark:border-subtle-dark"></div>
+                    <div id="alphabet-menu" class="mb-8 p-6 bg-subtle-light dark:bg-subtle-dark rounded-xl shadow-sm border border-subtle-light dark:border-subtle-dark">
+                        <div id="alphabet-list" class="flex flex-wrap justify-center gap-2"></div>
+                    </div>
                     <div id="letter-results" class="mb-8 grid grid-cols-2 md:grid-cols-3 gap-4"></div>
-                    <div id="alphabet-pagination" class="mt-8 flex justify-center items-center gap-2 py-8 border-t hidden"></div>
+                    <div id="alphabet-pagination" class="mt-8 flex flex-wrap justify-center items-center gap-4 py-8 border-t border-subtle-light dark:border-subtle-dark hidden"></div>
                 </div>
 
                 <div id="stats-section" class="hidden">
@@ -107,7 +127,7 @@
                 <div id="welcome-box" class="mb-6 p-6 bg-subtle-light dark:bg-subtle-dark rounded-lg sm:rounded-xl border-l-4 border-primary shadow-sm">
                     <h2 class="text-xl font-bold mb-3 text-primary" data-key="about_title"></h2>
                     <p class="text-base leading-relaxed mb-4" data-key="about_text_1"></p>
-                    <p class="text-sm text-muted-light dark:text-muted-dark" data-key="about_text_2"></p>
+                    <p class="text-sm text-muted-light dark:text-muted-dark" data-key="about_text_2" style="font-style: normal !important;"></p>
                 </div>
 
                 <div id="stats-card" class="mb-8 p-4 bg-subtle-light/50 dark:bg-subtle-dark/50 rounded-lg sm:rounded-xl border border-subtle-light dark:border-subtle-dark text-center shadow-sm">
@@ -120,26 +140,15 @@
     </div>
 
     <div id="feedbackModal" class="fixed inset-0 z-50 bg-background-light/90 dark:bg-background-dark/90 flex items-center justify-center hidden">
-        <div class="relative w-full max-w-2xl mx-auto p-6 sm:p-8 bg-subtle-light dark:bg-subtle-dark rounded-xl shadow-xl border border-subtle-light dark:border-subtle-dark">
-            <button class="absolute top-4 right-4 p-2" onclick="toggleFeedbackForm()">✕</button>
-            <h2 class="text-2xl font-bold mb-6">Geri Bildirim</h2>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-bold opacity-70 mb-1">Size nasıl ulaşabilirim? (Opsiyonel)</label>
-                    <input type="text" id="feedbackContact" placeholder="İletişim bilgileriniz..." class="w-full p-3 bg-background-light dark:bg-background-dark border-0 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-sm font-bold opacity-70 mb-1">Mesajınız</label>
-                    <textarea id="feedbackText" placeholder="Mesajınızı buraya yazın..." class="w-full h-40 p-3 bg-background-light dark:bg-background-dark border-0 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"></textarea>
-                </div>
-                
-                <p id="feedbackStatus" class="hidden text-center text-sm font-bold text-green-500">Mesajınız başarıyla gönderildi!</p>
-
-                <div class="flex justify-end gap-2">
-                    <button class="px-6 py-2 rounded-lg bg-muted-light text-white" onclick="toggleFeedbackForm()">İptal</button>
-                    <button id="submitBtn" class="px-6 py-2 rounded-lg bg-primary text-white font-bold" onclick="submitFeedback()">Gönder</button>
-                </div>
+        <div class="relative w-full max-w-2xl mx-auto p-6 sm:p-8 bg-subtle-light dark:bg-subtle-dark rounded-lg sm:rounded-xl shadow-xl">
+            <button class="absolute top-4 right-4 p-2 rounded-full hover:bg-background-light dark:hover:bg-background-dark transition-colors" onclick="toggleFeedbackForm()">
+                <svg class="w-6 h-6 text-muted-light dark:text-muted-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h2 class="text-2xl font-bold mb-4" data-key="feedback_title"></h2>
+            <textarea id="feedbackText" class="w-full h-40 p-3 bg-background-light dark:bg-background-dark border-0 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none placeholder:text-muted-light dark:placeholder:text-muted-dark" data-key="feedback_placeholder"></textarea>
+            <div class="flex justify-end gap-2 mt-4">
+                <button class="px-4 py-2 rounded-lg sm:rounded-xl bg-muted-light text-foreground-light dark:bg-muted-dark dark:text-foreground-dark hover:bg-muted-dark hover:text-white transition-colors" onclick="toggleFeedbackForm()" data-key="feedback_cancel"></button>
+                <button class="px-4 py-2 rounded-lg sm:rounded-xl bg-primary text-white hover:bg-primary/80 transition-colors" onclick="submitFeedback()" data-key="feedback_send"></button>
             </div>
         </div>
     </div>
