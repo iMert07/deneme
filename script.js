@@ -9,7 +9,7 @@ let searchHistory = JSON.parse(localStorage.getItem('orum_history')) || [];
 
 const PAGE_SIZE = 36;
 const customAlphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVX YZ".split("");
-const latinToGreekMap = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","Q":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
+const latinToGreekMap = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","Κ":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","Q":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
 
 const translations = { 
     'tr': { 
@@ -61,7 +61,7 @@ function updateThemeIcons() {
     document.getElementById('theme-toggle-light-icon')?.classList.toggle('hidden', !isDark);
 }
 
-// --- 2. GEÇMİŞ VE ARAMA SİSTEMİ ---
+// --- 2. GEÇMİŞ VE ARAMA ---
 function addToHistory(wordData, clickedText, subText = null) {
     searchHistory = searchHistory.filter(h => h.clickedText !== clickedText);
     searchHistory.unshift({ wordData, clickedText, subText });
@@ -76,11 +76,11 @@ function renderHistory() {
     if (searchHistory.length === 0) return;
     searchHistory.forEach(item => {
         const d = document.createElement('div');
-        // Öneriler beyaz arka plan (light modda)
+        // Geçmiş de tam beyaz (bg-white) yapıldı, metin opaklığı düşürüldü
         d.className = 'suggestion cursor-pointer p-4 bg-white dark:bg-subtle-dark hover:bg-background-light dark:hover:bg-background-dark border-b border-subtle-light dark:border-subtle-dark last:border-b-0 select-none flex items-baseline gap-2';
         const display = isGreek ? convertToGreek(item.clickedText) : item.clickedText;
         const subDisplay = item.subText ? (isGreek ? convertToGreek(item.subText) : item.subText) : '';
-        d.innerHTML = `<span class="font-bold text-foreground-light dark:text-foreground-dark opacity-80">${display}</span>${item.subText ? `<span class="opacity-30 ml-2">${subDisplay}</span>` : ''}`;
+        d.innerHTML = `<span class="font-bold text-foreground-light dark:text-foreground-dark opacity-60">${display}</span>${item.subText ? `<span class="opacity-20 ml-2">${subDisplay}</span>` : ''}`;
         d.onclick = () => selectWord(item.wordData, item.clickedText, true, item.subText);
         div.appendChild(d);
     });
@@ -93,7 +93,6 @@ function setupSearch() {
     input?.addEventListener('input', function () {
         let q = this.value.trim().toLocaleLowerCase('tr-TR');
         if (!q) { renderHistory(); return; }
-        
         let matches = [];
         allWords.forEach(row => {
             if (row.Sözcük && row.Sözcük.toLocaleLowerCase('tr-TR').startsWith(q)) {
@@ -275,7 +274,6 @@ function calculateStats() {
     s.innerHTML = sent.replace(eCount, `<span class="text-primary font-bold">${eCount}</span>`).replace(tWord, `<span class="text-primary font-bold">${tWord}</span>`);
 }
 
-function normalizeString(str) { return str ? str.toLocaleLowerCase('tr-TR') : ''; }
 function convertToGreek(str) { if(!str) return ""; return str.split('').map(char => latinToGreekMap[char] || char).join(''); }
 function updateText(lang) { document.querySelectorAll('[data-key]').forEach(el => { const key = el.getAttribute('data-key'); if (translations['tr'][key]) { let f = translations['tr'][key]; if (lang === 'gr') f = convertToGreek(f); if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = f; else el.textContent = f; } }); }
 function toggleFeedbackForm() { document.getElementById('feedbackModal').classList.toggle('hidden'); }
