@@ -80,7 +80,7 @@ function renderHistory() {
         const display = isGreek ? convertToGreek(item.clickedText) : item.clickedText;
         const subDisplay = item.subText ? (isGreek ? convertToGreek(item.subText) : item.subText) : '';
         d.innerHTML = `<span class="font-bold text-foreground-light dark:text-foreground-dark opacity-80">${display}</span>${item.subText ? `<span class="opacity-30 ml-1">${subDisplay}</span>` : ''}`;
-        d.onclick = () => selectWord(item.wordData, item.clickedText, true);
+        d.onclick = () => selectWord(item.wordData, item.clickedText, true, item.subText);
         div.appendChild(d);
     });
     cont.classList.remove('hidden');
@@ -92,16 +92,17 @@ function setupSearch() {
     input?.addEventListener('input', function () {
         let q = this.value.trim().toLocaleLowerCase('tr-TR');
         if (!q) { renderHistory(); return; }
-        let matches = [];
         
+        let matches = [];
         if (q.startsWith('/')) {
             const cleanQ = q.substring(1).trim();
-            allWords.forEach(row => {
-                // Bilimsel ad en baştan (startsWith) aranıyor
-                if (row.Bilimsel && row.Bilimsel.toLocaleLowerCase('tr-TR').startsWith(cleanQ)) {
-                    matches.push({ data: row, text: row.Bilimsel, subText: row.Sözcük });
-                }
-            });
+            if (cleanQ) {
+                allWords.forEach(row => {
+                    if (row.Bilimsel && row.Bilimsel.toLocaleLowerCase('tr-TR').startsWith(cleanQ)) {
+                        matches.push({ data: row, text: row.Bilimsel, subText: row.Sözcük });
+                    }
+                });
+            }
         } else {
             allWords.forEach(row => {
                 if (row.Sözcük && row.Sözcük.toLocaleLowerCase('tr-TR').startsWith(q)) {
@@ -125,9 +126,17 @@ function displaySuggestions(matches) {
     const div = document.getElementById('suggestions');
     const cont = document.getElementById('suggestions-container');
     div.innerHTML = '';
-    if (matches.length === 0) { div.innerHTML = `<div class="p-4 text-sm opacity-50">Sonuç bulunamadı</div>`; cont.classList.remove('hidden'); return; }
+    if (matches.length === 0) { 
+        div.innerHTML = `<div class="p-4 text-sm opacity-50">Sonuç bulunamadı</div>`; 
+        cont.classList.remove('hidden'); 
+        return; 
+    }
     const seen = new Set();
-    matches.filter(m => { if (seen.has(m.text)) return false; seen.add(m.text); return true; }).slice(0, 15).forEach(m => {
+    matches.filter(m => { 
+        if (seen.has(m.text)) return false; 
+        seen.add(m.text); 
+        return true; 
+    }).slice(0, 15).forEach(m => {
         const d = document.createElement('div');
         d.className = 'suggestion cursor-pointer p-4 hover:bg-background-light dark:hover:bg-background-dark border-b border-subtle-light dark:border-subtle-dark last:border-b-0 select-none flex items-baseline gap-2';
         const display = isGreek ? convertToGreek(m.text) : m.text;
@@ -222,6 +231,8 @@ function renderAlphabetStats() {
         container.appendChild(box);
     });
 }
+function setSortKey(k) { sortConfig.key = k; renderAlphabetStats(); }
+function toggleSortDirection() { sortConfig.direction = sortConfig.direction === 'asc' ? 'desc' : 'asc'; renderAlphabetStats(); }
 
 // --- 6. ALFABETİK LİSTE ---
 function renderAlphabet() {
@@ -281,6 +292,7 @@ function calculateStats() {
     s.innerHTML = sent.replace(eCount, `<span class="text-primary font-bold">${eCount}</span>`).replace(tWord, `<span class="text-primary font-bold">${tWord}</span>`);
 }
 
+function normalizeString(str) { return str ? str.toLocaleLowerCase('tr-TR') : ''; }
 function convertToGreek(str) { if(!str) return ""; return str.split('').map(char => latinToGreekMap[char] || char).join(''); }
 function updateText(lang) { document.querySelectorAll('[data-key]').forEach(el => { const key = el.getAttribute('data-key'); if (translations['tr'][key]) { let f = translations['tr'][key]; if (lang === 'gr') f = convertToGreek(f); if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = f; else el.textContent = f; } }); }
 function toggleFeedbackForm() { document.getElementById('feedbackModal').classList.toggle('hidden'); }
