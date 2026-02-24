@@ -81,19 +81,25 @@ function showPage(pageId) {
     }
 }
 
-// --- 3. ARAMA MANTIĞI (DÜZENLENDİ) ---
+// --- 3. ARAMA MANTIĞI (BAŞTAN ARAMA DÜZELTİLDİ) ---
 function setupSearch() {
     const input = document.getElementById('searchInput');
     input?.addEventListener('input', function () {
         const q = normalizeString(this.value.trim());
         if (!q) { document.getElementById('suggestions-container').classList.add('hidden'); return; }
         
-        // Arama yaparken kartları kapatmıyoruz, sadece sonuçları süzüyoruz
+        // Arama yaparken kartları kapatmıyoruz
         const matches = allWords.filter(row => {
             const sozcuk = normalizeString(row.Sözcük || "");
-            const esAnlam = normalizeString(row['Eş Anlamlılar'] || "");
             const bilimsel = normalizeString(row.Bilimsel || "");
-            return sozcuk.startsWith(q) || esAnlam.includes(q) || bilimsel.includes(q);
+            const esAnlamlilarStr = normalizeString(row['Eş Anlamlılar'] || "");
+            
+            // Ana sözcük veya bilimsel ad baştan başlıyor mu?
+            if (sozcuk.startsWith(q) || bilimsel.startsWith(q)) return true;
+            
+            // Eş anlamlılar listesindeki kelimelerden herhangi biri baştan başlıyor mu?
+            const synArray = esAnlamlilarStr.split(',').map(s => s.trim());
+            return synArray.some(s => s.startsWith(q));
         });
         
         displaySuggestions(matches, q);
@@ -114,16 +120,17 @@ function displaySuggestions(matches, q) {
         let displaySub = "";
 
         const sozcuk = normalizeString(m.Sözcük || "");
-        const esAnlam = normalizeString(m['Eş Anlamlılar'] || "");
         const bilimsel = normalizeString(m.Bilimsel || "");
+        const esAnlamlilarStr = normalizeString(m['Eş Anlamlılar'] || "");
 
-        // Eğer arama terimi ana kelimeyle başlamıyorsa, eşleşen diğer alanı silik göster
+        // Eğer arama terimi ana kelimeyle başlamıyorsa, hangi alanla başladığını bul ve onu silik göster
         if (!sozcuk.startsWith(q)) {
-            if (esAnlam.includes(q)) {
-                const foundSyn = m['Eş Anlamlılar'].split(',').find(s => normalizeString(s).includes(q));
-                if(foundSyn) { displayMain = foundSyn.trim(); displaySub = m.Sözcük; }
-            } else if (bilimsel.includes(q)) {
-                displayMain = m.Bilimsel; displaySub = m.Sözcük;
+            if (bilimsel.startsWith(q)) {
+                displayMain = m.Bilimsel; 
+                displaySub = m.Sözcük;
+            } else {
+                const foundSyn = m['Eş Anlamlılar'].split(',').map(s => s.trim()).find(s => normalizeString(s).startsWith(q));
+                if(foundSyn) { displayMain = foundSyn; displaySub = m.Sözcük; }
             }
         }
 
@@ -141,15 +148,12 @@ function selectWord(wordData, pText) {
     lastSelectedWord = wordData; 
     document.getElementById('searchInput').value = isGreek ? convertToGreek(pText) : pText; 
     document.getElementById('suggestions-container').classList.add('hidden'); 
-    
-    // Kelime seçilince ana ekranı temizle
     hideAllSections();
-    
     showResult(wordData); 
     setTimeout(() => { document.getElementById('result')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100); 
 }
 
-// --- 4. DİĞER FONKSİYONLAR (AYNEN KORUNDU) ---
+// --- 4. DİĞER FONKSİYONLAR ---
 function renderEtymologyStats() {
     const container = document.getElementById('ety-container'); if (!container) return;
     let etyMap = {}; let totalValidEntries = 0;
