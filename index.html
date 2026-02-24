@@ -35,9 +35,10 @@
         }
     </script>
     <style>
-        /* Tüm sitede italik yazıyı zorla kapat */
+        /* Tüm sitede italik yazıyı kesinlikle kapat */
         * { font-style: normal !important; }
-        .suggestion:hover { background-color: rgba(17, 147, 212, 0.1); }
+        /* Arama önerileri hover rengi */
+        .suggestion:hover { background-color: rgba(17, 147, 212, 0.05); }
     </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display text-foreground-light dark:text-foreground-dark">
@@ -93,21 +94,28 @@
         <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
             <div id="home-content" class="max-w-4xl mx-auto">
                 <div class="relative mb-8 md:mb-12">
-                    <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                    <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none z-10">
                         <svg class="h-5 w-5 sm:h-6 sm:w-6 text-primary" fill="currentColor" viewBox="0 0 256 256">
                             <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
                         </svg>
                     </div>
-                    <input class="w-full h-14 sm:h-16 pl-10 sm:pl-14 pr-4 text-base sm:text-lg bg-white dark:bg-subtle-dark border-0 rounded-lg sm:rounded-xl shadow-sm focus:ring-2 focus:ring-primary focus:outline-none placeholder:text-muted-light font-semibold" id="searchInput" type="search" autocomplete="off" data-key="search_placeholder">
-                    <div id="suggestions-container" class="absolute top-full left-0 right-0 z-10 mt-2 rounded-lg sm:rounded-xl bg-white dark:bg-subtle-dark border border-subtle-light dark:border-subtle-dark shadow-lg hidden overflow-hidden">
+                    
+                    <div id="custom-placeholder" class="absolute inset-y-0 left-10 sm:left-14 flex items-center pointer-events-none select-none text-base sm:text-lg font-semibold z-10">
+                        <span class="text-foreground-light dark:text-foreground-dark">Kelime ara... </span>
+                        <span class="text-muted-light dark:text-muted-dark opacity-40 ml-2">bilimsel adlar için "/" kullanın</span>
+                    </div>
+
+                    <input class="w-full h-14 sm:h-16 pl-10 sm:pl-14 pr-4 text-base sm:text-lg bg-white dark:bg-subtle-dark border-0 rounded-lg sm:rounded-xl shadow-sm focus:ring-2 focus:ring-primary focus:outline-none font-semibold text-foreground-light dark:text-foreground-dark" id="searchInput" type="search" autocomplete="off">
+                    
+                    <div id="suggestions-container" class="absolute top-full left-0 right-0 z-20 mt-2 rounded-lg sm:rounded-xl bg-white dark:bg-subtle-dark border border-subtle-light dark:border-subtle-dark shadow-xl hidden overflow-hidden">
                         <div id="suggestions" class="max-h-[20rem] overflow-y-auto"></div>
                     </div>
                 </div>
 
                 <div id="welcome-box" class="mb-6 p-6 bg-subtle-light dark:bg-subtle-dark rounded-lg sm:rounded-xl border-l-4 border-primary shadow-sm">
                     <h2 class="text-xl font-bold mb-3 text-primary" data-key="about_title"></h2>
-                    <p class="text-base leading-relaxed mb-4" data-key="about_text_1"></p>
-                    <p class="text-sm text-muted-light dark:text-muted-dark" data-key="about_text_2"></p>
+                    <p class="text-base leading-relaxed mb-4" data-key="about_text_1" style="font-style: normal !important;"></p>
+                    <p class="text-sm text-muted-light dark:text-muted-dark" data-key="about_text_2" style="font-style: normal !important;"></p>
                 </div>
 
                 <div id="stats-card" class="mb-8 p-4 bg-subtle-light/50 dark:bg-subtle-dark/50 rounded-lg sm:rounded-xl border border-subtle-light dark:border-subtle-dark text-center shadow-sm">
