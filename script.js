@@ -1,4 +1,3 @@
-// --- DEĞİŞKENLER VE AYARLAR ---
 let allWords = [];
 let lastSelectedWord = null;
 let isGreek = false;
@@ -25,16 +24,7 @@ const translations = {
     } 
 };
 
-// --- 1. ETKİLEŞİMLİ BUTONLAR ---
 function initButtons() {
-    ['theme-toggle', 'alphabet-toggle'].forEach(id => {
-        const btn = document.getElementById(id);
-        if(btn) {
-            const newBtn = btn.cloneNode(true);
-            btn.parentNode.replaceChild(newBtn, btn);
-        }
-    });
-
     document.getElementById('theme-toggle')?.addEventListener('click', () => {
         document.documentElement.classList.toggle('dark');
         localStorage.setItem('color-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
@@ -61,7 +51,6 @@ function updateThemeIcons() {
     document.getElementById('theme-toggle-light-icon')?.classList.toggle('hidden', !isDark);
 }
 
-// --- 2. GEÇMİŞ VE ARAMA SİSTEMİ ---
 function addToHistory(wordData, clickedText, subText = null) {
     searchHistory = searchHistory.filter(h => h.clickedText !== clickedText);
     searchHistory.unshift({ wordData, clickedText, subText });
@@ -76,11 +65,10 @@ function renderHistory() {
     if (searchHistory.length === 0) return;
     searchHistory.forEach(item => {
         const d = document.createElement('div');
-        // Geçmiş TAM BEYAZ (bg-white) ve opaklık %70 (opacity-70)
-        d.className = 'suggestion cursor-pointer p-4 bg-white dark:bg-subtle-dark hover:bg-background-light dark:hover:bg-background-dark border-b border-subtle-light dark:border-subtle-dark last:border-b-0 select-none flex items-baseline gap-2';
+        d.className = 'suggestion cursor-pointer p-4 bg-white dark:bg-subtle-dark hover:bg-gray-50 dark:hover:bg-background-dark border-b border-subtle-light dark:border-subtle-dark last:border-b-0 select-none flex items-baseline gap-2';
         const display = isGreek ? convertToGreek(item.clickedText) : item.clickedText;
         const subDisplay = item.subText ? (isGreek ? convertToGreek(item.subText) : item.subText) : '';
-        d.innerHTML = `<span class="font-bold text-foreground-light dark:text-foreground-dark opacity-70" style="font-style: normal !important;">${display}</span>${item.subText ? `<span class="opacity-30 ml-2" style="font-style: normal !important;">${subDisplay}</span>` : ''}`;
+        d.innerHTML = `<span class="font-bold text-foreground-light dark:text-foreground-dark opacity-70">${display}</span>${item.subText ? `<span class="opacity-30 ml-2">${subDisplay}</span>` : ''}`;
         d.onclick = () => selectWord(item.wordData, item.clickedText, true, item.subText);
         div.appendChild(d);
     });
@@ -119,21 +107,20 @@ function displaySuggestions(matches) {
     const div = document.getElementById('suggestions');
     const cont = document.getElementById('suggestions-container');
     div.innerHTML = '';
-    if (matches.length === 0) { div.innerHTML = `<div class="p-4 text-sm opacity-50 bg-white dark:bg-subtle-dark" style="font-style: normal !important;">Sonuç bulunamadı</div>`; cont.classList.remove('hidden'); return; }
+    if (matches.length === 0) { div.innerHTML = `<div class="p-4 text-sm opacity-50 bg-white dark:bg-subtle-dark">Sonuç bulunamadı</div>`; cont.classList.remove('hidden'); return; }
     const seen = new Set();
     matches.filter(m => { if (seen.has(m.text)) return false; seen.add(m.text); return true; }).slice(0, 15).forEach(m => {
         const d = document.createElement('div');
-        d.className = 'suggestion cursor-pointer p-4 bg-white dark:bg-subtle-dark hover:bg-background-light dark:hover:bg-background-dark border-b border-subtle-light dark:border-subtle-dark last:border-b-0 select-none flex items-baseline gap-2';
+        d.className = 'suggestion cursor-pointer p-4 bg-white dark:bg-subtle-dark hover:bg-gray-50 dark:hover:bg-background-dark border-b border-subtle-light dark:border-subtle-dark last:border-b-0 select-none flex items-baseline gap-2';
         const display = isGreek ? convertToGreek(m.text) : m.text;
         const subDisplay = m.subText ? (isGreek ? convertToGreek(m.subText) : m.subText) : '';
-        d.innerHTML = `<span class="font-bold text-foreground-light dark:text-foreground-dark" style="font-style: normal !important;">${display}</span>${m.subText ? `<span class="opacity-30 ml-2" style="font-style: normal !important;">${subDisplay}</span>` : ''}`;
+        d.innerHTML = `<span class="font-bold text-foreground-light dark:text-foreground-dark">${display}</span>${m.subText ? `<span class="opacity-30 ml-2">${subDisplay}</span>` : ''}`;
         d.onclick = () => selectWord(m.data, m.text, false, m.subText);
         div.appendChild(d);
     });
     cont.classList.remove('hidden');
 }
 
-// --- 3. SAYFA YÖNETİMİ ---
 function hideAllSections(keepWelcome = false) {
     const ids = ['stats-card', 'alphabet-section', 'stats-section', 'ety-section'];
     if (!keepWelcome) ids.push('welcome-box');
@@ -149,13 +136,12 @@ function showStatsPage() { hideAllSections(); document.getElementById('stats-sec
 function showEtyPage() { hideAllSections(); document.getElementById('ety-section').classList.remove('hidden'); renderEtymologyStats(); }
 function showPage(pageId) { if (pageId === 'home') { hideAllSections(false); document.getElementById('welcome-box').classList.remove('hidden'); document.getElementById('stats-card').classList.remove('hidden'); document.getElementById('searchInput').value = ''; document.getElementById('suggestions-container')?.classList.add('hidden'); } }
 
-// --- 4. SONUÇ GÖSTERİMİ VE SEÇİM ---
 function selectWord(wordData, pText, fromHistory = false, subText = null) { 
     lastSelectedWord = wordData; 
     document.getElementById('searchInput').value = isGreek ? convertToGreek(pText) : pText; 
     document.getElementById('suggestions-container').classList.add('hidden'); 
-    if (document.getElementById('welcome-box')) document.getElementById('welcome-box').classList.add('hidden');
-    if (document.getElementById('stats-card')) document.getElementById('stats-card').classList.add('hidden');
+    document.getElementById('welcome-box')?.classList.add('hidden');
+    document.getElementById('stats-card')?.classList.add('hidden');
     if (!fromHistory) addToHistory(wordData, pText, subText);
     showResult(wordData); 
     setTimeout(() => { const res = document.getElementById('result'); if (res) res.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100); 
@@ -165,10 +151,9 @@ function showResult(word) {
     const div = document.getElementById('result');
     const t = (k) => isGreek ? convertToGreek(translations['tr'][k]) : translations['tr'][k];
     const c = (v) => isGreek ? convertToGreek(v) : v;
-    div.innerHTML = `<div class="bg-subtle-light dark:bg-subtle-dark rounded-xl overflow-hidden p-6 shadow-md border border-subtle-light dark:border-subtle-dark mt-8 select-none"><div class="mb-5"><h2 class="text-4xl font-bold text-primary">${c(word.Sözcük)}</h2>${word.Bilimsel ? `<p class="text-base text-muted-light dark:text-muted-dark opacity-70 mt-1" style="font-style: normal !important;">${word.Bilimsel}</p>` : ''}${word.Tür ? `<p class="text-sm opacity-60 mt-0.5" style="font-style: normal !important;">${c(word.Tür)}</p>` : ''}</div><hr class="border-subtle-light dark:border-subtle-dark my-5"><div class="space-y-6">${word.Açıklama ? `<div><h3 class="text-primary font-bold text-lg mb-1">${t('description_title')}</h3><p class="text-base leading-relaxed" style="font-style: normal !important;">${c(word.Açıklama)}</p></div>` : ''}${word.Köken ? `<div><h3 class="text-primary font-bold text-lg mb-1">${t('etymology_title')}</h3><p class="text-base leading-relaxed" style="font-style: normal !important;">${c(word.Köken)}</p></div>` : ''}${word.Örnek ? `<div><h3 class="text-primary font-bold text-lg mb-1">${t('example_title')}</h3><p class="text-base border-l-4 border-primary/40 pl-4 py-1" style="font-style: normal !important;">${c(word.Örnek)}</p></div>` : ''}${word['Eş Anlamlılar'] ? `<div><h3 class="text-primary font-bold text-lg mb-1">${t('synonyms_title')}</h3><p class="text-base" style="font-style: normal !important;">${c(word['Eş Anlamlılar'])}</p></div>` : ''}</div></div>`;
+    div.innerHTML = `<div class="bg-subtle-light dark:bg-subtle-dark rounded-xl overflow-hidden p-6 shadow-md border border-subtle-light dark:border-subtle-dark mt-8 select-none"><div class="mb-5"><h2 class="text-4xl font-bold text-primary">${c(word.Sözcük)}</h2>${word.Bilimsel ? `<p class="text-base text-muted-light dark:text-muted-dark opacity-70 mt-1">${word.Bilimsel}</p>` : ''}${word.Tür ? `<p class="text-sm opacity-60 mt-0.5">${c(word.Tür)}</p>` : ''}</div><hr class="border-subtle-light dark:border-subtle-dark my-5"><div class="space-y-6">${word.Açıklama ? `<div><h3 class="text-primary font-bold text-lg mb-1">${t('description_title')}</h3><p class="text-base leading-relaxed">${c(word.Açıklama)}</p></div>` : ''}${word.Köken ? `<div><h3 class="text-primary font-bold text-lg mb-1">${t('etymology_title')}</h3><p class="text-base leading-relaxed">${c(word.Köken)}</p></div>` : ''}${word.Örnek ? `<div><h3 class="text-primary font-bold text-lg mb-1">${t('example_title')}</h3><p class="text-base border-l-4 border-primary/40 pl-4 py-1">${c(word.Örnek)}</p></div>` : ''}${word['Eş Anlamlılar'] ? `<div><h3 class="text-primary font-bold text-lg mb-1">${t('synonyms_title')}</h3><p class="text-base">${c(word['Eş Anlamlılar'])}</p></div>` : ''}</div></div>`;
 }
 
-// --- 5. İSTATİSTİK FONKSİYONLARI ---
 function renderEtymologyStats() {
     const container = document.getElementById('ety-container'); if (!container) return;
     let etyMap = {}; let totalValidEntries = 0;
@@ -196,6 +181,9 @@ function renderEtymologyStats() {
     });
 }
 
+function setEtySort(key) { etySortConfig.key = key; renderEtymologyStats(); }
+function toggleEtyDirection() { etySortConfig.direction = etySortConfig.direction === 'asc' ? 'desc' : 'asc'; renderEtymologyStats(); }
+
 function renderAlphabetStats() {
     const container = document.getElementById('stats-container'); if (!container) return;
     let totalChars = 0; let totalEntries = 0;
@@ -217,7 +205,6 @@ function renderAlphabetStats() {
 function setSortKey(k) { sortConfig.key = k; renderAlphabetStats(); }
 function toggleSortDirection() { sortConfig.direction = sortConfig.direction === 'asc' ? 'desc' : 'asc'; renderAlphabetStats(); }
 
-// --- 6. ALFABETİK LİSTE VE BAŞLATMA ---
 function renderAlphabet() {
     const list = document.getElementById('alphabet-list'); if (!list) return;
     list.innerHTML = ""; list.className = "grid grid-cols-5 md:grid-cols-10 gap-2 justify-items-center";
@@ -275,7 +262,6 @@ function calculateStats() {
     s.innerHTML = sent.replace(eCount, `<span class="text-primary font-bold">${eCount}</span>`).replace(tWord, `<span class="text-primary font-bold">${tWord}</span>`);
 }
 
-function normalizeString(str) { return str ? str.toLocaleLowerCase('tr-TR') : ''; }
 function convertToGreek(str) { if(!str) return ""; return str.split('').map(char => latinToGreekMap[char] || char).join(''); }
 function updateText(lang) { document.querySelectorAll('[data-key]').forEach(el => { const key = el.getAttribute('data-key'); if (translations['tr'][key]) { let f = translations['tr'][key]; if (lang === 'gr') f = convertToGreek(f); if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = f; else el.textContent = f; } }); }
 function toggleFeedbackForm() { document.getElementById('feedbackModal').classList.toggle('hidden'); }
