@@ -18,7 +18,7 @@ const translations = {
         'search_placeholder': 'Kelime ara...', 'about_title': 'Hoş Geldiniz', 
         'about_text_1': 'Bu sözlük, Orum Diline ait kelimeleri ve kökenlerini keşfetmeniz için hazırlanmıştır. Bu dil, Anadolu Türkçesinin özleştirilmesiyle ve kolaylaştırılmasıyla ve ayrıca Azerbaycan Türkçesinden esintilerle oluşturulan yapay bir dildir. Amacım, dilimizin öz zenginliğini kanıtlamaktır. Ancak yapay etkiler görebileceğinizi de unutmayın.',
         'about_text_2': 'Herhangi bir geri bildiriminiz, öneriniz veya yeni sözcük ekleme isteğiniz varsa; lütfen yukarıdaki menüden "Geri Bildirim" butonunu kullanarak bana ulaşın. Katkılarınızla bu sözlüğü daha da zenginleştirebiliriz!',
-        'feedback_title': 'Geri Bildirim', 'feedback_placeholder': 'Mesajınız*', 
+        'feedback_title': 'Geri Bildirim', 'feedback_placeholder': 'Mesajınız..', 
         'feedback_cancel': 'İptal', 'feedback_send': 'Gönder', 
         'synonyms_title': 'Eş Anlamlılar', 'description_title': 'Açıklama', 
         'example_title': 'Örnek', 'etymology_title': 'Köken', 'no_result': 'Sonuç bulunamadı' 
@@ -291,23 +291,24 @@ function toggleFeedbackForm() {
     const modal = document.getElementById('feedbackModal');
     modal.classList.toggle('hidden');
     
-    // Açıldığında veya kapandığında kutunun içindeki label'ları ve placeholder'ları ayarla
     const messageInput = document.getElementById('feedback-message');
     const contactInput = document.getElementById('feedback-contact');
+    const messageLabel = messageInput.previousElementSibling; // Üstteki etiketi yakalar
     const contactLabel = contactInput.previousElementSibling;
 
     if (!modal.classList.contains('hidden')) {
         messageInput.value = '';
         contactInput.value = '';
         
-        // "Mesajınız*" placeholder olarak ayarlandı
-        messageInput.placeholder = "Mesajınız*";
+        // Üst etiketi gizle ve placeholder'ı ayarla
+        if(messageLabel) messageLabel.classList.add('hidden');
+        messageInput.placeholder = "Mesajınız..";
         
-        // Alt kutunun başlığı beyaz ve "Size Nasıl Ulaşabilirim?" olarak ayarlandı
-        contactLabel.innerText = "Size Nasıl Ulaşabilirim?";
-        contactLabel.style.color = "white";
-        
-        // Alt kutunun içi "İsteğe bağlı" olarak ayarlandı
+        // Alt kutu başlığı beyaz ve metin "İsteğe bağlı"
+        if(contactLabel) {
+            contactLabel.innerText = "Size Nasıl Ulaşabilirim?";
+            contactLabel.style.color = "white";
+        }
         contactInput.placeholder = "İsteğe bağlı";
     }
 }
