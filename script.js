@@ -76,11 +76,12 @@ function renderHistory() {
     if (searchHistory.length === 0) return;
     searchHistory.forEach(item => {
         const d = document.createElement('div');
-        d.className = 'suggestion cursor-pointer p-4 hover:bg-background-light dark:hover:bg-background-dark border-b border-subtle-light dark:border-subtle-dark last:border-b-0 select-none flex items-baseline gap-2';
+        // Renk çakışmasını önlemek için bg-white yerine bg-transparent kullanıldı
+        d.className = 'suggestion cursor-pointer p-4 hover:bg-background-light dark:hover:bg-background-dark border-b border-subtle-light dark:border-subtle-dark last:border-b-0 select-none flex items-baseline gap-2 bg-transparent';
         const display = isGreek ? convertToGreek(item.clickedText) : item.clickedText;
         const subDisplay = item.subText ? (isGreek ? convertToGreek(item.subText) : item.subText) : '';
-        d.innerHTML = `<span class="font-bold text-foreground-light dark:text-foreground-dark">${display}</span>${item.subText ? `<span class="opacity-50 ml-2 text-sm">${subDisplay}</span>` : ''}`;
-        d.onclick = () => selectWord(item.wordData, item.clickedText, false, item.subText, true); // Aramadan geldiği için true
+        d.innerHTML = `<span class="font-bold text-foreground-light dark:text-foreground-dark">${display}</span>${item.subText ? `<span class="opacity-50 ml-2 text-sm text-muted-light dark:text-muted-dark">${subDisplay}</span>` : ''}`;
+        d.onclick = () => selectWord(item.wordData, item.clickedText, false, item.subText, true);
         div.appendChild(d);
     });
     cont.classList.remove('hidden');
@@ -118,13 +119,14 @@ function displaySuggestions(matches, q) {
     const cont = document.getElementById('suggestions-container');
     div.innerHTML = '';
     if (matches.length === 0) { 
-        div.innerHTML = `<div class="p-4 text-sm opacity-50 bg-white dark:bg-subtle-dark">Sonuç bulunamadı</div>`; 
+        div.innerHTML = `<div class="p-4 text-sm opacity-50 bg-transparent">Sonuç bulunamadı</div>`; 
         cont.classList.remove('hidden'); return; 
     }
     
     matches.slice(0, 15).forEach(m => {
         const d = document.createElement('div');
-        d.className = 'suggestion cursor-pointer p-4 bg-white dark:bg-subtle-dark hover:bg-background-light dark:hover:bg-background-dark border-b border-subtle-light dark:border-subtle-dark last:border-b-0 select-none flex items-baseline gap-2';
+        // bg-white silindi, bg-transparent eklendi. Böylece kirli beyaz arka planla bütünleşir.
+        d.className = 'suggestion cursor-pointer p-4 bg-transparent hover:bg-background-light dark:hover:bg-background-dark border-b border-subtle-light dark:border-subtle-dark last:border-b-0 select-none flex items-baseline gap-2';
         
         let displayMain = m.Sözcük;
         let displaySub = "";
@@ -144,8 +146,8 @@ function displaySuggestions(matches, q) {
         const mainText = isGreek ? convertToGreek(displayMain) : displayMain;
         const subText = displaySub ? (isGreek ? convertToGreek(displaySub) : displaySub) : "";
 
-        d.innerHTML = `<span class="font-bold text-foreground-light dark:text-foreground-dark">${mainText}</span>${subText ? `<span class="opacity-50 ml-2 text-sm">${subText}</span>` : ''}`;
-        d.onclick = () => selectWord(m, displayMain, false, displaySub, true); // Aramadan geldiği için true
+        d.innerHTML = `<span class="font-bold text-foreground-light dark:text-foreground-dark">${mainText}</span>${subText ? `<span class="opacity-50 ml-2 text-sm text-muted-light dark:text-muted-dark">${subText}</span>` : ''}`;
+        d.onclick = () => selectWord(m, displayMain, false, displaySub, true);
         div.appendChild(d);
     });
     cont.classList.remove('hidden');
@@ -158,11 +160,9 @@ function selectWord(wordData, pText, forceNoHistory = false, subText = null, fro
     
     if (!forceNoHistory) addToHistory(wordData, pText, subText);
     
-    // YENİ MANTIK: Eğer arama barından tıklandıysa her şeyi gizle, sadece kart kalsın
     if (fromSearch) {
         hideAllSections();
     } else {
-        // Liste içinden tıklandıysa sadece karşılama ve giriş istatistiklerini gizle
         document.getElementById('welcome-box')?.classList.add('hidden');
         document.getElementById('stats-card')?.classList.add('hidden');
     }
@@ -293,7 +293,7 @@ function showLetterResults(harf, page, showAll = false) {
     filtered.slice(start, end).forEach(item => {
         const b = document.createElement('button'); b.className = "text-left p-3 rounded bg-white/5 border border-subtle-light dark:border-subtle-dark hover:border-primary transition-all truncate font-semibold text-sm select-none text-foreground-light dark:text-foreground-dark";
         b.innerText = isGreek ? convertToGreek(item.Sözcük) : item.Sözcük;
-        b.onclick = () => selectWord(item, item.Sözcük, false, null, false); // Listeden seçildiği için false
+        b.onclick = () => selectWord(item, item.Sözcük, false, null, false); 
         resultsDiv.appendChild(b);
     });
     if (filtered.length > 0) {
