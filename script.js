@@ -79,7 +79,8 @@ function renderHistory() {
         d.className = 'suggestion cursor-pointer p-4 hover:bg-background-light dark:hover:bg-background-dark border-b border-subtle-light dark:border-subtle-dark last:border-b-0 select-none flex items-baseline gap-2';
         const display = isGreek ? convertToGreek(item.clickedText) : item.clickedText;
         const subDisplay = item.subText ? (isGreek ? convertToGreek(item.subText) : item.subText) : '';
-        d.innerHTML = `<span class="font-bold text-foreground-light dark:text-foreground-dark opacity-70">${display}</span>${item.subText ? `<span class="opacity-30 ml-2">${subDisplay}</span>` : ''}`;
+        // Geçmişteki ana metni beyaz, yan metni belirgin gri (opacity-50) yaptık
+        d.innerHTML = `<span class="font-bold text-foreground-light dark:text-foreground-dark">${display}</span>${item.subText ? `<span class="opacity-50 ml-2 text-sm">${subDisplay}</span>` : ''}`;
         d.onclick = () => selectWord(item.wordData, item.clickedText, false, item.subText);
         div.appendChild(d);
     });
@@ -144,7 +145,8 @@ function displaySuggestions(matches, q) {
         const mainText = isGreek ? convertToGreek(displayMain) : displayMain;
         const subText = displaySub ? (isGreek ? convertToGreek(displaySub) : displaySub) : "";
 
-        d.innerHTML = `<span class="font-bold text-foreground-light dark:text-foreground-dark">${mainText}</span>${subText ? `<span class="opacity-30 ml-2">${subText}</span>` : ''}`;
+        // Arama önerilerinde yan metni daha belirgin gri (opacity-50) yaptık
+        d.innerHTML = `<span class="font-bold text-foreground-light dark:text-foreground-dark">${mainText}</span>${subText ? `<span class="opacity-50 ml-2 text-sm">${subText}</span>` : ''}`;
         d.onclick = () => selectWord(m, displayMain, false, displaySub);
         div.appendChild(d);
     });
@@ -169,7 +171,7 @@ function selectWord(wordData, pText, forceNoHistory = false, subText = null) {
     setTimeout(() => { document.getElementById('result')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100); 
 }
 
-// --- 4. SAYFA YÖNETİMİ (GÜNCELLENDİ) ---
+// --- 4. SAYFA YÖNETİMİ ---
 function hideAllSections() {
     ['welcome-box', 'stats-card', 'alphabet-section', 'stats-section', 'ety-section'].forEach(id => {
         document.getElementById(id)?.classList.add('hidden');
@@ -187,11 +189,10 @@ function showPage(pageId) {
     }
 }
 
-// Kelimeler sayfası açıldığında doğrudan A harfini seçiyoruz
 function showKelimelerPage() { 
     hideAllSections(); 
     document.getElementById('alphabet-section').classList.remove('hidden'); 
-    currentSelectedLetter = "A"; // Başlangıç harfi A
+    currentSelectedLetter = "A"; 
     renderAlphabet(); 
     showLetterResults("A", 0); 
 }
