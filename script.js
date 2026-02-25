@@ -79,15 +79,14 @@ function renderHistory() {
         d.className = 'suggestion cursor-pointer p-4 hover:bg-background-light dark:hover:bg-background-dark border-b border-subtle-light dark:border-subtle-dark last:border-b-0 select-none flex items-baseline gap-2';
         const display = isGreek ? convertToGreek(item.clickedText) : item.clickedText;
         const subDisplay = item.subText ? (isGreek ? convertToGreek(item.subText) : item.subText) : '';
-        // Geçmişteki ana metni beyaz, yan metni belirgin gri (opacity-50) yaptık
-        d.innerHTML = `<span class="font-bold text-foreground-light dark:text-foreground-dark">${display}</span>${item.subText ? `<span class="opacity-50 ml-2 text-sm">${subDisplay}</span>` : ''}`;
+        d.innerHTML = `<span class="font-bold text-foreground-light dark:text-foreground-dark opacity-70">${display}</span>${item.subText ? `<span class="opacity-50 ml-2 text-sm text-muted-light dark:text-muted-dark">${subDisplay}</span>` : ''}`;
         d.onclick = () => selectWord(item.wordData, item.clickedText, false, item.subText);
         div.appendChild(d);
     });
     cont.classList.remove('hidden');
 }
 
-// --- 3. ARAMA MANTIĞI ---
+// --- 3. ARAMA MANTIĞI (ÇAKIŞMAYI ÖNLEYEN GÜNCELLEME) ---
 function setupSearch() {
     const input = document.getElementById('searchInput');
     const container = document.getElementById('suggestions-container');
@@ -98,6 +97,9 @@ function setupSearch() {
         const q = normalizeString(this.value.trim());
         if (!q) { renderHistory(); return; }
         
+        // Arama barına yazıldığı an DİĞER HER ŞEYİ gizle (Arama yeni sayfa demektir)
+        hideAllSections();
+
         const matches = allWords.filter(row => {
             const sozcuk = normalizeString(row.Sözcük || "");
             const bilimsel = normalizeString(row.Bilimsel || "");
@@ -145,8 +147,7 @@ function displaySuggestions(matches, q) {
         const mainText = isGreek ? convertToGreek(displayMain) : displayMain;
         const subText = displaySub ? (isGreek ? convertToGreek(displaySub) : displaySub) : "";
 
-        // Arama önerilerinde yan metni daha belirgin gri (opacity-50) yaptık
-        d.innerHTML = `<span class="font-bold text-foreground-light dark:text-foreground-dark">${mainText}</span>${subText ? `<span class="opacity-50 ml-2 text-sm">${subText}</span>` : ''}`;
+        d.innerHTML = `<span class="font-bold text-foreground-light dark:text-foreground-dark">${mainText}</span>${subText ? `<span class="opacity-50 ml-2 text-sm text-muted-light dark:text-muted-dark">${subText}</span>` : ''}`;
         d.onclick = () => selectWord(m, displayMain, false, displaySub);
         div.appendChild(d);
     });
@@ -160,13 +161,8 @@ function selectWord(wordData, pText, forceNoHistory = false, subText = null) {
     
     if (!forceNoHistory) addToHistory(wordData, pText, subText);
     
-    if (document.getElementById('alphabet-section').classList.contains('hidden')) {
-        hideAllSections();
-    } else {
-        document.getElementById('welcome-box').classList.add('hidden');
-        document.getElementById('stats-card').classList.add('hidden');
-    }
-
+    // Kelime açıldığında ekranı temizle
+    hideAllSections();
     showResult(wordData); 
     setTimeout(() => { document.getElementById('result')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100); 
 }
@@ -182,7 +178,6 @@ function hideAllSections() {
 function showPage(pageId) {
     if (pageId === 'home') {
         hideAllSections();
-        document.getElementById('result').innerHTML = '';
         document.getElementById('welcome-box').classList.remove('hidden');
         document.getElementById('stats-card').classList.remove('hidden');
         document.getElementById('searchInput').value = '';
@@ -293,7 +288,7 @@ function showLetterResults(harf, page, showAll = false) {
     filtered.slice(start, end).forEach(item => {
         const b = document.createElement('button'); b.className = "text-left p-3 rounded bg-white/5 border border-subtle-light dark:border-subtle-dark hover:border-primary transition-all truncate font-semibold text-sm select-none text-foreground-light dark:text-foreground-dark";
         b.innerText = isGreek ? convertToGreek(item.Sözcük) : item.Sözcük;
-        b.onclick = () => selectWord(item, item.Sözcük);
+        b.onclick = () => selectWord(item, item.Sözcük, true); // Kelime listesinden seçerken true geçiyoruz (Geçmişe kelime listesi eklenmesin diyorsan)
         resultsDiv.appendChild(b);
     });
     if (filtered.length > 0) {
