@@ -8,6 +8,7 @@ let etySortConfig = { key: 'label', direction: 'asc' };
 let searchHistory = JSON.parse(localStorage.getItem('orum_history')) || [];
 
 const PAGE_SIZE = 36;
+// X ve Y arasındaki boşluk kaldırıldı
 const customAlphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVXYZ".split("");
 const latinToGreekMap = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","Κ":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","Q":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ" };
 
@@ -47,7 +48,13 @@ function initButtons() {
         document.getElementById('alphabet-toggle-cyrillic')?.classList.toggle('hidden', !isGreek);
         updateText(isGreek ? 'gr' : 'tr');
         calculateStats();
-        if (lastSelectedWord) showResult(lastSelectedWord);
+
+        // DÜZELTME: Eğer sonuç ekranı boş değilse çeviriyi göster, boşsa son kelimeyi tekrar açma
+        const resultDiv = document.getElementById('result');
+        if (lastSelectedWord && resultDiv && resultDiv.innerHTML.trim() !== "") {
+            showResult(lastSelectedWord);
+        }
+
         if (!document.getElementById('alphabet-section').classList.contains('hidden')) renderAlphabet();
         if (!document.getElementById('stats-section')?.classList.contains('hidden')) renderAlphabetStats();
         if (!document.getElementById('ety-section')?.classList.contains('hidden')) renderEtymologyStats();
@@ -148,8 +155,6 @@ function selectWord(wordData, pText, forceNoHistory = false, subText = null, fro
     document.getElementById('searchInput').value = isGreek ? convertToGreek(pText) : pText; 
     document.getElementById('suggestions-container').classList.add('hidden'); 
     if (!forceNoHistory) addToHistory(wordData, pText, subText);
-    
-    // YENİ DÜZENLEME: Arama veya Geçmişten seçince her şeyi kapat
     if (fromSearch) {
         hideAllSections();
     } else {
@@ -165,14 +170,13 @@ function hideAllSections() {
     ['welcome-box', 'stats-card', 'alphabet-section', 'stats-section', 'ety-section'].forEach(id => {
         document.getElementById(id)?.classList.add('hidden');
     });
-    // Sonucu daima temizle
     const res = document.getElementById('result');
     if(res) res.innerHTML = '';
 }
 
 function showPage(pageId) {
     if (pageId === 'home') {
-        hideAllSections(); // Bu fonksiyon zaten result'ı temizler
+        hideAllSections();
         document.getElementById('welcome-box').classList.remove('hidden');
         document.getElementById('stats-card').classList.remove('hidden');
         document.getElementById('searchInput').value = '';
@@ -296,17 +300,19 @@ function toggleFeedbackForm() {
     
     const messageInput = document.getElementById('feedback-message');
     const contactInput = document.getElementById('feedback-contact');
-    const contactLabel = contactInput ? contactInput.previousElementSibling : null;
+    const messageLabel = messageInput.previousElementSibling; 
+    const contactLabel = contactInput.previousElementSibling;
 
     if (!modal.classList.contains('hidden')) {
         messageInput.value = '';
-        if(contactInput) contactInput.value = '';
+        contactInput.value = '';
+        if(messageLabel) messageLabel.classList.add('hidden');
         messageInput.placeholder = "Mesajınız...";
         if(contactLabel) {
             contactLabel.innerText = "Size Nasıl Ulaşabilirim?";
             contactLabel.style.color = "white";
         }
-        if(contactInput) contactInput.placeholder = "İsteğe bağlı";
+        contactInput.placeholder = "İsteğe bağlı";
     }
 }
 
