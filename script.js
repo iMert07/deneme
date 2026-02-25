@@ -8,7 +8,8 @@ let etySortConfig = { key: 'label', direction: 'asc' };
 let searchHistory = JSON.parse(localStorage.getItem('orum_history')) || [];
 
 const PAGE_SIZE = 36;
-const customAlphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVX YZ".split("");
+// DÜZELTME: X ve Y arasındaki boşluk kaldırıldı.
+const customAlphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVXYZ".split("");
 const latinToGreekMap = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","Κ":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","Q":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ" };
 
 const translations = { 
@@ -18,7 +19,8 @@ const translations = {
         'search_placeholder': 'Kelime ara...', 'about_title': 'Hoş Geldiniz', 
         'about_text_1': 'Bu sözlük, Orum Diline ait kelimeleri ve kökenlerini keşfetmeniz için hazırlanmıştır. Bu dil, Anadolu Türkçesinin özleştirilmesiyle ve kolaylaştırılmasıyla ve ayrıca Azerbaycan Türkçesinden esintilerle oluşturulan yapay bir dildir. Amacım, dilimizin öz zenginliğini kanıtlamaktır. Ancak yapay etkiler görebileceğinizi de unutmayın.',
         'about_text_2': 'Herhangi bir geri bildiriminiz, öneriniz veya yeni sözcük ekleme isteğiniz varsa; lütfen yukarıdaki menüden "Geri Bildirim" butonunu kullanarak bana ulaşın. Katkılarınızla bu sözlüğü daha da zenginleştirebiliriz!',
-        'feedback_title': 'Geri Bildirim', 'feedback_placeholder': 'Mesajınız..', 
+        'feedback_title': 'Geri Bildirim', 
+        'feedback_placeholder': 'Mesajınız...', // DÜZELTME: Üç nokta yapıldı.
         'feedback_cancel': 'İptal', 'feedback_send': 'Gönder', 
         'synonyms_title': 'Eş Anlamlılar', 'description_title': 'Açıklama', 
         'example_title': 'Örnek', 'etymology_title': 'Köken', 'no_result': 'Sonuç bulunamadı' 
@@ -293,23 +295,21 @@ function toggleFeedbackForm() {
     
     const messageInput = document.getElementById('feedback-message');
     const contactInput = document.getElementById('feedback-contact');
-    const messageLabel = messageInput.previousElementSibling; // Üstteki etiketi yakalar
+    const messageLabel = messageInput.previousElementSibling; 
     const contactLabel = contactInput.previousElementSibling;
 
     if (!modal.classList.contains('hidden')) {
         messageInput.value = '';
         contactInput.value = '';
         
-        // Üst etiketi gizle ve placeholder'ı ayarla
         if(messageLabel) messageLabel.classList.add('hidden');
-        messageInput.placeholder = "Mesajınız..";
+        messageInput.placeholder = "Mesajınız..."; // DÜZELTME: Üç nokta yapıldı.
         
-        // Alt kutu başlığı beyaz ve metin "İsteğe bağlı"
         if(contactLabel) {
             contactLabel.innerText = "Size Nasıl Ulaşabilirim?";
             contactLabel.style.color = "white";
         }
-        contactInput.placeholder = "İsteğe bağlı";
+        contactInput.placeholder = "İsteğe bağlı"; // DÜZELTME: İsteğe bağlı yapıldı.
     }
 }
 
@@ -323,9 +323,10 @@ function submitFeedback() {
     const btn = document.getElementById('feedback-submit-btn');
     btn.disabled = true; btn.innerText = "Gönderiliyor...";
 
+    // DÜZELTME: Sıfırların korunması için veri paketlenirken başına tek tırnak eklendi.
     const params = new URLSearchParams();
     params.append('message', message);
-    params.append('contact', contact);
+    params.append('contact', "'" + contact); // Baştaki tek tırnak Google Sheets'e "bu bir metindir" der ve sıfırları silmez.
 
     fetch(scriptURL, { 
         method: 'POST', 
