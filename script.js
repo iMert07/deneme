@@ -299,21 +299,34 @@ function toggleFeedbackForm() {
 function submitFeedback() {
     const message = document.getElementById('feedback-message').value.trim();
     const contact = document.getElementById('feedback-contact').value.trim();
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbw585eTmQmeddLCzb-CyjU93fmisrtnYZ9tfnV0bZ8otVmKO1UAdxsOKLTnO1MAWU-5/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbww1GhijmHLc81d6-K7lp6muodrlxk_PKm71S1inisYwZ_sAPgBj5l5iondTPTShZnV/exec';
 
     if (!message) { alert("Lütfen bir mesaj yazın."); return; }
 
     const btn = document.getElementById('feedback-submit-btn');
     btn.disabled = true; btn.innerText = "Gönderiliyor...";
 
-    const formData = new FormData();
-    formData.append('message', message);
-    formData.append('contact', contact);
+    const params = new URLSearchParams();
+    params.append('message', message);
+    params.append('contact', contact);
 
-    fetch(scriptURL, { method: 'POST', body: formData, mode: 'no-cors' })
-    .then(() => { alert("Geri bildiriminiz başarıyla iletildi. Teşekkür ederiz!"); toggleFeedbackForm(); })
-    .catch(() => { alert("Bir sorun oluştu."); })
-    .finally(() => { btn.disabled = false; btn.innerText = "Gönder"; });
+    fetch(scriptURL, { 
+        method: 'POST', 
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params.toString() 
+    })
+    .then(() => { 
+        alert("Geri bildiriminiz başarıyla iletildi. Teşekkür ederiz!"); 
+        toggleFeedbackForm(); 
+    })
+    .catch(() => { 
+        alert("Bir sorun oluştu."); 
+    })
+    .finally(() => { 
+        btn.disabled = false; 
+        btn.innerText = "Gönder"; 
+    });
 }
 
 function calculateStats() {
