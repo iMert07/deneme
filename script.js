@@ -61,14 +61,7 @@ function updateThemeIcons() {
     document.getElementById('theme-toggle-light-icon')?.classList.toggle('hidden', !isDark);
 }
 
-// --- 2. GEÇMİŞ YÖNETİMİ ---
-function addToHistory(wordData, clickedText, subText = null) {
-    searchHistory = searchHistory.filter(h => h.clickedText !== clickedText);
-    searchHistory.unshift({ wordData, clickedText, subText });
-    if (searchHistory.length > 12) searchHistory.pop();
-    localStorage.setItem('orum_history', JSON.stringify(searchHistory));
-}
-
+// --- 2. GEÇMİŞ YÖNETİMİ (İSTEDİĞİN DEĞİŞİKLİK BURADA YAPILDI) ---
 function renderHistory() {
     const div = document.getElementById('suggestions');
     const cont = document.getElementById('suggestions-container');
@@ -76,17 +69,28 @@ function renderHistory() {
     if (searchHistory.length === 0) return;
     searchHistory.forEach(item => {
         const d = document.createElement('div');
-        d.className = 'suggestion cursor-pointer p-4 hover:bg-background-light dark:hover:bg-background-dark border-b border-subtle-light dark:border-subtle-dark last:border-b-0 select-none flex items-baseline gap-2';
+        // Arama önerileriyle aynı arka plan ve hover efektleri eklendi
+        d.className = 'suggestion cursor-pointer p-4 bg-white dark:bg-subtle-dark hover:bg-background-light dark:hover:bg-background-dark border-b border-subtle-light dark:border-subtle-dark last:border-b-0 select-none flex items-baseline gap-2';
         const display = isGreek ? convertToGreek(item.clickedText) : item.clickedText;
         const subDisplay = item.subText ? (isGreek ? convertToGreek(item.subText) : item.subText) : '';
-        d.innerHTML = `<span class="font-bold text-foreground-light dark:text-foreground-dark opacity-70">${display}</span>${item.subText ? `<span class="opacity-50 ml-2 text-sm text-muted-light dark:text-muted-dark">${subDisplay}</span>` : ''}`;
+        
+        // Opaklık (opacity) değerleri kaldırılarak tam beyaz/net hale getirildi
+        d.innerHTML = `<span class="font-bold text-foreground-light dark:text-foreground-dark">${display}</span>${item.subText ? `<span class="ml-2 text-sm text-muted-light dark:text-muted-dark">${subDisplay}</span>` : ''}`;
+        
         d.onclick = () => selectWord(item.wordData, item.clickedText, false, item.subText);
         div.appendChild(d);
     });
     cont.classList.remove('hidden');
 }
 
-// --- 3. ARAMA MANTIĞI (ÇAKIŞMAYI ÖNLEYEN GÜNCELLEME) ---
+function addToHistory(wordData, clickedText, subText = null) {
+    searchHistory = searchHistory.filter(h => h.clickedText !== clickedText);
+    searchHistory.unshift({ wordData, clickedText, subText });
+    if (searchHistory.length > 12) searchHistory.pop();
+    localStorage.setItem('orum_history', JSON.stringify(searchHistory));
+}
+
+// --- 3. ARAMA MANTIĞI ---
 function setupSearch() {
     const input = document.getElementById('searchInput');
     const container = document.getElementById('suggestions-container');
@@ -97,7 +101,6 @@ function setupSearch() {
         const q = normalizeString(this.value.trim());
         if (!q) { renderHistory(); return; }
         
-        // Arama barına yazıldığı an DİĞER HER ŞEYİ gizle (Arama yeni sayfa demektir)
         hideAllSections();
 
         const matches = allWords.filter(row => {
@@ -161,7 +164,6 @@ function selectWord(wordData, pText, forceNoHistory = false, subText = null) {
     
     if (!forceNoHistory) addToHistory(wordData, pText, subText);
     
-    // Kelime açıldığında ekranı temizle
     hideAllSections();
     showResult(wordData); 
     setTimeout(() => { document.getElementById('result')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100); 
@@ -288,7 +290,7 @@ function showLetterResults(harf, page, showAll = false) {
     filtered.slice(start, end).forEach(item => {
         const b = document.createElement('button'); b.className = "text-left p-3 rounded bg-white/5 border border-subtle-light dark:border-subtle-dark hover:border-primary transition-all truncate font-semibold text-sm select-none text-foreground-light dark:text-foreground-dark";
         b.innerText = isGreek ? convertToGreek(item.Sözcük) : item.Sözcük;
-        b.onclick = () => selectWord(item, item.Sözcük, true); // Kelime listesinden seçerken true geçiyoruz (Geçmişe kelime listesi eklenmesin diyorsan)
+        b.onclick = () => selectWord(item, item.Sözcük, true); 
         resultsDiv.appendChild(b);
     });
     if (filtered.length > 0) {
