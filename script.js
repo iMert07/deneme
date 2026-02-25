@@ -306,7 +306,7 @@ function showLetterResults(harf, page, showAll = false) {
     }
 }
 
-// --- 7. GERİ BİLDİRİM VE DİĞER FONKSİYONLAR ---
+// --- 7. GERİ BİLDİRİM FONKSİYONLARI ---
 function toggleFeedbackForm() { 
     const modal = document.getElementById('feedbackModal');
     modal.classList.toggle('hidden');
@@ -319,17 +319,36 @@ function toggleFeedbackForm() {
 function submitFeedback() {
     const message = document.getElementById('feedback-message').value.trim();
     const contact = document.getElementById('feedback-contact').value.trim();
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbw585eTmQmeddLCzb-CyjU93fmisrtnYZ9tfnV0bZ8otVmKO1UAdxsOKLTnO1MAWU-5/exec';
 
     if (!message) {
         alert("Lütfen bir mesaj yazın.");
         return;
     }
 
-    // Tabloda 'İletişim' sütunu olduğunu belirttiğin için bu veri oraya gidecek şekilde hazırlandı
-    console.log("Mesaj:", message, "İletişim:", contact); 
-    
-    alert("Geri bildiriminiz başarıyla gönderildi. Teşekkür ederiz!");
-    toggleFeedbackForm();
+    const sendBtn = document.getElementById('feedback-submit-btn');
+    sendBtn.disabled = true;
+    sendBtn.innerText = "Gönderiliyor...";
+
+    fetch(scriptURL, {
+        method: 'POST',
+        mode: 'no-cors',
+        cache: 'no-cache',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ "message": message, "contact": contact }),
+    })
+    .then(() => {
+        alert("Geri bildiriminiz başarıyla iletildi. Teşekkür ederiz!");
+        toggleFeedbackForm();
+    })
+    .catch(error => {
+        console.error('Hata!', error);
+        alert("Bir sorun oluştu.");
+    })
+    .finally(() => {
+        sendBtn.disabled = false;
+        sendBtn.innerText = "Gönder";
+    });
 }
 
 function calculateStats() {
