@@ -1,4 +1,3 @@
-/* Genel Seçici Düzenlemeleri */
 header, .nav-tab, #kb-container, .key, #label-input, #label-output, #clock, #date, .unit-pill, .dropdown-item {
     user-select: none;
     -webkit-user-select: none;
@@ -7,28 +6,6 @@ header, .nav-tab, #kb-container, .key, #label-input, #label-output, #clock, #dat
     -webkit-touch-callout: none;
 }
 
-/* Tarih ve Saat Sabitleme Düzenlemesi */
-#clock, #date {
-    /* Karakter genişlikleri eşit olan fontlar (Monospace) sağa sola kaymayı bitirir */
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace !important;
-    font-variant-numeric: tabular-nums;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    letter-spacing: 0.02em;
-}
-
-/* Saat ve tarih için ayrı ayrı sabit genişlik (titremeyi önleyen ana kural) */
-#clock {
-    min-width: 9ch; /* 00.00.00 formatı için yeterli sabit alan */
-}
-
-#date {
-    min-width: 12ch; /* 00.00.0000 formatı için yeterli sabit alan */
-    margin-left: 5px;
-}
-
-/* Klavye Ana Yapısı */
 .keyboard {
     display: flex; flex-direction: column; align-items: center; gap: 8px; 
     margin: 20px auto; width: 100%; max-width: 850px; padding: 15px;
@@ -38,7 +15,6 @@ header, .nav-tab, #kb-container, .key, #label-input, #label-output, #clock, #dat
 
 .row { display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px; width: 100%; max-width: 800px; margin-bottom: 2px; }
 
-/* Tuş Tasarımları */
 .key {
     grid-column: span 1; height: 52px; display: flex; justify-content: center; align-items: center;
     background: #ffffff; color: #1e293b; cursor: pointer; font-size: 1.1rem; font-weight: 600;
@@ -47,27 +23,16 @@ header, .nav-tab, #kb-container, .key, #label-input, #label-output, #clock, #dat
 .dark .key { background: #233648; color: #f8fafc; border-bottom: 3px solid #000; }
 .key:active { transform: translateY(2px); border-bottom: 0; }
 
-/* Fonksiyon Tuşları */
 .fn-key { background: #cbd5e1 !important; }
 .dark .fn-key { background: #324d67 !important; }
 
-/* Tuş Genişlik Ayarları */
 [data-action="shift"], [data-action="delete"] { grid-column: span 2 !important; }
 [data-action="reset"], [data-action="enter"] { grid-column: span 3 !important; }
 [data-action="space"] { grid-column: span 6 !important; }
 
-/* Mobil Uyumluluk */
 @media (max-width: 768px) {
-    .keyboard { 
-        position: fixed; bottom: 8px; left: 2%; width: 96%; 
-        padding: 8px 4px 12px 4px; border-radius: 1rem; 
-        box-shadow: 0 -5px 20px rgba(0,0,0,0.3); 
-    }
+    .keyboard { position: fixed; bottom: 8px; left: 2%; width: 96%; padding: 8px 4px 12px 4px; border-radius: 1rem; box-shadow: 0 -5px 20px rgba(0,0,0,0.3); }
     .row { gap: 4px; }
-    .key { height: 42px !important; font-size: 1rem; border-bottom-width: 2px; }
-    main { padding-bottom: 280px !important; }
-    
-    #clock, #date { font-size: 0.85rem; }
-    #clock { min-width: 8ch; }
-    #date { min-width: 10ch; }
+    .key { height: 38px !important; font-size: 1rem; border-bottom-width: 2px; }
+    main { padding-bottom: 260px !important; }
 }
