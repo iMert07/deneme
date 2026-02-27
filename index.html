@@ -59,11 +59,18 @@
         .dark .unit-pill { background: #1e293b; color: #94a3b8; border-color: #334155; }
         .unit-pill:hover { background: #137fec; color: white; transform: translateY(-1px); }
 
-        /* Başlık kesilme önleyici */
-        .main-title {
-            line-height: 1.4 !important;
-            padding-bottom: 2px;
+        .main-title { line-height: 1.4 !important; padding-bottom: 2px; }
+
+        /* Takvim Grid ve Hücre Stilleri */
+        .cal-cell {
+            aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 50%;
+            transition: all 0.2s ease; border: 2px solid transparent;
         }
+        .cal-cell:hover { background: rgba(19, 127, 236, 0.1); }
+        .active-day { background: #137fec !important; color: white !important; box-shadow: 0 4px 12px rgba(19, 127, 236, 0.4); }
+        .today-mark { border-color: #137fec; color: #137fec; }
+        .other-month-day { opacity: 0.15; cursor: default; }
 
         @media (min-width: 1024px) {
             textarea { font-size: 1.5rem !important; }
@@ -85,8 +92,8 @@
         <div class="flex items-center gap-3">
             <h2 class="main-title text-base sm:text-lg font-bold truncate">Anatolya'ya Dönüş</h2>
             <div class="flex items-center gap-3 border-l border-slate-200 dark:border-slate-700 pl-3 leading-none font-mono font-bold pointer-events-none">
-                <span id="clock" class="text-sm sm:text-lg text-primary">θθ.θθ.θθ</span>
-                <span id="date" class="text-sm sm:text-lg text-slate-500 dark:text-slate-400">θθ.θθ.θθθθ</span>
+                <span id="clock" class="text-sm sm:text-lg text-primary">00.00.00</span>
+                <span id="date" class="text-sm sm:text-lg text-slate-500 dark:text-slate-400">00.00.0000</span>
             </div>
         </div>
         <button id="themeToggle" class="p-1 flex items-center justify-center bg-transparent border-none text-slate-500 dark:text-slate-400 focus:outline-none cursor-pointer">
@@ -119,6 +126,24 @@
                 <div class="unit-pill" id="pill-input-label" onclick="toggleDropdown('input')">Eski Alfabe</div>
                 <div id="dropdown-input" class="dropdown-panel select-none"></div>
             </div>
+            
+            <div id="calendar-ui" class="hidden w-full h-[300px] lg:h-[350px] p-5 bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm select-none">
+                <div class="flex items-center justify-between mb-4">
+                    <button id="prevPeriod" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-all">
+                        <span class="material-symbols-outlined">arrow_back_ios</span>
+                    </button>
+                    <div class="text-center">
+                        <h3 id="cal-title" class="text-lg font-bold text-primary uppercase leading-tight">Takvim</h3>
+                        <p id="cal-subtitle" class="text-[10px] text-slate-400 font-medium">Lütfen bekleyin...</p>
+                    </div>
+                    <button id="nextPeriod" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-all">
+                        <span class="material-symbols-outlined">arrow_forward_ios</span>
+                    </button>
+                </div>
+                <div id="calendar-header-days" class="grid gap-1 mb-2 text-[10px] font-black text-slate-500 uppercase text-center"></div>
+                <div id="calendar-body-days" class="grid gap-1 text-center"></div>
+            </div>
+
             <textarea id="input-area" class="w-full h-[180px] lg:h-[300px] p-5 bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm focus:ring-2 focus:ring-primary/50 resize-none text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
         </div>
 
@@ -133,7 +158,7 @@
 
     <section id="kb-container" class="select-none">
         <div class="keyboard !my-0" id="mainKeyboard">
-            <div class="row"><div class="key">θ</div><div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">Φ</div><div class="key">Λ</div></div>
+            <div class="row"><div class="key">0</div><div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">Φ</div><div class="key">Λ</div></div>
             <div class="row"><div class="key">Ϙ</div><div class="key">Ш</div><div class="key">E</div><div class="key">R</div><div class="key">T</div><div class="key">Y</div><div class="key">U</div><div class="key">Ͱ</div><div class="key">Ω</div><div class="key">P</div><div class="key">Γ</div><div class="key">Σ</div></div>
             <div class="row"><div class="key fn-key">,</div><div class="key">A</div><div class="key">S</div><div class="key">D</div><div class="key">F</div><div class="key">G</div><div class="key">H</div><div class="key">J</div><div class="key">K</div><div class="key">L</div><div class="key">Ь</div><div class="key fn-key">.</div></div>
             <div class="row"><div class="key wide fn-key" data-action="shift">Shift</div><div class="key">Z</div><div class="key">Ψ</div><div class="key">C</div><div class="key">V</div><div class="key">B</div><div class="key">N</div><div class="key">M</div><div class="key">Π</div><div class="key wide fn-key" data-action="delete"><span class="material-symbols-outlined">backspace</span></div></div>
