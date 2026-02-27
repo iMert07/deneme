@@ -55,12 +55,12 @@ const conversionRates = {
     }
 };
 
-const toGreek = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ" };
+const toGreek = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"0" };
 const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
 
 // --- TABAN DÖNÜŞTÜRÜCÜLER ---
 function toBase12(n, pad = 1, isAnatolya = true) {
-    const digits = isAnatolya ? "θ123456789ΦΛ" : "0123456789AB";
+    const digits = isAnatolya ? "0123456789ΦΛ" : "0123456789AB";
     let num = Math.abs(Math.floor(n));
     let res = "";
     if (num === 0) res = digits[0];
@@ -69,7 +69,7 @@ function toBase12(n, pad = 1, isAnatolya = true) {
 }
 
 function toBase12Float(n, isAnatolya = true) {
-    const digits = isAnatolya ? "θ123456789ΦΛ" : "0123456789AB";
+    const digits = isAnatolya ? "0123456789ΦΛ" : "0123456789AB";
     let integerPart = Math.floor(Math.abs(n));
     let fractionPart = Math.abs(n) - integerPart;
     let res = toBase12(integerPart, 1, isAnatolya);
@@ -104,7 +104,7 @@ function getAnatolyaDays(years) {
 function normalizeInput(text) { return text.toUpperCase().replace(/θ/g, '0').replace(/Φ/g, 'A').replace(/Λ/g, 'B'); }
 
 function isValidInput(text, unit) {
-    const anaDigits = "θΦΛ";
+    const anaDigits = "0ΦΛ";
     let allowedChars = "";
     const isSpecial = ["Anatolya", "Gün", "Ay", "Yıl", "Arşın", "Menzil", "Endaze", "Rubu", "Kerrab", "Berid", "Fersah", "Merhale", "Okka", "Kantar", "Batman", "Miskal", "Dirhem", "Akçe", "Meridyen"].some(s => unit.includes(s));
     if (unit.includes("(2)")) allowedChars = "01,.";
@@ -160,14 +160,13 @@ function performConversion() {
         let val = parseFloat(text.replace(',','.'));
         if (currentInputUnit === "Boylam (Derece)") {
             if (isNaN(val)) return;
-            // Floransa 11.25, Başlangıç Floransa'nın 180 zıttı: -168.75. Batıya doğru artıyor.
             let res = (168.75 - val);
             while (res < 0) res += 360; res = res % 360;
             const anaVal = toBase12Float(res, true), stdVal = toBase12Float(res, false);
             outputArea.value = `${anaVal} (${stdVal}) [${res.toFixed(2)}]`;
         } else {
             let input = normalizeInput(text.toUpperCase());
-            let dec = parseInt(input.split('.')[0], 12); // Basitçe onluğa çek
+            let dec = parseInt(input.split('.')[0], 12);
             let res = 168.75 - dec;
             while (res < -180) res += 360; while (res > 180) res -= 360;
             outputArea.value = res.toFixed(4).replace('.',',');
@@ -271,7 +270,6 @@ function updateHeader() {
     }
     const day = (daysPassed - daysCounter) % 30 + 1;
     const month = Math.floor((daysPassed - daysCounter) / 30) + 1;
-    // Yıl hatası düzeltildi: year + 10369
     document.getElementById('date').textContent = `${toBase12(day, 2, true)}.${toBase12(month, 2, true)}.${toBase12(year + 10369, 4, true)}`;
 }
 
