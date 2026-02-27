@@ -1,3 +1,4 @@
+/* --- GENEL KULLANICI ETKİLEŞİMİ --- */
 header, .nav-tab, #kb-container, .key, #label-input, #label-output, #clock, #date, .unit-pill, .dropdown-item {
     user-select: none;
     -webkit-user-select: none;
@@ -6,6 +7,19 @@ header, .nav-tab, #kb-container, .key, #label-input, #label-output, #clock, #dat
     -webkit-touch-callout: none;
 }
 
+/* --- SAAT VE TARİH FONT EŞİTLEME (İSTEDİĞİN DÜZENLEME) --- */
+#clock, #date {
+    /* Karakter boyutlarını ve hizalarını eşitlemek için monospace font grubu */
+    font-family: 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+    /* Karakterlerin (θ dahil) genişliklerini ve yüksekliklerini sabitler */
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+}
+
+/* --- KLAVYE YAPISI --- */
 .keyboard {
     display: flex; flex-direction: column; align-items: center; gap: 8px; 
     margin: 20px auto; width: 100%; max-width: 850px; padding: 15px;
@@ -26,10 +40,12 @@ header, .nav-tab, #kb-container, .key, #label-input, #label-output, #clock, #dat
 .fn-key { background: #cbd5e1 !important; }
 .dark .fn-key { background: #324d67 !important; }
 
+/* --- KLAVYE ÖZEL TUŞ GENİŞLİKLERİ --- */
 [data-action="shift"], [data-action="delete"] { grid-column: span 2 !important; }
 [data-action="reset"], [data-action="enter"] { grid-column: span 3 !important; }
 [data-action="space"] { grid-column: span 6 !important; }
 
+/* --- MOBİL UYUMLULUK --- */
 @media (max-width: 768px) {
     .keyboard { position: fixed; bottom: 8px; left: 2%; width: 96%; padding: 8px 4px 12px 4px; border-radius: 1rem; box-shadow: 0 -5px 20px rgba(0,0,0,0.3); }
     .row { gap: 4px; }
