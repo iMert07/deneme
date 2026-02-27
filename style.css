@@ -7,14 +7,25 @@ header, .nav-tab, #kb-container, .key, #label-input, #label-output, #clock, #dat
     -webkit-touch-callout: none;
 }
 
-/* Tarih ve Saat θ Simgesi Düzenlemesi */
+/* Tarih ve Saat Sabitleme Düzenlemesi */
 #clock, #date {
-    font-family: 'Noto Sans', 'Inter', monospace; /* θ simgesini içeren fontlar */
-    font-variant-numeric: tabular-nums; /* Rakamların ve sembollerin genişliğini eşitler */
+    /* Karakter genişlikleri eşit olan fontlar (Monospace) sağa sola kaymayı bitirir */
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace !important;
+    font-variant-numeric: tabular-nums;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: fit-content;
+    letter-spacing: 0.02em;
+}
+
+/* Saat ve tarih için ayrı ayrı sabit genişlik (titremeyi önleyen ana kural) */
+#clock {
+    min-width: 9ch; /* 00.00.00 formatı için yeterli sabit alan */
+}
+
+#date {
+    min-width: 12ch; /* 00.00.0000 formatı için yeterli sabit alan */
+    margin-left: 5px;
 }
 
 /* Klavye Ana Yapısı */
@@ -54,8 +65,9 @@ header, .nav-tab, #kb-container, .key, #label-input, #label-output, #clock, #dat
     }
     .row { gap: 4px; }
     .key { height: 42px !important; font-size: 1rem; border-bottom-width: 2px; }
-    main { padding-bottom: 280px !important; } /* Klavye üstte kalmasın diye ana içeriğe boşluk */
+    main { padding-bottom: 280px !important; }
     
-    /* Mobil cihazlarda tarih/saat yazı boyutunu biraz küçültelim */
     #clock, #date { font-size: 0.85rem; }
+    #clock { min-width: 8ch; }
+    #date { min-width: 10ch; }
 }
