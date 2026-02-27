@@ -7,16 +7,14 @@ header, .nav-tab, #kb-container, .key, #label-input, #label-output, #clock, #dat
     -webkit-touch-callout: none;
 }
 
-/* --- SAAT VE TARİH FONT EŞİTLEME (İSTEDİĞİN DÜZENLEME) --- */
+/* --- SAAT VE TARİH FONT EŞİTLEME --- */
 #clock, #date {
-    /* Karakter boyutlarını ve hizalarını eşitlemek için monospace font grubu */
-    font-family: 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
-    /* Karakterlerin (θ dahil) genişliklerini ve yüksekliklerini sabitler */
+    /* JetBrains Mono tüm karakterleri (θ dahil) aynı kutu içine hapseder */
+    font-family: 'JetBrains Mono', monospace !important;
     font-variant-numeric: tabular-nums;
-    letter-spacing: -0.02em;
-    display: inline-flex;
-    align-items: center;
-    line-height: 1;
+    font-weight: 700;
+    line-height: 1.2;
+    display: inline-block;
 }
 
 /* --- KLAVYE YAPISI --- */
