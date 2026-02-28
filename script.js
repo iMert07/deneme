@@ -1,3 +1,11 @@
+// --- YARDIMCI FORMAT FONKSİYONU ---
+// Küsuratları en fazla 2 basamak yapar ve sondaki gereksiz 0'ları siler.
+function formatCompact(num) {
+    if (num === 0) return "0";
+    // Sayıyı en fazla 2 basamağa yuvarla ve gereksiz sıfırları at (Örn: 1.80 -> 1.8)
+    return parseFloat(num.toFixed(2)).toString().replace('.', ',');
+}
+
 // --- ELEMENT SEÇİCİLER ---
 const inputArea = document.getElementById('input-area');
 const outputArea = document.getElementById('output-area');
@@ -74,8 +82,17 @@ function toBase12Float(n, isAnatolya = true) {
     let fractionPart = Math.abs(n) - integerPart;
     let res = (n < 0 ? "-" : "") + toBase12(integerPart, 1, isAnatolya);
     if (fractionPart > 0.0001) {
-        res += ",";
-        for (let i = 0; i < 3; i++) { fractionPart *= 12; let d = Math.floor(fractionPart); res += digits[d]; fractionPart -= d; if (fractionPart < 0.0001) break; }
+        let fracRes = "";
+        for (let i = 0; i < 3; i++) { 
+            fractionPart *= 12; 
+            let d = Math.floor(fractionPart); 
+            fracRes += digits[d]; 
+            fractionPart -= d; 
+            if (fractionPart < 0.0001) break; 
+        }
+        // Sondaki gereksiz 0'ları (taban 12'de) temizle
+        fracRes = fracRes.replace(/0+$/, '');
+        if (fracRes !== "") res += "," + fracRes;
     }
     return res;
 }
@@ -159,14 +176,10 @@ function performConversion() {
     else if (mode === "Sıcaklık") {
         if (!isValidInput(text, currentInputUnit)) { outputArea.value = "Geçersiz Karakter"; return; }
         let fahr;
-        // Girdi ne olursa olsun önce Fahrenheit'a çeviriyoruz
-        if (currentInputUnit === "Celsius") {
-            fahr = (parseFloat(text.replace(',', '.')) * 1.8) + 32;
-        } else if (currentInputUnit === "Kelvin") {
-            fahr = ((parseFloat(text.replace(',', '.')) - 273.15) * 1.8) + 32;
-        } else if (currentInputUnit === "Fahrenheit") {
-            fahr = parseFloat(text.replace(',', '.'));
-        } else if (currentInputUnit === "Anatolya (Fahrenheit)") {
+        if (currentInputUnit === "Celsius") fahr = (parseFloat(text.replace(',', '.')) * 1.8) + 32;
+        else if (currentInputUnit === "Kelvin") fahr = ((parseFloat(text.replace(',', '.')) - 273.15) * 1.8) + 32;
+        else if (currentInputUnit === "Fahrenheit") fahr = parseFloat(text.replace(',', '.'));
+        else if (currentInputUnit === "Anatolya (Fahrenheit)") {
             let input = normalizeInput(text.toUpperCase()).replace(',','.');
             const parts = input.split('.');
             let val = parseInt(parts[0], 12);
@@ -174,26 +187,24 @@ function performConversion() {
                 const stdDigits = "0123456789ABCDEF";
                 for (let i = 0; i < parts[1].length; i++) val += stdDigits.indexOf(parts[1][i]) * Math.pow(12, -(i+1));
             }
-            fahr = val + 32; // 0 Anatolya = 32 Fahrenheit kuralı
+            fahr = val + 32;
         }
 
         if (isNaN(fahr)) { outputArea.value = "Hata"; return; }
 
-        // Fahrenheit'tan hedef birime çeviriyoruz
         let result;
-        if (currentOutputUnit === "Celsius") {
-            result = (fahr - 32) / 1.8;
-            outputArea.value = result.toFixed(2).replace('.', ',');
-        } else if (currentOutputUnit === "Kelvin") {
-            result = ((fahr - 32) / 1.8) + 273.15;
-            outputArea.value = result.toFixed(2).replace('.', ',');
-        } else if (currentOutputUnit === "Fahrenheit") {
-            outputArea.value = fahr.toFixed(2).replace('.', ',');
-        } else if (currentOutputUnit === "Anatolya (Fahrenheit)") {
-            result = fahr - 32; // 32F = 0 Anatolya
+        if (currentOutputUnit === "Celsius") result = (fahr - 32) / 1.8;
+        else if (currentOutputUnit === "Kelvin") result = ((fahr - 32) / 1.8) + 273.15;
+        else if (currentOutputUnit === "Fahrenheit") result = fahr;
+        else if (currentOutputUnit === "Anatolya (Fahrenheit)") {
+            result = fahr - 32;
             const anaVal = toBase12Float(result, true), stdVal = toBase12Float(result, false);
-            outputArea.value = (anaVal === stdVal) ? `${anaVal} [${result.toFixed(2)}]` : `${anaVal} (${stdVal}) [${result.toFixed(2)}]`;
+            // Sıfır veya tam sayı kontrolü, gereksiz [0] gösterimini engeller
+            let decPart = result === 0 ? "0" : formatCompact(result);
+            outputArea.value = (anaVal === stdVal) ? (anaVal === "0" ? "0" : `${anaVal} [${decPart}]`) : `${anaVal} (${stdVal}) [${decPart}]`;
+            return;
         }
+        outputArea.value = formatCompact(result);
     }
     else if (mode === "Konum") {
         let val = parseFloat(text.replace(',','.'));
@@ -202,13 +213,13 @@ function performConversion() {
             let res = (168.75 - val);
             while (res < 0) res += 360; res = res % 360;
             const anaVal = toBase12Float(res, true), stdVal = toBase12Float(res, false);
-            outputArea.value = `${anaVal} (${stdVal}) [${res.toFixed(2)}]`;
+            outputArea.value = `${anaVal} (${stdVal}) [${formatCompact(res)}]`;
         } else {
             let input = normalizeInput(text.toUpperCase());
             let dec = parseInt(input.split('.')[0], 12);
             let res = 168.75 - dec;
             while (res < -180) res += 360; while (res > 180) res -= 360;
-            outputArea.value = res.toFixed(4).replace('.',',');
+            outputArea.value = formatCompact(res);
         }
     }
     else if (conversionRates[mode] || mode === "Zaman") {
@@ -225,29 +236,38 @@ function performConversion() {
                 for (let i = 0; i < parts[1].length; i++) numericValue += stdDigits.indexOf(parts[1][i]) * Math.pow(12, -(i+1));
             }
         } else { numericValue = parseFloat(text.replace(',', '.')); }
+        
         if (isNaN(numericValue)) { outputArea.value = "Hata"; return; }
+
         let baseValue;
-        const currentModeRates = conversionRates[mode] || (mode === "Zaman" ? conversionRates["Zaman"] : null);
-        if (!currentModeRates) return;
+        const currentModeRates = conversionRates[mode] || conversionRates["Zaman"];
         if (currentInputUnit === "Yıl (Gregoryen)") baseValue = getGregorianDays(numericValue) * 86400;
         else if (currentInputUnit === "Yıl (Anatolya)") baseValue = getAnatolyaDays(numericValue) * 86400;
         else baseValue = numericValue * (currentModeRates[currentInputUnit] || 1);
+
         let result;
         if (currentOutputUnit === "Yıl (Gregoryen)") result = baseValue / (365.2425 * 86400);
         else if (currentOutputUnit === "Yıl (Anatolya)") result = baseValue / (365.25 * 86400);
         else result = baseValue / (currentModeRates[currentOutputUnit] || 1);
+
         const isOutputSpecial = specialUnits.some(s => currentOutputUnit.includes(s)) || currentOutputUnit.includes("Anatolya");
         if (isOutputSpecial) {
-            const anaVal = toBase12Float(result, true), stdVal = toBase12Float(result, false), decStr = Number(result.toFixed(2)).toLocaleString('tr-TR');
-            let resStr = anaVal;
-            if (anaVal !== stdVal) resStr += ` (${stdVal})`;
-            resStr += ` [${decStr}]`;
-            outputArea.value = resStr;
-        } else { outputArea.value = Number(result.toFixed(5)).toLocaleString('tr-TR'); }
+            const anaVal = toBase12Float(result, true), stdVal = toBase12Float(result, false);
+            if (result === 0 || anaVal === "0") {
+                outputArea.value = "0";
+            } else {
+                let resStr = anaVal;
+                if (anaVal !== stdVal) resStr += ` (${stdVal})`;
+                resStr += ` [${formatCompact(result)}]`;
+                outputArea.value = resStr;
+            }
+        } else {
+            outputArea.value = formatCompact(result);
+        }
     }
 }
 
-// UI FONKSİYONLARI VE DİĞERLERİ AYNI KALDI...
+// Diğer UI fonksiyonları (renderDropdowns, selectUnit vb.) aynı kalacak...
 function selectUnit(type, value) {
     if (type === 'input') { if (value === currentOutputUnit) currentOutputUnit = currentInputUnit; currentInputUnit = value; }
     else { if (value === currentInputUnit) currentInputUnit = currentOutputUnit; currentOutputUnit = value; }
