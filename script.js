@@ -1,9 +1,7 @@
 // --- YARDIMCI FORMAT FONKSİYONU ---
 function formatCompact(num) {
     if (num === 0) return "0";
-    // En fazla 2 basamak ve sondaki gereksiz 0'ları atar
-    let formatted = parseFloat(num.toFixed(2)).toString().replace('.', ',');
-    return formatted;
+    return parseFloat(num.toFixed(2)).toString().replace('.', ',');
 }
 
 // --- ELEMENT SEÇİCİLER ---
@@ -43,17 +41,23 @@ const unitData = {
         "Mililitre (10⁻³)", "Sıvı Ons (ABD)", "Miskal (12⁻¹)", "Şinik (12⁰)", 
         "Litre (10⁰)", "Kıyye (12¹)", "Galon (ABD)", "Kile (12²)", "Metreküp (10³)"
     ],
+    "Hız": ["Kilometre/Saat", "Mil/Saat", "Fersah/Saat (12)"],
     "Konum": ["Boylam (Derece)", "Meridyen (Anatolya)"],
     "Sıcaklık": ["Celsius", "Anatolya (Fahrenheit, 12)", "Fahrenheit", "Kelvin"],
     "Veri": ["Byte", "Kilobyte", "Megabyte", "Gigabyte", "Terabyte", "Anatolya Verisi"]
 };
 
-// --- KATSAYILAR (Baz: Litre) ---
+// --- KATSAYILAR (Baz: Metre / Saniye veya uygun temel birim) ---
 const conversionRates = {
     "Uzunluk": {
         "Kerrab (12⁻³)": 0.00041666666, "Milimetre (10⁻³)": 0.001, "Rubu (12⁻²)": 0.005, "Santimetre (10⁻²)": 0.01,
         "İnç": 0.0254, "Endaze (12⁻¹)": 0.06, "Fit": 0.3048, "Arşın (12⁰)": 0.72, "Yard": 0.9144, "Metre (10⁰)": 1,
         "Berid (12¹)": 8.64, "Menzil (12²)": 103.68, "Kilometre (10³)": 1000, "Fersah (12³)": 1244.16, "Mil": 1609.34, "Merhale (12⁴)": 14929.92
+    },
+    "Hız": {
+        "Kilometre/Saat": 1, // Baz olarak Km/Sa alıyoruz
+        "Mil/Saat": 1.60934,
+        "Fersah/Saat (12)": 0.62208 // (1244,16 metre / 2000 metre) -> 1 Fersah / 2 Saat (Km cinsinden)
     },
     "Kütle": {
         "Miligram (10⁻³)": 0.000001, "Dirhem (12⁻³)": 0.0005, "Gram (10⁰)": 0.001, "Miskal (12⁻²)": 0.006,
@@ -139,6 +143,26 @@ function universalNumberConvert(text, fromUnit, toUnit) {
     return dec.toString(toBase).toUpperCase().replace('.', ',');
 }
 
+function getGregorianDays(years) {
+    let totalDays = 0;
+    for (let i = 1; i <= Math.floor(years); i++) {
+        if ((i % 4 === 0 && i % 100 !== 0) || (i % 400 === 0)) totalDays += 366;
+        else totalDays += 365;
+    }
+    totalDays += (years % 1) * 365.2425;
+    return totalDays;
+}
+
+function getAnatolyaDays(years) {
+    let totalDays = 0;
+    for (let i = 1; i <= Math.floor(years); i++) {
+        if (i % 20 === 0 && i % 640 !== 0) totalDays += 370;
+        else totalDays += 365;
+    }
+    totalDays += (years % 1) * 365.25; 
+    return totalDays;
+}
+
 function performConversion() {
     const activeTab = document.querySelector('.active-tab');
     if (!activeTab) return;
@@ -176,13 +200,12 @@ function performConversion() {
             let res = fahr - 32;
             let ana = toBase12Float(res, true);
             let decStr = formatCompact(res);
-            // Karşılaştırma: Parantez içindeki sayı farklı değilse yazma
             outputArea.value = (ana === decStr) ? ana : `${ana} [${decStr}]`;
         }
     }
     else if (conversionRates[mode] || mode === "Zaman") {
         let numericValue;
-        const specialUnits = ["Anatolya", "Arşın", "Miskal", "Şinik", "Kıyye", "Kile"];
+        const specialUnits = ["Anatolya", "Arşın", "Miskal", "Şinik", "Kıyye", "Kile", "Fersah/Saat (12)"];
         const isInputSpecial = specialUnits.some(s => currentInputUnit.includes(s));
         
         if (isInputSpecial) {
@@ -210,25 +233,22 @@ function performConversion() {
 
         const isOutputSpecial = specialUnits.some(s => currentOutputUnit.includes(s)) || currentOutputUnit.includes("Anatolya");
         if (isOutputSpecial) {
-            let ana = toBase12Float(result, true);
-            let decStr = formatCompact(result);
-            // Karşılaştırma: Parantez içindeki sayı farklı değilse yazma
-            outputArea.value = (ana === decStr) ? ana : `${ana} [${decStr}]`;
+            if (result === 0) { outputArea.value = "0"; }
+            else {
+                let ana = toBase12Float(result, true);
+                let decStr = formatCompact(result);
+                outputArea.value = (ana === decStr) ? ana : `${ana} [${decStr}]`;
+            }
         } else { outputArea.value = formatCompact(result); }
     }
 }
 
-// --- UI ETKİLEŞİM ---
 function selectUnit(type, value) {
     if (type === 'input') {
-        if (value === currentOutputUnit) {
-            currentOutputUnit = currentInputUnit;
-        }
+        if (value === currentOutputUnit) currentOutputUnit = currentInputUnit;
         currentInputUnit = value;
     } else {
-        if (value === currentInputUnit) {
-            currentInputUnit = currentOutputUnit;
-        }
+        if (value === currentInputUnit) currentInputUnit = currentOutputUnit;
         currentOutputUnit = value;
     }
     renderPills(); performConversion();
@@ -243,6 +263,7 @@ function renderDropdowns(mode) {
     else if (mode === "Konum") { currentInputUnit = "Boylam (Derece)"; currentOutputUnit = "Meridyen (Anatolya)"; }
     else if (mode === "Sıcaklık") { currentInputUnit = "Celsius"; currentOutputUnit = "Anatolya (Fahrenheit, 12)"; }
     else if (mode === "Hacim") { currentInputUnit = "Litre (10⁰)"; currentOutputUnit = "Şinik (12⁰)"; }
+    else if (mode === "Hız") { currentInputUnit = "Kilometre/Saat"; currentOutputUnit = "Fersah/Saat (12)"; }
     else { currentInputUnit = options[0]; currentOutputUnit = options[1] || options[0]; }
     const createItems = (type) => options.map(opt => `<div class="dropdown-item" onclick="selectUnit('${type}', '${opt}')">${opt}</div>`).join('');
     dropdownInput.innerHTML = createItems('input'); dropdownOutput.innerHTML = createItems('output');
@@ -268,7 +289,6 @@ document.getElementById('themeToggle').addEventListener('click', () => document.
 
 function updateHeader() {
     const now = new Date();
-    // Saat
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 30, 0);
     if (now < todayStart) todayStart.setDate(todayStart.getDate() - 1);
     const totalSecs = Math.floor(((now - todayStart) / 1000) * 2);
@@ -277,7 +297,6 @@ function updateHeader() {
     const s = totalSecs % 120;
     document.getElementById('clock').textContent = `${toBase12(h, 2, true)}.${toBase12(m, 2, true)}.${toBase12(s, 2, true)}`;
     
-    // Takvim
     const gregBase = new Date(1071, 2, 21);
     const diff = now - gregBase;
     const daysPassed = Math.floor(diff / 86400000);
