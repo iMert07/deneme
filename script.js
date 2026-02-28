@@ -1,6 +1,7 @@
 // --- YARDIMCI FORMAT FONKSİYONU ---
 function formatCompact(num) {
     if (num === 0) return "0";
+    // En fazla 2 basamak, sondaki etkisiz sıfırlar hariç
     return parseFloat(num.toFixed(2)).toString().replace('.', ',');
 }
 
@@ -46,7 +47,7 @@ const unitData = {
     "Veri": ["Byte", "Kilobyte", "Megabyte", "Gigabyte", "Terabyte", "Anatolya Verisi"]
 };
 
-// --- KATSAYILAR (Baz: Litre) ---
+// --- KATSAYILAR ---
 const conversionRates = {
     "Uzunluk": {
         "Kerrab (12⁻³)": 0.00041666666, "Milimetre (10⁻³)": 0.001, "Rubu (12⁻²)": 0.005, "Santimetre (10⁻²)": 0.01,
@@ -58,15 +59,8 @@ const conversionRates = {
         "Batman (12⁻¹)": 0.072, "Paund": 0.45359, "Okka (12⁰)": 0.864, "Kilogram (10³)": 1, "Kantar (12¹)": 10.368, "Ton (10⁶)": 1000
     },
     "Hacim": {
-        "Mililitre": 0.001,
-        "Sıvı Ons (ABD)": 0.0295735,
-        "Kile (12⁻¹)": 0.018,
-        "Hacim (12⁰)": 0.216,
-        "Litre": 1,
-        "Litre (12¹)": 2.592,
-        "Galon (ABD)": 3.78541,
-        "Şinik (12²)": 31.104,
-        "Metreküp": 1000
+        "Mililitre": 0.001, "Sıvı Ons (ABD)": 0.0295735, "Kile (12⁻¹)": 0.018, "Hacim (12⁰)": 0.216,
+        "Litre": 1, "Litre (12¹)": 2.592, "Galon (ABD)": 3.78541, "Şinik (12²)": 31.104, "Metreküp": 1000
     },
     "Para": { "Lira": 1, "Akçe": 9, "Dollar": 43, "Euro": 51, "Gümüş (Ons)": 2735, "Altın (Ons)": 183787 },
     "Veri": { "Byte": 1, "Kilobyte": 1024, "Megabyte": 1048576, "Gigabyte": 1073741824, "Terabyte": 1099511627776, "Anatolya Verisi": 1200 },
@@ -76,7 +70,10 @@ const conversionRates = {
     }
 };
 
-// --- TABAN DÖNÜŞTÜRÜCÜLER ---
+const toGreek = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"0" };
+const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
+
+// --- FONKSİYONLAR ---
 function toBase12(n, pad = 1, isAnatolya = true) {
     const digits = isAnatolya ? "0123456789ΦΛ" : "0123456789AB";
     let num = Math.abs(Math.floor(n));
@@ -106,7 +103,60 @@ function toBase12Float(n, isAnatolya = true) {
     return res;
 }
 
-// ... (normalizeInput, isValidInput, universalNumberConvert, getGregorianDays, getAnatolyaDays gibi diğer fonksiyonlar aynı kalacak)
+function normalizeInput(text) { return text.toUpperCase().replace(/θ/g, '0').replace(/Φ/g, 'A').replace(/Λ/g, 'B'); }
+
+function isValidInput(text, unit) {
+    const anaDigits = "0ΦΛ";
+    let allowedChars = "0123456789ABCDEF" + anaDigits + ",.- ";
+    if (unit.includes("Alfabe")) return true;
+    for (let char of text.toUpperCase()) { if (!allowedChars.includes(char)) return false; }
+    return true;
+}
+
+function universalNumberConvert(text, fromUnit, toUnit) {
+    if (!isValidInput(text, fromUnit)) return "Geçersiz Karakter";
+    const stdDigits = "0123456789ABCDEF";
+    const getBase = (unit) => {
+        if (unit.includes("(2)")) return 2;
+        if (unit.includes("Anatolya") || unit.includes("(12)")) return 12;
+        if (unit.includes("(16)")) return 16;
+        return 10;
+    };
+    let input = normalizeInput(text.toUpperCase()).replace(',', '.');
+    const fromBase = getBase(fromUnit); const toBase = getBase(toUnit);
+    const parts = input.split('.');
+    let dec = parseInt(parts[0], fromBase);
+    if (parts[1]) {
+        for (let i = 0; i < parts[1].length; i++) {
+            let dv = stdDigits.indexOf(parts[1][i]);
+            if (dv >= fromBase || dv === -1) break;
+            dec += dv * Math.pow(fromBase, -(i + 1));
+        }
+    }
+    if (isNaN(dec)) return "Hata";
+    if (toUnit.includes("Anatolya")) return toBase12Float(dec, true);
+    return dec.toString(toBase).toUpperCase().replace('.', ',');
+}
+
+function getGregorianDays(years) {
+    let totalDays = 0;
+    for (let i = 1; i <= Math.floor(years); i++) {
+        if ((i % 4 === 0 && i % 100 !== 0) || (i % 400 === 0)) totalDays += 366;
+        else totalDays += 365;
+    }
+    totalDays += (years % 1) * 365.2425;
+    return totalDays;
+}
+
+function getAnatolyaDays(years) {
+    let totalDays = 0;
+    for (let i = 1; i <= Math.floor(years); i++) {
+        if (i % 20 === 0 && i % 640 !== 0) totalDays += 370;
+        else totalDays += 365;
+    }
+    totalDays += (years % 1) * 365.25; 
+    return totalDays;
+}
 
 function performConversion() {
     const activeTab = document.querySelector('.active-tab');
@@ -118,45 +168,40 @@ function performConversion() {
     if (mode === "Alfabe") {
         outputArea.value = (currentInputUnit === "Eski Alfabe") ? text.split('').map(ch => toGreek[ch] || ch).join('') : text.split('').map(ch => toLatin[ch] || ch).join('');
     } 
-    else if (mode === "Sayı") { outputArea.value = universalNumberConvert(text, currentInputUnit, currentOutputUnit); }
+    else if (mode === "Sayı") {
+        outputArea.value = universalNumberConvert(text, currentInputUnit, currentOutputUnit);
+    }
     else if (mode === "Sıcaklık") {
-        if (!isValidInput(text, currentInputUnit)) { outputArea.value = "Geçersiz Karakter"; return; }
         let fahr;
-        if (currentInputUnit === "Celsius") fahr = (parseFloat(text.replace(',', '.')) * 1.8) + 32;
-        else if (currentInputUnit === "Kelvin") fahr = ((parseFloat(text.replace(',', '.')) - 273.15) * 1.8) + 32;
-        else if (currentInputUnit === "Fahrenheit") fahr = parseFloat(text.replace(',', '.'));
+        const val = parseFloat(text.replace(',', '.'));
+        if (currentInputUnit === "Celsius") fahr = (val * 1.8) + 32;
+        else if (currentInputUnit === "Kelvin") fahr = ((val - 273.15) * 1.8) + 32;
+        else if (currentInputUnit === "Fahrenheit") fahr = val;
         else if (currentInputUnit === "Anatolya (Fahrenheit, 12)") {
             let input = normalizeInput(text.toUpperCase()).replace(',','.');
             const parts = input.split('.');
-            let val = parseInt(parts[0], 12);
+            let decVal = parseInt(parts[0], 12);
             if (parts[1]) {
                 const stdDigits = "0123456789ABCDEF";
-                for (let i = 0; i < parts[1].length; i++) val += stdDigits.indexOf(parts[1][i]) * Math.pow(12, -(i+1));
+                for (let i = 0; i < parts[1].length; i++) decVal += stdDigits.indexOf(parts[1][i]) * Math.pow(12, -(i+1));
             }
-            fahr = val + 32;
+            fahr = decVal + 32;
         }
 
         if (isNaN(fahr)) { outputArea.value = "Hata"; return; }
 
-        let result;
-        if (currentOutputUnit === "Celsius") result = (fahr - 32) / 1.8;
-        else if (currentOutputUnit === "Kelvin") result = ((fahr - 32) / 1.8) + 273.15;
-        else if (currentOutputUnit === "Fahrenheit") result = fahr;
+        if (currentOutputUnit === "Celsius") outputArea.value = formatCompact((fahr - 32) / 1.8);
+        else if (currentOutputUnit === "Kelvin") outputArea.value = formatCompact(((fahr - 32) / 1.8) + 273.15);
+        else if (currentOutputUnit === "Fahrenheit") outputArea.value = formatCompact(fahr);
         else if (currentOutputUnit === "Anatolya (Fahrenheit, 12)") {
-            result = fahr - 32;
-            const anaVal = toBase12Float(result, true), stdVal = toBase12Float(result, false);
-            let decPart = result === 0 ? "0" : formatCompact(result);
-            outputArea.value = (anaVal === stdVal) ? (anaVal === "0" ? "0" : `${anaVal} [${decPart}]`) : `${anaVal} (${stdVal}) [${decPart}]`;
-            return;
+            let res = fahr - 32;
+            let ana = toBase12Float(res, true);
+            outputArea.value = (res === 0) ? "0" : `${ana} [${formatCompact(res)}]`;
         }
-        outputArea.value = formatCompact(result);
     }
-    // Konum, Hacim, Uzunluk vb. dönüşümler
     else if (conversionRates[mode] || mode === "Zaman") {
-        if (!isValidInput(text, currentInputUnit)) { outputArea.value = "Geçersiz Karakter"; return; }
         let numericValue;
-        // Hacimdeki yeni Anatolya birimlerini de "Special" listesine ekleyelim
-        const specialUnits = ["Anatolya", "Gün", "Ay", "Yıl", "Arşın", "Menzil", "Endaze", "Rubu", "Kerrab", "Berid", "Fersah", "Merhale", "Okka", "Kantar", "Batman", "Miskal", "Dirhem", "Akçe", "Kile", "Hacim", "Litre (12", "Şinik"];
+        const specialUnits = ["Anatolya", "Arşın", "Kile", "Hacim", "Şinik", "Litre (12"];
         const isInputSpecial = specialUnits.some(s => currentInputUnit.includes(s));
         
         if (isInputSpecial) {
@@ -184,18 +229,57 @@ function performConversion() {
 
         const isOutputSpecial = specialUnits.some(s => currentOutputUnit.includes(s)) || currentOutputUnit.includes("Anatolya");
         if (isOutputSpecial) {
-            const anaVal = toBase12Float(result, true), stdVal = toBase12Float(result, false);
-            if (result === 0 || anaVal === "0") {
-                outputArea.value = "0";
-            } else {
-                let resStr = anaVal;
-                if (anaVal !== stdVal) resStr += ` (${stdVal})`;
-                resStr += ` [${formatCompact(result)}]`;
-                outputArea.value = resStr;
+            if (result === 0) { outputArea.value = "0"; }
+            else {
+                let ana = toBase12Float(result, true);
+                outputArea.value = `${ana} [${formatCompact(result)}]`;
             }
-        } else {
-            outputArea.value = formatCompact(result);
-        }
+        } else { outputArea.value = formatCompact(result); }
     }
 }
-// ... (Geri kalan UI ve Header fonksiyonları aynı şekilde devam eder)
+
+// --- UI ETKİLEŞİM ---
+function selectUnit(type, value) {
+    if (type === 'input') currentInputUnit = value;
+    else currentOutputUnit = value;
+    renderPills(); performConversion();
+}
+
+function renderDropdowns(mode) {
+    const options = unitData[mode] || [];
+    currentInputUnit = options[0]; currentOutputUnit = options[1] || options[0];
+    const createItems = (type) => options.map(opt => `<div class="dropdown-item" onclick="selectUnit('${type}', '${opt}')">${opt}</div>`).join('');
+    dropdownInput.innerHTML = createItems('input'); dropdownOutput.innerHTML = createItems('output');
+    renderPills(); performConversion();
+}
+
+function renderPills() { pillInputLabel.innerText = currentInputUnit; pillOutputLabel.innerText = currentOutputUnit; dropdownInput.classList.remove('show'); dropdownOutput.classList.remove('show'); }
+function toggleDropdown(type) { const el = type === 'input' ? dropdownInput : dropdownOutput; const other = type === 'input' ? dropdownOutput : dropdownInput; other.classList.remove('show'); el.classList.toggle('show'); }
+
+inputArea.addEventListener('input', performConversion);
+document.querySelectorAll('.key').forEach(key => { key.addEventListener('click', () => {
+    const action = key.dataset.action;
+    if(action === 'delete') inputArea.value = inputArea.value.slice(0,-1);
+    else if(action === 'reset') { inputArea.value = ''; outputArea.value = ''; }
+    else if(!key.classList.contains('fn-key')) inputArea.value += key.innerText;
+    performConversion();
+}); });
+document.querySelectorAll('.nav-tab').forEach(tab => { tab.addEventListener('click', function() {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.replace('active-tab', 'inactive-tab'));
+    this.classList.replace('inactive-tab', 'active-tab'); renderDropdowns(this.dataset.value);
+}); });
+document.getElementById('themeToggle').addEventListener('click', () => document.documentElement.classList.toggle('dark'));
+
+function updateHeader() {
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 30, 0);
+    if (now < todayStart) todayStart.setDate(todayStart.getDate() - 1);
+    const totalSecs = Math.floor(((now - todayStart) / 1000) * 2);
+    const h = Math.floor(totalSecs / 14400) % 12;
+    const m = Math.floor((totalSecs / 120) % 120);
+    const s = totalSecs % 120;
+    document.getElementById('clock').textContent = `${toBase12(h, 2, true)}.${toBase12(m, 2, true)}.${toBase12(s, 2, true)}`;
+}
+
+setInterval(updateHeader, 500);
+renderDropdowns("Alfabe");
