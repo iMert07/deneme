@@ -41,13 +41,13 @@ const unitData = {
         "Mililitre (10⁻³)", "Sıvı Ons (ABD)", "Miskal (12⁻¹)", "Şinik (12⁰)", 
         "Litre (10⁰)", "Kıyye (12¹)", "Galon (ABD)", "Kile (12²)", "Metreküp (10³)"
     ],
-    "Hız": ["Kilometre/Saat", "Mil/Saat", "Fersah/Saat (12)"],
+    "Hız": ["Kilometre/Saat", "Fersah/Saat (12)", "Mil/Saat"], // Mil/Saat en sona alındı
     "Konum": ["Boylam (Derece)", "Meridyen (Anatolya)"],
     "Sıcaklık": ["Celsius", "Anatolya (Fahrenheit, 12)", "Fahrenheit", "Kelvin"],
     "Veri": ["Byte", "Kilobyte", "Megabyte", "Gigabyte", "Terabyte", "Anatolya Verisi"]
 };
 
-// --- KATSAYILAR (Baz: Metre / Saniye veya uygun temel birim) ---
+// --- KATSAYILAR (Baz: Km/Saat) ---
 const conversionRates = {
     "Uzunluk": {
         "Kerrab (12⁻³)": 0.00041666666, "Milimetre (10⁻³)": 0.001, "Rubu (12⁻²)": 0.005, "Santimetre (10⁻²)": 0.01,
@@ -55,9 +55,9 @@ const conversionRates = {
         "Berid (12¹)": 8.64, "Menzil (12²)": 103.68, "Kilometre (10³)": 1000, "Fersah (12³)": 1244.16, "Mil": 1609.34, "Merhale (12⁴)": 14929.92
     },
     "Hız": {
-        "Kilometre/Saat": 1, // Baz olarak Km/Sa alıyoruz
-        "Mil/Saat": 1.60934,
-        "Fersah/Saat (12)": 0.62208 // (1244,16 metre / 2000 metre) -> 1 Fersah / 2 Saat (Km cinsinden)
+        "Kilometre/Saat": 1,
+        "Fersah/Saat (12)": 0.62208,
+        "Mil/Saat": 1.60934
     },
     "Kütle": {
         "Miligram (10⁻³)": 0.000001, "Dirhem (12⁻³)": 0.0005, "Gram (10⁰)": 0.001, "Miskal (12⁻²)": 0.006,
@@ -141,26 +141,6 @@ function universalNumberConvert(text, fromUnit, toUnit) {
     if (isNaN(dec)) return "Hata";
     if (toUnit.includes("Anatolya")) return toBase12Float(dec, true);
     return dec.toString(toBase).toUpperCase().replace('.', ',');
-}
-
-function getGregorianDays(years) {
-    let totalDays = 0;
-    for (let i = 1; i <= Math.floor(years); i++) {
-        if ((i % 4 === 0 && i % 100 !== 0) || (i % 400 === 0)) totalDays += 366;
-        else totalDays += 365;
-    }
-    totalDays += (years % 1) * 365.2425;
-    return totalDays;
-}
-
-function getAnatolyaDays(years) {
-    let totalDays = 0;
-    for (let i = 1; i <= Math.floor(years); i++) {
-        if (i % 20 === 0 && i % 640 !== 0) totalDays += 370;
-        else totalDays += 365;
-    }
-    totalDays += (years % 1) * 365.25; 
-    return totalDays;
 }
 
 function performConversion() {
@@ -271,9 +251,24 @@ function renderDropdowns(mode) {
 }
 
 function renderPills() { pillInputLabel.innerText = currentInputUnit; pillOutputLabel.innerText = currentOutputUnit; dropdownInput.classList.remove('show'); dropdownOutput.classList.remove('show'); }
-function toggleDropdown(type) { const el = type === 'input' ? dropdownInput : dropdownOutput; const other = type === 'input' ? dropdownOutput : dropdownInput; other.classList.remove('show'); el.classList.toggle('show'); }
+
+function toggleDropdown(type) { 
+    const el = type === 'input' ? dropdownInput : dropdownOutput; 
+    const other = type === 'input' ? dropdownOutput : dropdownInput; 
+    other.classList.remove('show'); 
+    el.classList.toggle('show'); 
+}
+
+// --- BOŞLUĞA TIKLAYINCA KAPATMA MANTIĞI ---
+window.addEventListener('click', function(event) {
+    if (!event.target.closest('.unit-pill') && !event.target.closest('.dropdown-panel')) {
+        dropdownInput.classList.remove('show');
+        dropdownOutput.classList.remove('show');
+    }
+});
 
 inputArea.addEventListener('input', performConversion);
+
 document.querySelectorAll('.key').forEach(key => { key.addEventListener('click', () => {
     const action = key.dataset.action;
     if(action === 'delete') inputArea.value = inputArea.value.slice(0,-1);
@@ -281,10 +276,12 @@ document.querySelectorAll('.key').forEach(key => { key.addEventListener('click',
     else if(!key.classList.contains('fn-key')) inputArea.value += key.innerText;
     performConversion();
 }); });
+
 document.querySelectorAll('.nav-tab').forEach(tab => { tab.addEventListener('click', function() {
     document.querySelectorAll('.nav-tab').forEach(t => t.classList.replace('active-tab', 'inactive-tab'));
     this.classList.replace('inactive-tab', 'active-tab'); renderDropdowns(this.dataset.value);
 }); });
+
 document.getElementById('themeToggle').addEventListener('click', () => document.documentElement.classList.toggle('dark'));
 
 function updateHeader() {
