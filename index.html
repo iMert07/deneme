@@ -15,31 +15,59 @@
             darkMode: "class",
             theme: { extend: { colors: { "primary": "#137fec", "background-dark": "#101922" } } }
         }
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
     </script>
+    <style>
+        html, body { min-height: 100%; overflow-y: auto; margin: 0; padding: 0; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .active-tab { background-color: #137fec; color: white !important; }
+        .active-tab span { color: white !important; }
+        .inactive-tab { background-color: transparent; color: #94a3b8; }
+        .dark .inactive-tab { color: #64748b; }
+        .dropdown-panel { display: none; position: absolute; top: calc(100% + 5px); left: 0; min-width: 140px; background: white; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid #e2e8f0; z-index: 100; overflow: hidden; }
+        .dark .dropdown-panel { background: #1e293b; border-color: #334155; }
+        .dropdown-panel.show { display: block; animation: dropdownFade 0.15s ease-out; }
+        @keyframes dropdownFade { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .dropdown-item { padding: 10px 16px; font-size: 11px; font-weight: 700; color: #475569; cursor: pointer; transition: all 0.2s; text-transform: uppercase; }
+        .dark .dropdown-item { color: #94a3b8; }
+        .unit-pill { display: flex; align-items: center; justify-content: center; padding: 6px 16px; background: #e2e8f0; color: #475569; border-radius: 9999px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.2s; cursor: pointer; border: 1px solid transparent; user-select: none; max-width: 180px; }
+        .dark .unit-pill { background: #1e293b; color: #94a3b8; border-color: #334155; }
+        .main-title { line-height: 1.4 !important; padding-bottom: 2px; }
+        @media (min-width: 1024px) { textarea { font-size: 1.5rem !important; } h2 { font-size: 1.5rem !important; } }
+        @media (max-width: 768px) { .keyboard { width: 97% !important; max-width: 550px !important; margin: 0 0 0 auto !important; padding: 8px !important; border-radius: 1rem !important; } #kb-container { padding-top: 5px !important; padding-bottom: 0px !important; padding-right: 0px !important; display: flex; justify-content: flex-end; } .key { height: 38px !important; font-size: 1rem !important; border-bottom-width: 2px !important; } textarea { font-size: 1.1rem !important; height: 140px !important; padding: 10px !important; } }
+
+        /* Takvim Görsel Düzenleyici */
+        .cal-cell { width: 100%; aspect-ratio: 1/1; max-height: 32px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; border-radius: 50%; margin: auto; }
+        .cal-cell.active { background: #137fec !important; color: white !important; box-shadow: 0 2px 6px rgba(19, 127, 236, 0.4); }
+        .cal-cell.empty { opacity: 0.1; }
+    </style>
 </head>
 <body class="bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white font-sans flex flex-col min-h-screen">
-
 <header class="sticky top-0 bg-white dark:bg-[#111a22] border-b border-slate-200 dark:border-[#233648] z-50 select-none">
     <div class="flex items-center justify-between px-6 py-2">
         <div class="flex items-center gap-3">
             <h2 class="main-title text-base sm:text-lg font-bold truncate">Anatolya'ya Dönüş</h2>
             <div class="flex items-center gap-3 border-l border-slate-200 dark:border-slate-700 pl-3 leading-none font-mono font-bold pointer-events-none">
-                <span id="clock" class="text-sm sm:text-lg text-primary">00.00.00</span>
-                <span id="date" class="text-sm sm:text-lg text-slate-500 dark:text-slate-400">00.00.0000</span>
+                <span id="clock" class="text-sm sm:text-lg text-primary">θθ.θθ.θθ</span>
+                <span id="date" class="text-sm sm:text-lg text-slate-500 dark:text-slate-400">θθ.θθ.θθθθ</span>
             </div>
         </div>
         <button id="themeToggle" class="p-1 flex items-center justify-center bg-transparent border-none text-slate-500 dark:text-slate-400 focus:outline-none cursor-pointer">
             <span class="material-symbols-outlined text-[26px]">globe_book</span>
         </button>
     </div>
-
     <div class="flex items-center gap-2 px-4 pb-2 overflow-x-auto no-scrollbar scroll-smooth select-none">
         <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all active-tab cursor-pointer" data-value="Alfabe"><span class="material-symbols-outlined text-[18px]">translate</span><span class="text-sm font-medium">Alfabe</span></button>
         <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Sayı"><span class="material-symbols-outlined text-[18px]">123</span><span class="text-sm font-medium">Sayı</span></button>
         <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Takvim"><span class="material-symbols-outlined text-[18px]">calendar_month</span><span class="text-sm font-medium">Takvim</span></button>
-    </div>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Zaman"><span class="material-symbols-outlined text-[18px]">schedule</span><span class="text-sm font-medium">Zaman</span></button>
+        </div>
 </header>
-
 <main class="flex-1 flex flex-col p-3 gap-4 lg:gap-8">
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
         <div class="flex flex-col gap-2 relative">
@@ -60,7 +88,6 @@
             </div>
             <textarea id="input-area" class="w-full h-[180px] lg:h-[300px] p-5 bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm focus:ring-2 focus:ring-primary/50 resize-none text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
         </div>
-
         <div class="flex flex-col gap-2 relative">
             <div class="w-max ml-1 relative">
                 <div class="unit-pill" id="pill-output-label" onclick="toggleDropdown('output')">Anatolya</div>
@@ -80,15 +107,16 @@
             <textarea id="output-area" class="w-full h-[180px] lg:h-[300px] p-5 bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner resize-none text-slate-900 dark:text-white" placeholder="Sonuç..." readonly></textarea>
         </div>
     </section>
-
     <section id="kb-container" class="select-none">
         <div class="keyboard !my-0" id="mainKeyboard">
-            <div class="row"><div class="key">0</div><div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">Φ</div><div class="key">Λ</div></div>
-            <div class="row"><div class="key wide fn-key" data-action="shift">Shift</div><div class="key extra-wide" data-action="space">Boşluk</div><div class="key wide fn-key" data-action="delete"><span class="material-symbols-outlined">backspace</span></div></div>
+            <div class="row"><div class="key">θ</div><div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">Φ</div><div class="key">Λ</div></div>
+            <div class="row"><div class="key">Ϙ</div><div class="key">Ш</div><div class="key">E</div><div class="key">R</div><div class="key">T</div><div class="key">Y</div><div class="key">U</div><div class="key">Ͱ</div><div class="key">Ω</div><div class="key">P</div><div class="key">Γ</div><div class="key">Σ</div></div>
+            <div class="row"><div class="key fn-key">,</div><div class="key">A</div><div class="key">S</div><div class="key">D</div><div class="key">F</div><div class="key">G</div><div class="key">H</div><div class="key">J</div><div class="key">K</div><div class="key">L</div><div class="key">Ь</div><div class="key fn-key">.</div></div>
+            <div class="row"><div class="key wide fn-key" data-action="shift">Shift</div><div class="key">Z</div><div class="key">Ψ</div><div class="key">C</div><div class="key">V</div><div class="key">B</div><div class="key">N</div><div class="key">M</div><div class="key">Π</div><div class="key wide fn-key" data-action="delete"><span class="material-symbols-outlined">backspace</span></div></div>
+            <div class="row"><div class="key wide fn-key" data-action="reset">Sıfırla</div><div class="key extra-wide" data-action="space">Boşluk</div><div class="key wide fn-key" data-action="enter">Enter</div></div>
         </div>
     </section>
 </main>
-
 <script src="script.js"></script>
 </body>
 </html>
