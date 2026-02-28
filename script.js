@@ -32,6 +32,11 @@ const unitData = {
         "Yard", "Metre (10⁰)", "Berid (12¹)", "Menzil (12²)", 
         "Kilometre (10³)", "Fersah (12³)", "Mil", "Merhale (12⁴)"
     ],
+    "Alan": [
+        "Santimetrekare (10⁻⁴)", "Rubu² (12⁻⁴)", "Arşın² (12⁰)", "Metrekare (10⁰)", 
+        "Dönüm (Anatolya)", "Dönüm (10³)", "Hektar (10⁴)", "Menzil² (12⁴)", 
+        "Kilometrekare (10⁶)", "Fersah² (12⁶)"
+    ],
     "Kütle": [
         "Miligram (10⁻³)", "Dirhem (12⁻³)", "Gram (10⁰)", "Miskal (12⁻²)", 
         "Batman (12⁻¹)", "Paund", "Okka (12⁰)", "Kilogram (10³)", 
@@ -41,24 +46,32 @@ const unitData = {
         "Mililitre (10⁻³)", "Sıvı Ons (ABD)", "Miskal (12⁻¹)", "Şinik (12⁰)", 
         "Litre (10⁰)", "Kıyye (12¹)", "Galon (ABD)", "Kile (12²)", "Metreküp (10³)"
     ],
-    "Hız": ["Kilometre/Saat", "Fersah/Saat (12)", "Mil/Saat"], // Mil/Saat en sona alındı
+    "Hız": ["Kilometre/Saat", "Fersah/Saat (12)", "Mil/Saat"],
     "Konum": ["Boylam (Derece)", "Meridyen (Anatolya)"],
     "Sıcaklık": ["Celsius", "Anatolya (Fahrenheit, 12)", "Fahrenheit", "Kelvin"],
     "Veri": ["Byte", "Kilobyte", "Megabyte", "Gigabyte", "Terabyte", "Anatolya Verisi"]
 };
 
-// --- KATSAYILAR (Baz: Km/Saat) ---
+// --- KATSAYILAR (Baz: Metrekare / Metre / Litre vb.) ---
 const conversionRates = {
     "Uzunluk": {
         "Kerrab (12⁻³)": 0.00041666666, "Milimetre (10⁻³)": 0.001, "Rubu (12⁻²)": 0.005, "Santimetre (10⁻²)": 0.01,
         "İnç": 0.0254, "Endaze (12⁻¹)": 0.06, "Fit": 0.3048, "Arşın (12⁰)": 0.72, "Yard": 0.9144, "Metre (10⁰)": 1,
         "Berid (12¹)": 8.64, "Menzil (12²)": 103.68, "Kilometre (10³)": 1000, "Fersah (12³)": 1244.16, "Mil": 1609.34, "Merhale (12⁴)": 14929.92
     },
-    "Hız": {
-        "Kilometre/Saat": 1,
-        "Fersah/Saat (12)": 0.62208,
-        "Mil/Saat": 1.60934
+    "Alan": {
+        "Santimetrekare (10⁻⁴)": 0.0001,
+        "Rubu² (12⁻⁴)": 0.000025,
+        "Arşın² (12⁰)": 0.5184,
+        "Metrekare (10⁰)": 1,
+        "Dönüm (Anatolya)": 895.7952,
+        "Dönüm (10³)": 1000,
+        "Hektar (10⁴)": 10000,
+        "Menzil² (12⁴)": 10749.5424,
+        "Kilometrekare (10⁶)": 1000000,
+        "Fersah² (12⁶)": 1547934.0544
     },
+    "Hız": { "Kilometre/Saat": 1, "Fersah/Saat (12)": 0.62208, "Mil/Saat": 1.60934 },
     "Kütle": {
         "Miligram (10⁻³)": 0.000001, "Dirhem (12⁻³)": 0.0005, "Gram (10⁰)": 0.001, "Miskal (12⁻²)": 0.006,
         "Batman (12⁻¹)": 0.072, "Paund": 0.45359, "Okka (12⁰)": 0.864, "Kilogram (10³)": 1, "Kantar (12¹)": 10.368, "Ton (10⁶)": 1000
@@ -185,7 +198,7 @@ function performConversion() {
     }
     else if (conversionRates[mode] || mode === "Zaman") {
         let numericValue;
-        const specialUnits = ["Anatolya", "Arşın", "Miskal", "Şinik", "Kıyye", "Kile", "Fersah/Saat (12)"];
+        const specialUnits = ["Anatolya", "Arşın", "Miskal", "Şinik", "Kıyye", "Kile", "Rubu", "Menzil", "Fersah"];
         const isInputSpecial = specialUnits.some(s => currentInputUnit.includes(s));
         
         if (isInputSpecial) {
@@ -239,6 +252,7 @@ function renderDropdowns(mode) {
     if (mode === "Sayı") { currentInputUnit = "Onluk (10)"; currentOutputUnit = "Anatolya (12)"; }
     else if (mode === "Zaman") { currentInputUnit = "Dakika"; currentOutputUnit = "Gün"; }
     else if (mode === "Uzunluk") { currentInputUnit = "Metre (10⁰)"; currentOutputUnit = "Arşın (12⁰)"; }
+    else if (mode === "Alan") { currentInputUnit = "Metrekare (10⁰)"; currentOutputUnit = "Arşın² (12⁰)"; }
     else if (mode === "Kütle") { currentInputUnit = "Kilogram (10³)"; currentOutputUnit = "Okka (12⁰)"; }
     else if (mode === "Konum") { currentInputUnit = "Boylam (Derece)"; currentOutputUnit = "Meridyen (Anatolya)"; }
     else if (mode === "Sıcaklık") { currentInputUnit = "Celsius"; currentOutputUnit = "Anatolya (Fahrenheit, 12)"; }
@@ -259,7 +273,6 @@ function toggleDropdown(type) {
     el.classList.toggle('show'); 
 }
 
-// --- BOŞLUĞA TIKLAYINCA KAPATMA MANTIĞI ---
 window.addEventListener('click', function(event) {
     if (!event.target.closest('.unit-pill') && !event.target.closest('.dropdown-panel')) {
         dropdownInput.classList.remove('show');
@@ -268,7 +281,6 @@ window.addEventListener('click', function(event) {
 });
 
 inputArea.addEventListener('input', performConversion);
-
 document.querySelectorAll('.key').forEach(key => { key.addEventListener('click', () => {
     const action = key.dataset.action;
     if(action === 'delete') inputArea.value = inputArea.value.slice(0,-1);
@@ -276,12 +288,10 @@ document.querySelectorAll('.key').forEach(key => { key.addEventListener('click',
     else if(!key.classList.contains('fn-key')) inputArea.value += key.innerText;
     performConversion();
 }); });
-
 document.querySelectorAll('.nav-tab').forEach(tab => { tab.addEventListener('click', function() {
     document.querySelectorAll('.nav-tab').forEach(t => t.classList.replace('active-tab', 'inactive-tab'));
     this.classList.replace('inactive-tab', 'active-tab'); renderDropdowns(this.dataset.value);
 }); });
-
 document.getElementById('themeToggle').addEventListener('click', () => document.documentElement.classList.toggle('dark'));
 
 function updateHeader() {
