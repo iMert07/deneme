@@ -20,7 +20,6 @@ let currentInputUnit = "Eski Alfabe";
 let currentOutputUnit = "Yeni Alfabe";
 
 // --- VERİ SETLERİ ---
-// Not: Küçükten büyüğe sıralanmıştır.
 const unitData = {
     "Alfabe": ["Eski Alfabe", "Yeni Alfabe"],
     "Sayı": ["İkilik (2)", "Onluk (10)", "Anatolya (12)", "On Altılık (16)"],
@@ -44,26 +43,14 @@ const conversionRates = {
     "Kütle": { "Miligram (10⁻³)": 0.000001, "Dirhem (12⁻³)": 0.0005, "Gram (10⁰)": 0.001, "Miskal (12⁻²)": 0.006, "Batman (12⁻¹)": 0.072, "Paund": 0.45359, "Okka (12⁰)": 0.864, "Kilogram (10³)": 1, "Kantar (12¹)": 10.368, "Ton (10⁶)": 1000 },
     "Hacim": { "Mililitre (10⁻³)": 0.001, "Sıvı Ons (ABD)": 0.0295735, "Miskal (12⁻¹)": 0.018, "Şinik (12⁰)": 0.216, "Litre (10⁰)": 1, "Kıyye (12¹)": 2.592, "Galon (ABD)": 3.78541, "Kile (12²)": 31.104, "Metreküp (10³)": 1000 },
     "Para": { "Lira": 1, "Akçe": 9, "Dollar": 43, "Euro": 51, "Gümüş (Ons)": 2735, "Altın (Ons)": 183787 },
-    "Veri": { 
-        "Bit": 0.125, 
-        "Bayt": 1, 
-        "Kilobyte": 1024, 
-        "Kibi (2¹⁸ Bit, 12)": 32768, 
-        "Megabyte": 1048576, 
-        "Mebi (2²⁴ Bit, 12)": 2097152, 
-        "Gibi (2³⁰ Bit, 12)": 134217728, 
-        "Gigabyte": 1073741824, 
-        "Gemi (2³⁶ Bit, 12)": 8589934592,
-        "Terabyte": 1099511627776, 
-        "Tebi (2⁴² Bit, 12)": 549755813888 
-    },
+    "Veri": { "Bit": 0.125, "Bayt": 1, "Kilobyte": 1024, "Kibi (2¹⁸ Bit, 12)": 32768, "Megabyte": 1048576, "Mebi (2²⁴ Bit, 12)": 2097152, "Gibi (2³⁰ Bit, 12)": 134217728, "Gigabyte": 1073741824, "Gemi (2³⁶ Bit, 12)": 8589934592, "Terabyte": 1099511627776, "Tebi (2⁴² Bit, 12)": 549755813888 },
     "Zaman": { "Milisaniye": 0.001, "Salise (Anatolya)": 1/240, "Salise": 1/60, "Saniye (Anatolya)": 0.5, "Saniye": 1, "Dakika": 60, "Saat": 3600, "Saat (Anatolya)": 7200, "Gün": 86400, "Hafta (Anatolya)": 432000, "Hafta": 604800, "Ay": 2592000 }
 };
 
 const toGreek = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"0" };
 const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
 
-// --- FONKSİYONLAR ---
+// --- ÇEKİRDEK FONKSİYONLAR ---
 
 function toBase12(n, pad = 1, isAnatolya = true) {
     const digits = isAnatolya ? "0123456789ΦΛ" : "0123456789AB";
@@ -97,9 +84,9 @@ function toBase12Float(n, isAnatolya = true) {
 function normalizeInput(text) { return text.toUpperCase().replace(/θ/g, '0').replace(/Φ/g, 'A').replace(/Λ/g, 'B'); }
 
 function isValidInput(text, unit) {
-    const anaDigits = "0ΦΛ";
-    let allowedChars = "0123456789ABCDEF" + anaDigits + ",.- \n";
     if (unit.includes("Alfabe")) return true;
+    const anaDigits = "0123456789ABCDEFΦΛ";
+    let allowedChars = anaDigits + ",.- \n";
     for (let char of text.toUpperCase()) { if (!allowedChars.includes(char)) return false; }
     return true;
 }
@@ -109,7 +96,7 @@ function universalNumberConvert(text, fromUnit, toUnit) {
     const stdDigits = "0123456789ABCDEF";
     const getBase = (unit) => {
         if (unit.includes("(2)")) return 2;
-        if (unit.includes("Anatolya") || unit.includes("(12)")) return 12;
+        if (unit.includes("Anatolya") || unit.includes("(12)") || unit.includes(", 12)")) return 12;
         if (unit.includes("(16)")) return 16;
         return 10;
     };
@@ -125,7 +112,7 @@ function universalNumberConvert(text, fromUnit, toUnit) {
         }
     }
     if (isNaN(dec)) return "Hata";
-    if (toUnit.includes("Anatolya")) return toBase12Float(dec, true);
+    if (toUnit.includes("12") || toUnit.includes("Anatolya")) return toBase12Float(dec, true);
     return dec.toString(toBase).toUpperCase().replace('.', ',');
 }
 
@@ -146,7 +133,7 @@ function performConversion() {
         if (currentInputUnit === "Celsius") fahr = (val * 1.8) + 32;
         else if (currentInputUnit === "Kelvin") fahr = ((val - 273.15) * 1.8) + 32;
         else if (currentInputUnit === "Fahrenheit") fahr = val;
-        else if (currentInputUnit === "Anatolya (Fahrenheit, 12)") {
+        else if (currentInputUnit.includes("12")) {
             let input = normalizeInput(text.toUpperCase()).replace(',','.');
             const parts = input.split('.');
             let decVal = parseInt(parts[0], 12) || 0;
@@ -162,21 +149,18 @@ function performConversion() {
         if (currentOutputUnit === "Celsius") result = (fahr - 32) / 1.8;
         else if (currentOutputUnit === "Kelvin") result = ((fahr - 32) / 1.8) + 273.15;
         else if (currentOutputUnit === "Fahrenheit") result = fahr;
-        else if (currentOutputUnit === "Anatolya (Fahrenheit, 12)") {
+        else if (currentOutputUnit.includes("12")) {
             result = fahr - 32;
             let ana = toBase12Float(result, true);
             let decStr = formatCompact(result);
-            if (decStr === "0") outputArea.value = "0";
-            else if (decStr === "~0") outputArea.value = "~0";
-            else if (ana === decStr) outputArea.value = ana;
-            else outputArea.value = `${ana} [${decStr}]`;
+            outputArea.value = (decStr === "0" || decStr === "~0") ? decStr : `${ana} [${decStr}]`;
             return;
         }
         outputArea.value = formatCompact(result);
     }
     else if (conversionRates[mode] || mode === "Zaman") {
         let numericValue;
-        const specialUnits = ["Anatolya", "Arşın", "Miskal", "Şinik", "Kıyye", "Kile", "Rubu", "Menzil", "Fersah", "12"];
+        const specialUnits = ["Anatolya", "Arşın", "Miskal", "Şinik", "Kıyye", "Kile", "Rubu", "Menzil", "Fersah", "Kibi", "Mebi", "Gibi", "Gemi", "Tebi"];
         const isInputSpecial = specialUnits.some(s => currentInputUnit.includes(s));
         
         if (isInputSpecial) {
@@ -191,17 +175,14 @@ function performConversion() {
         
         if (isNaN(numericValue)) { outputArea.value = "Hata"; return; }
 
-        let baseValue = numericValue * (conversionRates[mode]?.[currentInputUnit] || (mode === "Zaman" ? conversionRates["Zaman"][currentInputUnit] : 1));
-        let result = baseValue / (conversionRates[mode]?.[currentOutputUnit] || (mode === "Zaman" ? conversionRates["Zaman"][currentOutputUnit] : 1));
+        let baseValue = numericValue * (conversionRates[mode]?.[currentInputUnit] || conversionRates["Zaman"][currentInputUnit]);
+        let result = baseValue / (conversionRates[mode]?.[currentOutputUnit] || conversionRates["Zaman"][currentOutputUnit]);
 
-        const isOutputSpecial = specialUnits.some(s => currentOutputUnit.includes(s)) || currentOutputUnit.includes("Anatolya");
+        const isOutputSpecial = specialUnits.some(s => currentOutputUnit.includes(s));
         if (isOutputSpecial) {
             let ana = toBase12Float(result, true);
             let decStr = formatCompact(result);
-            if (decStr === "0") outputArea.value = "0";
-            else if (decStr === "~0") outputArea.value = "~0";
-            else if (ana === decStr) outputArea.value = ana;
-            else outputArea.value = `${ana} [${decStr}]`;
+            outputArea.value = (decStr === "0" || decStr === "~0") ? decStr : `${ana} [${decStr}]`;
         } else { outputArea.value = formatCompact(result); }
     }
 }
@@ -223,16 +204,80 @@ function renderDropdowns(mode) {
     if (mode === "Sayı") { currentInputUnit = "Onluk (10)"; currentOutputUnit = "Anatolya (12)"; }
     else if (mode === "Zaman") { currentInputUnit = "Dakika"; currentOutputUnit = "Gün"; }
     else if (mode === "Uzunluk") { currentInputUnit = "Metre (10⁰)"; currentOutputUnit = "Arşın (12⁰)"; }
-    else if (mode === "Alan") { currentInputUnit = "Metrekare (10⁰)"; currentOutputUnit = "Arşın² (12⁰)"; }
+    else if (mode === "Veri") { currentInputUnit = "Bayt"; currentOutputUnit = "Kibi (2¹⁸ Bit, 12)"; }
     else if (mode === "Kütle") { currentInputUnit = "Kilogram (10³)"; currentOutputUnit = "Okka (12⁰)"; }
     else if (mode === "Sıcaklık") { currentInputUnit = "Celsius"; currentOutputUnit = "Anatolya (Fahrenheit, 12)"; }
-    else if (mode === "Hacim") { currentInputUnit = "Litre (10⁰)"; currentOutputUnit = "Şinik (12⁰)"; }
-    else if (mode === "Hız") { currentInputUnit = "Kilometre/Saat"; currentOutputUnit = "Fersah/Saat (12)"; }
-    else if (mode === "Veri") { currentInputUnit = "Bayt"; currentOutputUnit = "Kibi (2¹⁸ Bit, 12)"; }
     else { currentInputUnit = options[0]; currentOutputUnit = options[1] || options[0]; }
+    
     const createItems = (type) => options.map(opt => `<div class="dropdown-item" onclick="selectUnit('${type}', '${opt}')">${opt}</div>`).join('');
-    dropdownInput.innerHTML = createItems('input'); dropdownOutput.innerHTML = createItems('output');
+    dropdownInput.innerHTML = createItems('input'); 
+    dropdownOutput.innerHTML = createItems('output');
     renderPills(); performConversion();
 }
 
-// ... (Klavye yönetimi ve geri kalan UI event dinleyicileri aynı kalacak) ...
+function renderPills() { pillInputLabel.innerText = currentInputUnit; pillOutputLabel.innerText = currentOutputUnit; dropdownInput.classList.remove('show'); dropdownOutput.classList.remove('show'); }
+
+function toggleDropdown(type) { 
+    const el = type === 'input' ? dropdownInput : dropdownOutput; 
+    const other = type === 'input' ? dropdownOutput : dropdownInput; 
+    other.classList.remove('show'); el.classList.toggle('show'); 
+}
+
+// --- KLAVYE VE EVENT DINLEYICILER ---
+window.addEventListener('click', (e) => {
+    if (!e.target.closest('.unit-pill') && !e.target.closest('.dropdown-panel')) {
+        dropdownInput.classList.remove('show'); dropdownOutput.classList.remove('show');
+    }
+});
+
+document.querySelectorAll('.key').forEach(key => {
+    key.addEventListener('mousedown', (e) => e.preventDefault());
+    key.addEventListener('click', () => {
+        const action = key.dataset.action;
+        const keyText = key.innerText;
+        const start = inputArea.selectionStart;
+        const end = inputArea.selectionEnd;
+        const val = inputArea.value;
+
+        if (action === 'delete') {
+            inputArea.value = val.slice(0, Math.max(0, start - 1)) + val.slice(end);
+            inputArea.selectionStart = inputArea.selectionEnd = Math.max(0, start - 1);
+        } else if (action === 'reset') {
+            inputArea.value = ''; outputArea.value = '';
+        } else if (action === 'space') {
+            inputArea.value = val.slice(0, start) + ' ' + val.slice(end);
+            inputArea.selectionStart = inputArea.selectionEnd = start + 1;
+        } else if (action === 'enter') {
+            inputArea.value = val.slice(0, start) + '\n' + val.slice(end);
+            inputArea.selectionStart = inputArea.selectionEnd = start + 1;
+        } else if (action !== 'shift') {
+            inputArea.value = val.slice(0, start) + keyText + val.slice(end);
+            inputArea.selectionStart = inputArea.selectionEnd = start + keyText.length;
+        }
+        performConversion();
+        inputArea.focus();
+    });
+});
+
+inputArea.addEventListener('input', performConversion);
+document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.replace('active-tab', 'inactive-tab'));
+        this.classList.replace('inactive-tab', 'active-tab'); 
+        renderDropdowns(this.dataset.value);
+    });
+});
+
+document.getElementById('themeToggle').addEventListener('click', () => document.documentElement.classList.toggle('dark'));
+
+function updateHeader() {
+    const now = new Date();
+    const totalSecs = Math.floor(((now - new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 30, 0)) / 1000) * 2);
+    const h = Math.floor(totalSecs / 14400) % 12;
+    const m = Math.floor((totalSecs / 120) % 120);
+    const s = totalSecs % 120;
+    document.getElementById('clock').textContent = `${toBase12(h, 2, true)}.${toBase12(m, 2, true)}.${toBase12(s, 2, true)}`;
+}
+
+setInterval(updateHeader, 500);
+renderDropdowns("Alfabe");
