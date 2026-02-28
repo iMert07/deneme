@@ -72,7 +72,7 @@ function toBase12Float(n, isAnatolya = true) {
     const digits = isAnatolya ? "0123456789ΦΛ" : "0123456789AB";
     let integerPart = Math.floor(Math.abs(n));
     let fractionPart = Math.abs(n) - integerPart;
-    let res = toBase12(integerPart, 1, isAnatolya);
+    let res = (n < 0 ? "-" : "") + toBase12(integerPart, 1, isAnatolya);
     if (fractionPart > 0.0001) {
         res += ",";
         for (let i = 0; i < 3; i++) { fractionPart *= 12; let d = Math.floor(fractionPart); res += digits[d]; fractionPart -= d; if (fractionPart < 0.0001) break; }
@@ -108,8 +108,8 @@ function isValidInput(text, unit) {
     let allowedChars = "";
     const isSpecial = ["Anatolya", "Gün", "Ay", "Yıl", "Arşın", "Menzil", "Endaze", "Rubu", "Kerrab", "Berid", "Fersah", "Merhale", "Okka", "Kantar", "Batman", "Miskal", "Dirhem", "Akçe", "Meridyen"].some(s => unit.includes(s));
     if (unit.includes("(2)")) allowedChars = "01,.";
-    else if (unit.includes("(10)") || unit === "Boylam (Derece)") allowedChars = "0123456789,.-";
-    else if (isSpecial) allowedChars = "0123456789AB" + anaDigits + ",.";
+    else if (unit.includes("(10)") || unit === "Boylam (Derece)" || unit === "Celsius" || unit === "Fahrenheit" || unit === "Kelvin") allowedChars = "0123456789,.-";
+    else if (isSpecial) allowedChars = "0123456789AB" + anaDigits + ",.-";
     else if (unit.includes("(16)")) allowedChars = "0123456789ABCDEF,.";
     else return true;
     for (let char of text.toUpperCase()) { if (!allowedChars.includes(char)) return false; }
@@ -156,6 +156,45 @@ function performConversion() {
         outputArea.value = (currentInputUnit === "Eski Alfabe") ? text.split('').map(ch => toGreek[ch] || ch).join('') : text.split('').map(ch => toLatin[ch] || ch).join('');
     } 
     else if (mode === "Sayı") { outputArea.value = universalNumberConvert(text, currentInputUnit, currentOutputUnit); }
+    else if (mode === "Sıcaklık") {
+        if (!isValidInput(text, currentInputUnit)) { outputArea.value = "Geçersiz Karakter"; return; }
+        let fahr;
+        // Girdi ne olursa olsun önce Fahrenheit'a çeviriyoruz
+        if (currentInputUnit === "Celsius") {
+            fahr = (parseFloat(text.replace(',', '.')) * 1.8) + 32;
+        } else if (currentInputUnit === "Kelvin") {
+            fahr = ((parseFloat(text.replace(',', '.')) - 273.15) * 1.8) + 32;
+        } else if (currentInputUnit === "Fahrenheit") {
+            fahr = parseFloat(text.replace(',', '.'));
+        } else if (currentInputUnit === "Anatolya (Fahrenheit)") {
+            let input = normalizeInput(text.toUpperCase()).replace(',','.');
+            const parts = input.split('.');
+            let val = parseInt(parts[0], 12);
+            if (parts[1]) {
+                const stdDigits = "0123456789ABCDEF";
+                for (let i = 0; i < parts[1].length; i++) val += stdDigits.indexOf(parts[1][i]) * Math.pow(12, -(i+1));
+            }
+            fahr = val + 32; // 0 Anatolya = 32 Fahrenheit kuralı
+        }
+
+        if (isNaN(fahr)) { outputArea.value = "Hata"; return; }
+
+        // Fahrenheit'tan hedef birime çeviriyoruz
+        let result;
+        if (currentOutputUnit === "Celsius") {
+            result = (fahr - 32) / 1.8;
+            outputArea.value = result.toFixed(2).replace('.', ',');
+        } else if (currentOutputUnit === "Kelvin") {
+            result = ((fahr - 32) / 1.8) + 273.15;
+            outputArea.value = result.toFixed(2).replace('.', ',');
+        } else if (currentOutputUnit === "Fahrenheit") {
+            outputArea.value = fahr.toFixed(2).replace('.', ',');
+        } else if (currentOutputUnit === "Anatolya (Fahrenheit)") {
+            result = fahr - 32; // 32F = 0 Anatolya
+            const anaVal = toBase12Float(result, true), stdVal = toBase12Float(result, false);
+            outputArea.value = (anaVal === stdVal) ? `${anaVal} [${result.toFixed(2)}]` : `${anaVal} (${stdVal}) [${result.toFixed(2)}]`;
+        }
+    }
     else if (mode === "Konum") {
         let val = parseFloat(text.replace(',','.'));
         if (currentInputUnit === "Boylam (Derece)") {
@@ -208,7 +247,7 @@ function performConversion() {
     }
 }
 
-// --- UI FONKSİYONLARI ---
+// UI FONKSİYONLARI VE DİĞERLERİ AYNI KALDI...
 function selectUnit(type, value) {
     if (type === 'input') { if (value === currentOutputUnit) currentOutputUnit = currentInputUnit; currentInputUnit = value; }
     else { if (value === currentInputUnit) currentInputUnit = currentOutputUnit; currentOutputUnit = value; }
@@ -222,6 +261,7 @@ function renderDropdowns(mode) {
     else if (mode === "Uzunluk") { currentInputUnit = "Metre (10⁰)"; currentOutputUnit = "Arşın (12⁰)"; }
     else if (mode === "Kütle") { currentInputUnit = "Kilogram (10³)"; currentOutputUnit = "Okka (12⁰)"; }
     else if (mode === "Konum") { currentInputUnit = "Boylam (Derece)"; currentOutputUnit = "Meridyen (Anatolya)"; }
+    else if (mode === "Sıcaklık") { currentInputUnit = "Celsius"; currentOutputUnit = "Anatolya (Fahrenheit)"; }
     else { currentInputUnit = options[0]; currentOutputUnit = options[1] || options[0]; }
     const createItems = (type) => options.map(opt => `<div class="dropdown-item" onclick="selectUnit('${type}', '${opt}')">${opt}</div>`).join('');
     dropdownInput.innerHTML = createItems('input'); dropdownOutput.innerHTML = createItems('output');
@@ -246,7 +286,6 @@ document.querySelectorAll('.nav-tab').forEach(tab => { tab.addEventListener('cli
 }); });
 document.getElementById('themeToggle').addEventListener('click', () => document.documentElement.classList.toggle('dark'));
 
-// --- HEADER SAAT VE TAKVİM (DÜZELTİLDİ) ---
 function updateHeader() {
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 30, 0);
