@@ -1,3 +1,4 @@
+/* Genel Ayarlar */
 header, .nav-tab, #kb-container, .key, #label-input, #label-output, #clock, #date, .unit-pill, .dropdown-item {
     user-select: none;
     -webkit-user-select: none;
@@ -6,33 +7,36 @@ header, .nav-tab, #kb-container, .key, #label-input, #label-output, #clock, #dat
     -webkit-touch-callout: none;
 }
 
-.keyboard {
-    display: flex; flex-direction: column; align-items: center; gap: 8px; 
-    margin: 20px auto; width: 100%; max-width: 850px; padding: 15px;
-    background: #e2e8f0; border-radius: 1.25rem; box-sizing: border-box;
+#clock, #date {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace !important;
+    font-variant-numeric: tabular-nums;
+    display: inline-flex; align-items: center; justify-content: center;
 }
+#clock { min-width: 9ch; }
+#date { min-width: 12ch; margin-left: 5px; }
+
+/* Takvim Izgara Yapısı */
+.cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
+.cal-grid { display: grid; gap: 4px; text-align: center; }
+.cal-head { font-size: 10px; font-weight: 900; color: #64748b; text-transform: uppercase; padding-bottom: 5px; border-bottom: 1px solid rgba(0,0,0,0.1); }
+.cal-cell {
+    aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; font-weight: 700; cursor: pointer; border-radius: 50%;
+    transition: all 0.2s; border: 2px solid transparent;
+}
+.cal-cell:hover:not(.other-month) { background: rgba(19, 127, 236, 0.1); }
+.active-day { background: #137fec !important; color: white !important; box-shadow: 0 4px 8px rgba(19,127,236,0.3); }
+.today-mark { border-color: #137fec; color: #137fec; }
+.other-month { opacity: 0.15; cursor: default; pointer-events: none; }
+
+/* Klavye Ayarları */
+.keyboard { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 20px auto; width: 100%; max-width: 850px; padding: 15px; background: #e2e8f0; border-radius: 1.25rem; }
 .dark .keyboard { background: #111a22; border: 1px solid #233648; }
-
-.row { display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px; width: 100%; max-width: 800px; margin-bottom: 2px; }
-
-.key {
-    grid-column: span 1; height: 52px; display: flex; justify-content: center; align-items: center;
-    background: #ffffff; color: #1e293b; cursor: pointer; font-size: 1.1rem; font-weight: 600;
-    border-radius: 8px; border-bottom: 3px solid #cbd5e1; transition: all 0.05s ease;
-}
-.dark .key { background: #233648; color: #f8fafc; border-bottom: 3px solid #000; }
-.key:active { transform: translateY(2px); border-bottom: 0; }
-
-.fn-key { background: #cbd5e1 !important; }
-.dark .fn-key { background: #324d67 !important; }
-
-[data-action="shift"], [data-action="delete"] { grid-column: span 2 !important; }
-[data-action="reset"], [data-action="enter"] { grid-column: span 3 !important; }
-[data-action="space"] { grid-column: span 6 !important; }
+.row { display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px; width: 100%; max-width: 800px; }
+.key { height: 52px; display: flex; justify-content: center; align-items: center; background: #ffffff; border-radius: 8px; border-bottom: 3px solid #cbd5e1; cursor: pointer; font-weight: 600; }
+.dark .key { background: #233648; color: white; border-bottom-color: #000; }
 
 @media (max-width: 768px) {
     .keyboard { position: fixed; bottom: 8px; left: 2%; width: 96%; padding: 8px 4px 12px 4px; border-radius: 1rem; box-shadow: 0 -5px 20px rgba(0,0,0,0.3); }
-    .row { gap: 4px; }
-    .key { height: 38px !important; font-size: 1rem; border-bottom-width: 2px; }
     main { padding-bottom: 260px !important; }
 }
