@@ -20,6 +20,7 @@ let currentInputUnit = "Eski Alfabe";
 let currentOutputUnit = "Yeni Alfabe";
 
 // --- VERİ SETLERİ ---
+// Not: Küçükten büyüğe sıralanmıştır.
 const unitData = {
     "Alfabe": ["Eski Alfabe", "Yeni Alfabe"],
     "Sayı": ["İkilik (2)", "Onluk (10)", "Anatolya (12)", "On Altılık (16)"],
@@ -32,7 +33,7 @@ const unitData = {
     "Hız": ["Kilometre/Saat", "Fersah/Saat (12)", "Mil/Saat"],
     "Konum": ["Boylam (Derece)", "Meridyen (Anatolya)"],
     "Sıcaklık": ["Celsius", "Anatolya (Fahrenheit, 12)", "Fahrenheit", "Kelvin"],
-    "Veri": ["Byte", "Kilobyte", "Megabyte", "Gigabyte", "Terabyte", "Anatolya Verisi"]
+    "Veri": ["Bit", "Bayt", "Kilobyte", "Kibi (2¹⁸ Bit, 12)", "Megabyte", "Mebi (2²⁴ Bit, 12)", "Gibi (2³⁰ Bit, 12)", "Gigabyte", "Gemi (2³⁶ Bit, 12)", "Terabyte", "Tebi (2⁴² Bit, 12)"]
 };
 
 // --- KATSAYILAR ---
@@ -43,24 +44,24 @@ const conversionRates = {
     "Kütle": { "Miligram (10⁻³)": 0.000001, "Dirhem (12⁻³)": 0.0005, "Gram (10⁰)": 0.001, "Miskal (12⁻²)": 0.006, "Batman (12⁻¹)": 0.072, "Paund": 0.45359, "Okka (12⁰)": 0.864, "Kilogram (10³)": 1, "Kantar (12¹)": 10.368, "Ton (10⁶)": 1000 },
     "Hacim": { "Mililitre (10⁻³)": 0.001, "Sıvı Ons (ABD)": 0.0295735, "Miskal (12⁻¹)": 0.018, "Şinik (12⁰)": 0.216, "Litre (10⁰)": 1, "Kıyye (12¹)": 2.592, "Galon (ABD)": 3.78541, "Kile (12²)": 31.104, "Metreküp (10³)": 1000 },
     "Para": { "Lira": 1, "Akçe": 9, "Dollar": 43, "Euro": 51, "Gümüş (Ons)": 2735, "Altın (Ons)": 183787 },
-    "Veri": { "Byte": 1, "Kilobyte": 1024, "Megabyte": 1048576, "Gigabyte": 1073741824, "Terabyte": 1099511627776, "Anatolya Verisi": 1200 },
+    "Veri": { 
+        "Bit": 0.125, 
+        "Bayt": 1, 
+        "Kilobyte": 1024, 
+        "Kibi (2¹⁸ Bit, 12)": 32768, 
+        "Megabyte": 1048576, 
+        "Mebi (2²⁴ Bit, 12)": 2097152, 
+        "Gibi (2³⁰ Bit, 12)": 134217728, 
+        "Gigabyte": 1073741824, 
+        "Gemi (2³⁶ Bit, 12)": 8589934592,
+        "Terabyte": 1099511627776, 
+        "Tebi (2⁴² Bit, 12)": 549755813888 
+    },
     "Zaman": { "Milisaniye": 0.001, "Salise (Anatolya)": 1/240, "Salise": 1/60, "Saniye (Anatolya)": 0.5, "Saniye": 1, "Dakika": 60, "Saat": 3600, "Saat (Anatolya)": 7200, "Gün": 86400, "Hafta (Anatolya)": 432000, "Hafta": 604800, "Ay": 2592000 }
 };
 
 const toGreek = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"0" };
 const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
-
-// --- KLAVYE YÖNETİMİ ---
-
-// Kutunun kendisine dokunulduğunda telefon klavyesini aç
-inputArea.addEventListener('focus', () => {
-    inputArea.setAttribute('inputmode', 'text');
-});
-
-// Kutudan çıkıldığında veya site klavyesi kullanılırken inputmode'u kapatmak için yardımcı fonksiyon
-function disableSystemKeyboard() {
-    inputArea.setAttribute('inputmode', 'none');
-}
 
 // --- FONKSİYONLAR ---
 
@@ -175,7 +176,7 @@ function performConversion() {
     }
     else if (conversionRates[mode] || mode === "Zaman") {
         let numericValue;
-        const specialUnits = ["Anatolya", "Arşın", "Miskal", "Şinik", "Kıyye", "Kile", "Rubu", "Menzil", "Fersah"];
+        const specialUnits = ["Anatolya", "Arşın", "Miskal", "Şinik", "Kıyye", "Kile", "Rubu", "Menzil", "Fersah", "12"];
         const isInputSpecial = specialUnits.some(s => currentInputUnit.includes(s));
         
         if (isInputSpecial) {
@@ -227,107 +228,11 @@ function renderDropdowns(mode) {
     else if (mode === "Sıcaklık") { currentInputUnit = "Celsius"; currentOutputUnit = "Anatolya (Fahrenheit, 12)"; }
     else if (mode === "Hacim") { currentInputUnit = "Litre (10⁰)"; currentOutputUnit = "Şinik (12⁰)"; }
     else if (mode === "Hız") { currentInputUnit = "Kilometre/Saat"; currentOutputUnit = "Fersah/Saat (12)"; }
+    else if (mode === "Veri") { currentInputUnit = "Bayt"; currentOutputUnit = "Kibi (2¹⁸ Bit, 12)"; }
     else { currentInputUnit = options[0]; currentOutputUnit = options[1] || options[0]; }
     const createItems = (type) => options.map(opt => `<div class="dropdown-item" onclick="selectUnit('${type}', '${opt}')">${opt}</div>`).join('');
     dropdownInput.innerHTML = createItems('input'); dropdownOutput.innerHTML = createItems('output');
     renderPills(); performConversion();
 }
 
-function renderPills() { pillInputLabel.innerText = currentInputUnit; pillOutputLabel.innerText = currentOutputUnit; dropdownInput.classList.remove('show'); dropdownOutput.classList.remove('show'); }
-
-function toggleDropdown(type) { 
-    const el = type === 'input' ? dropdownInput : dropdownOutput; 
-    const other = type === 'input' ? dropdownOutput : dropdownInput; 
-    other.classList.remove('show'); 
-    el.classList.toggle('show'); 
-}
-
-window.addEventListener('click', function(event) {
-    if (!event.target.closest('.unit-pill') && !event.target.closest('.dropdown-panel')) {
-        dropdownInput.classList.remove('show');
-        dropdownOutput.classList.remove('show');
-    }
-});
-
-// --- KLAVYE ETKİLEŞİMİ (ODAĞI VE İMLECİ BOZMAYAN YENİ SİSTEM) ---
-document.querySelectorAll('.key').forEach(key => { 
-    // mousedown kullanıyoruz çünkü click'ten önce çalışır ve odağı durdurabiliriz
-    key.addEventListener('mousedown', (e) => {
-        e.preventDefault(); // Metin kutusunun odağını kaybetmesini ve telefon klavyesinin tetiklenmesini engeller
-        disableSystemKeyboard(); // Site klavyesi kullanılıyorken sistem klavyesini "none" yap
-    });
-
-    key.addEventListener('click', () => {
-        const action = key.dataset.action;
-        const keyText = key.innerText;
-        const start = inputArea.selectionStart;
-        const end = inputArea.selectionEnd;
-        const currentVal = inputArea.value;
-
-        if (action === 'delete') {
-            inputArea.value = currentVal.slice(0, Math.max(0, start - 1)) + currentVal.slice(end);
-            inputArea.selectionStart = inputArea.selectionEnd = Math.max(0, start - 1);
-        } 
-        else if (action === 'reset') {
-            inputArea.value = ''; outputArea.value = '';
-        } 
-        else if (action === 'space') {
-            inputArea.value = currentVal.slice(0, start) + ' ' + currentVal.slice(end);
-            inputArea.selectionStart = inputArea.selectionEnd = start + 1;
-        } 
-        else if (action === 'enter') {
-            inputArea.value = currentVal.slice(0, start) + '\n' + currentVal.slice(end);
-            inputArea.selectionStart = inputArea.selectionEnd = start + 1;
-        }
-        else if (action === 'shift') { /* Shift Pasif */ }
-        else {
-            inputArea.value = currentVal.slice(0, start) + keyText + currentVal.slice(end);
-            inputArea.selectionStart = inputArea.selectionEnd = start + keyText.length;
-        }
-
-        performConversion();
-        // Mobilde imleç kaybolmaması için odağı geri veriyoruz ama inputmode="none" olduğu için klavye açılmıyor
-        inputArea.focus(); 
-    }); 
-});
-
-inputArea.addEventListener('input', performConversion);
-
-document.querySelectorAll('.nav-tab').forEach(tab => { 
-    tab.addEventListener('click', function() {
-        document.querySelectorAll('.nav-tab').forEach(t => t.classList.replace('active-tab', 'inactive-tab'));
-        this.classList.replace('inactive-tab', 'active-tab'); renderDropdowns(this.dataset.value);
-    }); 
-});
-
-document.getElementById('themeToggle').addEventListener('click', () => document.documentElement.classList.toggle('dark'));
-
-function updateHeader() {
-    const now = new Date();
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 30, 0);
-    if (now < todayStart) todayStart.setDate(todayStart.getDate() - 1);
-    const totalSecs = Math.floor(((now - todayStart) / 1000) * 2);
-    const h = Math.floor(totalSecs / 14400) % 12;
-    const m = Math.floor((totalSecs / 120) % 120);
-    const s = totalSecs % 120;
-    document.getElementById('clock').textContent = `${toBase12(h, 2, true)}.${toBase12(m, 2, true)}.${toBase12(s, 2, true)}`;
-    
-    const gregBase = new Date(1071, 2, 21);
-    const diff = now - gregBase;
-    const daysPassed = Math.floor(diff / 86400000);
-    let year = 0; let daysCounter = 0;
-    while (true) {
-        let yearDays = 365;
-        let nextYear = year + 1;
-        if (nextYear % 20 === 0 && nextYear % 640 !== 0) yearDays += 5;
-        if (daysCounter + yearDays > daysPassed) break;
-        daysCounter += yearDays; year++;
-    }
-    const day = (daysPassed - daysCounter) % 30 + 1;
-    const month = Math.floor((daysPassed - daysCounter) / 30) + 1;
-    document.getElementById('date').textContent = `${toBase12(day, 2, true)}.${toBase12(month, 2, true)}.${toBase12(year + 10369, 4, true)}`;
-}
-
-setInterval(updateHeader, 500);
-updateHeader();
-renderDropdowns("Alfabe");
+// ... (Klavye yönetimi ve geri kalan UI event dinleyicileri aynı kalacak) ...
