@@ -1,8 +1,6 @@
 // --- YARDIMCI FORMAT FONKSİYONU ---
-// Küsuratları en fazla 2 basamak yapar ve sondaki gereksiz 0'ları siler.
 function formatCompact(num) {
     if (num === 0) return "0";
-    // Sayıyı en fazla 2 basamağa yuvarla ve gereksiz sıfırları at (Örn: 1.80 -> 1.8)
     return parseFloat(num.toFixed(2)).toString().replace('.', ',');
 }
 
@@ -39,8 +37,9 @@ const unitData = {
         "Batman (12⁻¹)", "Paund", "Okka (12⁰)", "Kilogram (10³)", 
         "Kantar (12¹)", "Ton (10⁶)"
     ],
+    "Hacim": ["Mililitre", "Santilitre", "Desilitre", "Litre", "Metreküp", "Galon", "Varil"],
     "Konum": ["Boylam (Derece)", "Meridyen (Anatolya)"],
-    "Sıcaklık": ["Celsius", "Anatolya (Fahrenheit)", "Fahrenheit", "Kelvin"],
+    "Sıcaklık": ["Celsius", "Anatolya (Fahrenheit, 12)", "Fahrenheit", "Kelvin"],
     "Veri": ["Byte", "Kilobyte", "Megabyte", "Gigabyte", "Terabyte", "Anatolya Verisi"]
 };
 
@@ -54,6 +53,9 @@ const conversionRates = {
     "Kütle": {
         "Miligram (10⁻³)": 0.000001, "Dirhem (12⁻³)": 0.0005, "Gram (10⁰)": 0.001, "Miskal (12⁻²)": 0.006,
         "Batman (12⁻¹)": 0.072, "Paund": 0.45359, "Okka (12⁰)": 0.864, "Kilogram (10³)": 1, "Kantar (12¹)": 10.368, "Ton (10⁶)": 1000
+    },
+    "Hacim": {
+        "Mililitre": 0.001, "Santilitre": 0.01, "Desilitre": 0.1, "Litre": 1, "Metreküp": 1000, "Galon": 3.78541, "Varil": 158.987
     },
     "Para": { "Lira": 1, "Akçe": 9, "Dollar": 43, "Euro": 51, "Gümüş (Ons)": 2735, "Altın (Ons)": 183787 },
     "Veri": { "Byte": 1, "Kilobyte": 1024, "Megabyte": 1048576, "Gigabyte": 1073741824, "Terabyte": 1099511627776, "Anatolya Verisi": 1200 },
@@ -90,7 +92,6 @@ function toBase12Float(n, isAnatolya = true) {
             fractionPart -= d; 
             if (fractionPart < 0.0001) break; 
         }
-        // Sondaki gereksiz 0'ları (taban 12'de) temizle
         fracRes = fracRes.replace(/0+$/, '');
         if (fracRes !== "") res += "," + fracRes;
     }
@@ -179,7 +180,7 @@ function performConversion() {
         if (currentInputUnit === "Celsius") fahr = (parseFloat(text.replace(',', '.')) * 1.8) + 32;
         else if (currentInputUnit === "Kelvin") fahr = ((parseFloat(text.replace(',', '.')) - 273.15) * 1.8) + 32;
         else if (currentInputUnit === "Fahrenheit") fahr = parseFloat(text.replace(',', '.'));
-        else if (currentInputUnit === "Anatolya (Fahrenheit)") {
+        else if (currentInputUnit === "Anatolya (Fahrenheit, 12)") {
             let input = normalizeInput(text.toUpperCase()).replace(',','.');
             const parts = input.split('.');
             let val = parseInt(parts[0], 12);
@@ -196,10 +197,9 @@ function performConversion() {
         if (currentOutputUnit === "Celsius") result = (fahr - 32) / 1.8;
         else if (currentOutputUnit === "Kelvin") result = ((fahr - 32) / 1.8) + 273.15;
         else if (currentOutputUnit === "Fahrenheit") result = fahr;
-        else if (currentOutputUnit === "Anatolya (Fahrenheit)") {
+        else if (currentOutputUnit === "Anatolya (Fahrenheit, 12)") {
             result = fahr - 32;
             const anaVal = toBase12Float(result, true), stdVal = toBase12Float(result, false);
-            // Sıfır veya tam sayı kontrolü, gereksiz [0] gösterimini engeller
             let decPart = result === 0 ? "0" : formatCompact(result);
             outputArea.value = (anaVal === stdVal) ? (anaVal === "0" ? "0" : `${anaVal} [${decPart}]`) : `${anaVal} (${stdVal}) [${decPart}]`;
             return;
@@ -267,7 +267,6 @@ function performConversion() {
     }
 }
 
-// Diğer UI fonksiyonları (renderDropdowns, selectUnit vb.) aynı kalacak...
 function selectUnit(type, value) {
     if (type === 'input') { if (value === currentOutputUnit) currentOutputUnit = currentInputUnit; currentInputUnit = value; }
     else { if (value === currentInputUnit) currentInputUnit = currentOutputUnit; currentOutputUnit = value; }
@@ -281,7 +280,8 @@ function renderDropdowns(mode) {
     else if (mode === "Uzunluk") { currentInputUnit = "Metre (10⁰)"; currentOutputUnit = "Arşın (12⁰)"; }
     else if (mode === "Kütle") { currentInputUnit = "Kilogram (10³)"; currentOutputUnit = "Okka (12⁰)"; }
     else if (mode === "Konum") { currentInputUnit = "Boylam (Derece)"; currentOutputUnit = "Meridyen (Anatolya)"; }
-    else if (mode === "Sıcaklık") { currentInputUnit = "Celsius"; currentOutputUnit = "Anatolya (Fahrenheit)"; }
+    else if (mode === "Sıcaklık") { currentInputUnit = "Celsius"; currentOutputUnit = "Anatolya (Fahrenheit, 12)"; }
+    else if (mode === "Hacim") { currentInputUnit = "Litre"; currentOutputUnit = "Metreküp"; }
     else { currentInputUnit = options[0]; currentOutputUnit = options[1] || options[0]; }
     const createItems = (type) => options.map(opt => `<div class="dropdown-item" onclick="selectUnit('${type}', '${opt}')">${opt}</div>`).join('');
     dropdownInput.innerHTML = createItems('input'); dropdownOutput.innerHTML = createItems('output');
