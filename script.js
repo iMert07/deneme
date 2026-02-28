@@ -38,8 +38,8 @@ const unitData = {
         "Kantar (12¹)", "Ton (10⁶)"
     ],
     "Hacim": [
-        "Mililitre", "Sıvı Ons (ABD)", "Kile (12⁻¹)", "Hacim (12⁰)", 
-        "Litre", "Litre (12¹)", "Galon (ABD)", "Şinik (12²)", "Metreküp"
+        "Mililitre (10⁻³)", "Sıvı Ons (ABD)", "Miskal (12⁻¹)", "Şinik (12⁰)", 
+        "Litre (10⁰)", "Kıyye (12¹)", "Galon (ABD)", "Kile (12²)", "Metreküp (10³)"
     ],
     "Konum": ["Boylam (Derece)", "Meridyen (Anatolya)"],
     "Sıcaklık": ["Celsius", "Anatolya (Fahrenheit, 12)", "Fahrenheit", "Kelvin"],
@@ -58,8 +58,15 @@ const conversionRates = {
         "Batman (12⁻¹)": 0.072, "Paund": 0.45359, "Okka (12⁰)": 0.864, "Kilogram (10³)": 1, "Kantar (12¹)": 10.368, "Ton (10⁶)": 1000
     },
     "Hacim": {
-        "Mililitre": 0.001, "Sıvı Ons (ABD)": 0.0295735, "Kile (12⁻¹)": 0.018, "Hacim (12⁰)": 0.216,
-        "Litre": 1, "Litre (12¹)": 2.592, "Galon (ABD)": 3.78541, "Şinik (12²)": 31.104, "Metreküp": 1000
+        "Mililitre (10⁻³)": 0.001,
+        "Sıvı Ons (ABD)": 0.0295735,
+        "Miskal (12⁻¹)": 0.018,
+        "Şinik (12⁰)": 0.216,
+        "Litre (10⁰)": 1,
+        "Kıyye (12¹)": 2.592,
+        "Galon (ABD)": 3.78541,
+        "Kile (12²)": 31.104,
+        "Metreküp (10³)": 1000
     },
     "Para": { "Lira": 1, "Akçe": 9, "Dollar": 43, "Euro": 51, "Gümüş (Ons)": 2735, "Altın (Ons)": 183787 },
     "Veri": { "Byte": 1, "Kilobyte": 1024, "Megabyte": 1048576, "Gigabyte": 1073741824, "Terabyte": 1099511627776, "Anatolya Verisi": 1200 },
@@ -198,7 +205,8 @@ function performConversion() {
     }
     else if (conversionRates[mode] || mode === "Zaman") {
         let numericValue;
-        const specialUnits = ["Anatolya", "Arşın", "Kile", "Hacim", "Şinik", "Litre (12"];
+        // Hacimdeki yeni Anatolya birimleri Special listesine eklendi
+        const specialUnits = ["Anatolya", "Arşın", "Miskal", "Şinik", "Kıyye", "Kile"];
         const isInputSpecial = specialUnits.some(s => currentInputUnit.includes(s));
         
         if (isInputSpecial) {
@@ -235,7 +243,6 @@ function performConversion() {
     }
 }
 
-// --- UI ETKİLEŞİM ---
 function selectUnit(type, value) {
     if (type === 'input') currentInputUnit = value;
     else currentOutputUnit = value;
@@ -250,7 +257,7 @@ function renderDropdowns(mode) {
     else if (mode === "Kütle") { currentInputUnit = "Kilogram (10³)"; currentOutputUnit = "Okka (12⁰)"; }
     else if (mode === "Konum") { currentInputUnit = "Boylam (Derece)"; currentOutputUnit = "Meridyen (Anatolya)"; }
     else if (mode === "Sıcaklık") { currentInputUnit = "Celsius"; currentOutputUnit = "Anatolya (Fahrenheit, 12)"; }
-    else if (mode === "Hacim") { currentInputUnit = "Litre"; currentOutputUnit = "Hacim (12⁰)"; }
+    else if (mode === "Hacim") { currentInputUnit = "Litre (10⁰)"; currentOutputUnit = "Şinik (12⁰)"; }
     else { currentInputUnit = options[0]; currentOutputUnit = options[1] || options[0]; }
     const createItems = (type) => options.map(opt => `<div class="dropdown-item" onclick="selectUnit('${type}', '${opt}')">${opt}</div>`).join('');
     dropdownInput.innerHTML = createItems('input'); dropdownOutput.innerHTML = createItems('output');
@@ -259,7 +266,6 @@ function renderDropdowns(mode) {
 
 function renderPills() { pillInputLabel.innerText = currentInputUnit; pillOutputLabel.innerText = currentOutputUnit; dropdownInput.classList.remove('show'); dropdownOutput.classList.remove('show'); }
 function toggleDropdown(type) { const el = type === 'input' ? dropdownInput : dropdownOutput; const other = type === 'input' ? dropdownOutput : dropdownInput; other.classList.remove('show'); el.classList.toggle('show'); }
-window.onclick = function(event) { if (!event.target.closest('.unit-pill')) { dropdownInput.classList.remove('show'); dropdownOutput.classList.remove('show'); } }
 
 inputArea.addEventListener('input', performConversion);
 document.querySelectorAll('.key').forEach(key => { key.addEventListener('click', () => {
@@ -277,7 +283,6 @@ document.getElementById('themeToggle').addEventListener('click', () => document.
 
 function updateHeader() {
     const now = new Date();
-    // Saat
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 30, 0);
     if (now < todayStart) todayStart.setDate(todayStart.getDate() - 1);
     const totalSecs = Math.floor(((now - todayStart) / 1000) * 2);
@@ -286,7 +291,6 @@ function updateHeader() {
     const s = totalSecs % 120;
     document.getElementById('clock').textContent = `${toBase12(h, 2, true)}.${toBase12(m, 2, true)}.${toBase12(s, 2, true)}`;
     
-    // Takvim
     const gregBase = new Date(1071, 2, 21);
     const diff = now - gregBase;
     const daysPassed = Math.floor(diff / 86400000);
