@@ -9,19 +9,32 @@ html, body { min-height: 100%; overflow-y: auto; margin: 0; padding: 0; }
 .dark .inactive-tab { color: #64748b; }
 
 .dropdown-panel {
-    display: none; position: absolute; top: calc(100% + 5px); left: 0;
-    min-width: 140px; background: white; border-radius: 12px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid #e2e8f0;
-    z-index: 100; overflow: hidden;
+    display: none; 
+    position: absolute; 
+    top: calc(100% + 5px); 
+    left: 0;
+    min-width: 100%;        /* Pill kutusundan daha küçük olamaz */
+    width: max-content;     /* İçindeki en uzun metne göre genişler */
+    background: white; 
+    border-radius: 12px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); 
+    border: 1px solid #e2e8f0;
+    z-index: 100; 
+    overflow: hidden;
 }
 .dark .dropdown-panel { background: #1e293b; border-color: #334155; }
 .dropdown-panel.show { display: block; animation: dropdownFade 0.15s ease-out; }
 @keyframes dropdownFade { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
 .dropdown-item {
-    padding: 10px 16px; font-size: 11px; font-weight: 700; color: #475569;
-    cursor: pointer; transition: all 0.2s;
-    text-transform: none !important; /* ZORLAMA KALDIRILDI */
+    padding: 10px 16px; 
+    font-size: 11px; 
+    font-weight: 700; 
+    color: #475569;
+    cursor: pointer; 
+    transition: all 0.2s;
+    text-transform: none !important; 
+    white-space: nowrap;    /* Metinlerin alt satıra geçmesini engeller */
 }
 .dark .dropdown-item { color: #94a3b8; }
 .dropdown-item:hover { background: #f1f5f9; color: #137fec; }
@@ -33,8 +46,9 @@ html, body { min-height: 100%; overflow-y: auto; margin: 0; padding: 0; }
     border-radius: 9999px; font-size: 10px; font-weight: 800;
     letter-spacing: 0.05em;
     transition: all 0.2s; cursor: pointer; border: 1px solid transparent;
-    user-select: none; -webkit-user-select: none; max-width: 180px;
-    text-transform: none !important; /* ZORLAMA KALDIRILDI */
+    user-select: none; -webkit-user-select: none; 
+    max-width: 250px;       /* Pill kutusunu biraz genişlettik */
+    text-transform: none !important; 
 }
 .dark .unit-pill { background: #1e293b; color: #94a3b8; border-color: #334155; }
 .unit-pill:hover { background: #137fec; color: white; transform: translateY(-1px); }
@@ -76,7 +90,7 @@ header, .nav-tab, #kb-container, .key, .unit-pill, .dropdown-item {
 }
 
 @media (max-width: 768px) {
-    .keyboard { position: fixed; bottom: 8px; left: 2%; width: 96% !important; max-width: 550px !important; margin: 0 0 0 auto !important; padding: 8px !important; border-radius: 1rem !important; box-shadow: 0 -5px 20px rgba(0,0,0,0.3); }
+    .keyboard { position: fixed; bottom: 8px; left: 2%; width: 96% !important; max-width: 550px !important; margin: 0 0 0 auto !important; padding: 8px 4px 12px 4px !important; border-radius: 1rem !important; box-shadow: 0 -5px 20px rgba(0,0,0,0.3); }
     #kb-container { padding-top: 5px !important; padding-bottom: 0px !important; display: flex; justify-content: flex-end; }
     .row { gap: 4px; }
     .key { height: 38px !important; font-size: 1rem !important; border-bottom-width: 2px !important; }
