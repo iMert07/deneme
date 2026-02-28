@@ -1,7 +1,19 @@
 // --- YARDIMCI FORMAT FONKSİYONU ---
 function formatCompact(num) {
     if (num === 0) return "0";
-    return parseFloat(num.toFixed(2)).toString().replace('.', ',');
+    
+    // Mutlak değer üzerinden kontrol yapıyoruz (negatif sayılar için de geçerli olsun)
+    let absNum = Math.abs(num);
+    
+    // Eğer sayı 0.001'den küçükse ama 0 değilse "~0" döndür
+    if (absNum > 0 && absNum < 0.001) {
+        return "~0";
+    }
+
+    // Virgülden sonra en fazla 3 basamak, en yakın sayıya yuvarlayarak
+    // .replace('.', ',') ile Türk standartlarına çeviriyoruz
+    let formatted = (Math.round(num * 1000) / 1000).toString().replace('.', ',');
+    return formatted;
 }
 
 // --- ELEMENT SEÇİCİLER ---
@@ -52,7 +64,7 @@ const unitData = {
     "Veri": ["Byte", "Kilobyte", "Megabyte", "Gigabyte", "Terabyte", "Anatolya Verisi"]
 };
 
-// --- KATSAYILAR (Baz: Metrekare / Metre / Litre vb.) ---
+// --- KATSAYILAR (Baz Üniteler Üzerinden) ---
 const conversionRates = {
     "Uzunluk": {
         "Kerrab (12⁻³)": 0.00041666666, "Milimetre (10⁻³)": 0.001, "Rubu (12⁻²)": 0.005, "Santimetre (10⁻²)": 0.01,
@@ -60,16 +72,9 @@ const conversionRates = {
         "Berid (12¹)": 8.64, "Menzil (12²)": 103.68, "Kilometre (10³)": 1000, "Fersah (12³)": 1244.16, "Mil": 1609.34, "Merhale (12⁴)": 14929.92
     },
     "Alan": {
-        "Santimetrekare (10⁻⁴)": 0.0001,
-        "Rubu² (12⁻⁴)": 0.000025,
-        "Arşın² (12⁰)": 0.5184,
-        "Metrekare (10⁰)": 1,
-        "Dönüm (Anatolya)": 895.7952,
-        "Dönüm (10³)": 1000,
-        "Hektar (10⁴)": 10000,
-        "Menzil² (12⁴)": 10749.5424,
-        "Kilometrekare (10⁶)": 1000000,
-        "Fersah² (12⁶)": 1547934.0544
+        "Santimetrekare (10⁻⁴)": 0.0001, "Rubu² (12⁻⁴)": 0.000025, "Arşın² (12⁰)": 0.5184, "Metrekare (10⁰)": 1,
+        "Dönüm (Anatolya)": 895.7952, "Dönüm (10³)": 1000, "Hektar (10⁴)": 10000, "Menzil² (12⁴)": 10749.5424,
+        "Kilometrekare (10⁶)": 1000000, "Fersah² (12⁶)": 1547934.0544
     },
     "Hız": { "Kilometre/Saat": 1, "Fersah/Saat (12)": 0.62208, "Mil/Saat": 1.60934 },
     "Kütle": {
@@ -91,7 +96,7 @@ const conversionRates = {
 const toGreek = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"0" };
 const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
 
-// --- FONKSİYONLAR ---
+// --- TABAN DÖNÜŞTÜRÜCÜLER ---
 function toBase12(n, pad = 1, isAnatolya = true) {
     const digits = isAnatolya ? "0123456789ΦΛ" : "0123456789AB";
     let num = Math.abs(Math.floor(n));
@@ -156,6 +161,26 @@ function universalNumberConvert(text, fromUnit, toUnit) {
     return dec.toString(toBase).toUpperCase().replace('.', ',');
 }
 
+function getGregorianDays(years) {
+    let totalDays = 0;
+    for (let i = 1; i <= Math.floor(years); i++) {
+        if ((i % 4 === 0 && i % 100 !== 0) || (i % 400 === 0)) totalDays += 366;
+        else totalDays += 365;
+    }
+    totalDays += (years % 1) * 365.2425;
+    return totalDays;
+}
+
+function getAnatolyaDays(years) {
+    let totalDays = 0;
+    for (let i = 1; i <= Math.floor(years); i++) {
+        if (i % 20 === 0 && i % 640 !== 0) totalDays += 370;
+        else totalDays += 365;
+    }
+    totalDays += (years % 1) * 365.25; 
+    return totalDays;
+}
+
 function performConversion() {
     const activeTab = document.querySelector('.active-tab');
     if (!activeTab) return;
@@ -198,7 +223,7 @@ function performConversion() {
     }
     else if (conversionRates[mode] || mode === "Zaman") {
         let numericValue;
-        const specialUnits = ["Anatolya", "Arşın", "Miskal", "Şinik", "Kıyye", "Kile", "Rubu", "Menzil", "Fersah"];
+        const specialUnits = ["Anatolya", "Arşın", "Miskal", "Şinik", "Kıyye", "Kile", "Rubu", "Menzil", "Fersah", "Hacim"];
         const isInputSpecial = specialUnits.some(s => currentInputUnit.includes(s));
         
         if (isInputSpecial) {
@@ -226,12 +251,9 @@ function performConversion() {
 
         const isOutputSpecial = specialUnits.some(s => currentOutputUnit.includes(s)) || currentOutputUnit.includes("Anatolya");
         if (isOutputSpecial) {
-            if (result === 0) { outputArea.value = "0"; }
-            else {
-                let ana = toBase12Float(result, true);
-                let decStr = formatCompact(result);
-                outputArea.value = (ana === decStr) ? ana : `${ana} [${decStr}]`;
-            }
+            let ana = toBase12Float(result, true);
+            let decStr = formatCompact(result);
+            outputArea.value = (ana === decStr) ? ana : `${ana} [${decStr}]`;
         } else { outputArea.value = formatCompact(result); }
     }
 }
