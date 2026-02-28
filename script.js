@@ -2,9 +2,16 @@
 function formatCompact(num) {
     if (num === 0) return "0";
     let absNum = Math.abs(num);
+    
+    // Sayı 0 değil ama 0.001'den küçükse yaklaşık işareti döndür
     if (absNum > 0 && absNum < 0.001) return "~0";
+
+    // En fazla 3 basamak ve yuvarlama
     let rounded = Number(num.toFixed(3));
+    
+    // Yuvarlama sonrası 0 olduysa yine "~0" döndür
     if (rounded === 0) return "~0";
+
     return rounded.toString().replace('.', ',');
 }
 
@@ -115,26 +122,6 @@ function universalNumberConvert(text, fromUnit, toUnit) {
     return dec.toString(toBase).toUpperCase().replace('.', ',');
 }
 
-function getGregorianDays(years) {
-    let totalDays = 0;
-    for (let i = 1; i <= Math.floor(years); i++) {
-        if ((i % 4 === 0 && i % 100 !== 0) || (i % 400 === 0)) totalDays += 366;
-        else totalDays += 365;
-    }
-    totalDays += (years % 1) * 365.2425;
-    return totalDays;
-}
-
-function getAnatolyaDays(years) {
-    let totalDays = 0;
-    for (let i = 1; i <= Math.floor(years); i++) {
-        if (i % 20 === 0 && i % 640 !== 0) totalDays += 370;
-        else totalDays += 365;
-    }
-    totalDays += (years % 1) * 365.25; 
-    return totalDays;
-}
-
 function performConversion() {
     const activeTab = document.querySelector('.active-tab');
     if (!activeTab) return;
@@ -172,7 +159,10 @@ function performConversion() {
             result = fahr - 32;
             let ana = toBase12Float(result, true);
             let decStr = formatCompact(result);
-            outputArea.value = (ana === decStr || result === 0) ? ana : `${ana} [${decStr}]`;
+            if (decStr === "0") outputArea.value = "0";
+            else if (decStr === "~0") outputArea.value = "~0";
+            else if (ana === decStr) outputArea.value = ana;
+            else outputArea.value = `${ana} [${decStr}]`;
             return;
         }
         outputArea.value = formatCompact(result);
@@ -194,16 +184,17 @@ function performConversion() {
         
         if (isNaN(numericValue)) { outputArea.value = "Hata"; return; }
 
-        let baseValue;
-        const currentModeRates = conversionRates[mode] || conversionRates["Zaman"];
-        baseValue = numericValue * (currentModeRates[currentInputUnit] || 1);
-        let result = baseValue / (currentModeRates[currentOutputUnit] || 1);
+        let baseValue = numericValue * (conversionRates[mode]?.[currentInputUnit] || (mode === "Zaman" ? conversionRates["Zaman"][currentInputUnit] : 1));
+        let result = baseValue / (conversionRates[mode]?.[currentOutputUnit] || (mode === "Zaman" ? conversionRates["Zaman"][currentOutputUnit] : 1));
 
         const isOutputSpecial = specialUnits.some(s => currentOutputUnit.includes(s)) || currentOutputUnit.includes("Anatolya");
         if (isOutputSpecial) {
             let ana = toBase12Float(result, true);
             let decStr = formatCompact(result);
-            outputArea.value = (ana === decStr || result === 0) ? ana : `${ana} [${decStr}]`;
+            if (decStr === "0") outputArea.value = "0";
+            else if (decStr === "~0") outputArea.value = "~0";
+            else if (ana === decStr) outputArea.value = ana;
+            else outputArea.value = `${ana} [${decStr}]`;
         } else { outputArea.value = formatCompact(result); }
     }
 }
@@ -227,6 +218,7 @@ function renderDropdowns(mode) {
     else if (mode === "Uzunluk") { currentInputUnit = "Metre (10⁰)"; currentOutputUnit = "Arşın (12⁰)"; }
     else if (mode === "Alan") { currentInputUnit = "Metrekare (10⁰)"; currentOutputUnit = "Arşın² (12⁰)"; }
     else if (mode === "Kütle") { currentInputUnit = "Kilogram (10³)"; currentOutputUnit = "Okka (12⁰)"; }
+    else if (mode === "Konum") { currentInputUnit = "Boylam (Derece)"; currentOutputUnit = "Meridyen (Anatolya)"; }
     else if (mode === "Sıcaklık") { currentInputUnit = "Celsius"; currentOutputUnit = "Anatolya (Fahrenheit, 12)"; }
     else if (mode === "Hacim") { currentInputUnit = "Litre (10⁰)"; currentOutputUnit = "Şinik (12⁰)"; }
     else if (mode === "Hız") { currentInputUnit = "Kilometre/Saat"; currentOutputUnit = "Fersah/Saat (12)"; }
@@ -252,34 +244,40 @@ window.addEventListener('click', function(event) {
     }
 });
 
-// --- KLAVYE DÜZELTİLMİŞ ETKİLEŞİM ---
+// --- KLAVYE ETKİLEŞİMİ (İMLEÇ VE ODAK DÜZELTİLDİ) ---
 document.querySelectorAll('.key').forEach(key => { 
+    key.addEventListener('mousedown', (e) => e.preventDefault()); // Butonun odağı çalmasını engeller
+
     key.addEventListener('click', () => {
         const action = key.dataset.action;
         const keyText = key.innerText;
+        const start = inputArea.selectionStart;
+        const end = inputArea.selectionEnd;
+        const currentVal = inputArea.value;
 
         if (action === 'delete') {
-            inputArea.value = inputArea.value.slice(0, -1);
+            inputArea.value = currentVal.slice(0, Math.max(0, start - 1)) + currentVal.slice(end);
+            inputArea.selectionStart = inputArea.selectionEnd = Math.max(0, start - 1);
         } 
         else if (action === 'reset') {
             inputArea.value = ''; outputArea.value = '';
         } 
         else if (action === 'space') {
-            inputArea.value += ' ';
+            inputArea.value = currentVal.slice(0, start) + ' ' + currentVal.slice(end);
+            inputArea.selectionStart = inputArea.selectionEnd = start + 1;
         } 
         else if (action === 'enter') {
-            inputArea.value += '\n';
+            inputArea.value = currentVal.slice(0, start) + '\n' + currentVal.slice(end);
+            inputArea.selectionStart = inputArea.selectionEnd = start + 1;
         }
-        else if (action === 'shift') {
-            // Shift şimdilik bir işlev yapmıyor
-        }
+        else if (action === 'shift') { /* Shift Pasif */ }
         else {
-            // fn-key kontrolünü metin karakterleri için devre dışı bırakıyoruz (., için)
-            inputArea.value += keyText;
+            inputArea.value = currentVal.slice(0, start) + keyText + currentVal.slice(end);
+            inputArea.selectionStart = inputArea.selectionEnd = start + keyText.length;
         }
 
         performConversion();
-        inputArea.focus(); // İmlecin kaybolmaması için odaklama
+        inputArea.focus(); // Metin kutusunda kal
     }); 
 });
 
