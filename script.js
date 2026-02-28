@@ -2,16 +2,9 @@
 function formatCompact(num) {
     if (num === 0) return "0";
     let absNum = Math.abs(num);
-    
-    // Sayı 0 değil ama 0.001'den küçükse yaklaşık işareti döndür
     if (absNum > 0 && absNum < 0.001) return "~0";
-
-    // En fazla 3 basamak ve yuvarlama
     let rounded = Number(num.toFixed(3));
-    
-    // Yuvarlama sonrası 0 olduysa yine "~0" döndür
     if (rounded === 0) return "~0";
-
     return rounded.toString().replace('.', ',');
 }
 
@@ -57,7 +50,20 @@ const conversionRates = {
 const toGreek = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"0" };
 const toLatin = Object.fromEntries(Object.entries(toGreek).map(([k,v])=>[v,k.toUpperCase()]));
 
+// --- KLAVYE YÖNETİMİ ---
+
+// Kutunun kendisine dokunulduğunda telefon klavyesini aç
+inputArea.addEventListener('focus', () => {
+    inputArea.setAttribute('inputmode', 'text');
+});
+
+// Kutudan çıkıldığında veya site klavyesi kullanılırken inputmode'u kapatmak için yardımcı fonksiyon
+function disableSystemKeyboard() {
+    inputArea.setAttribute('inputmode', 'none');
+}
+
 // --- FONKSİYONLAR ---
+
 function toBase12(n, pad = 1, isAnatolya = true) {
     const digits = isAnatolya ? "0123456789ΦΛ" : "0123456789AB";
     let num = Math.abs(Math.floor(n));
@@ -218,7 +224,6 @@ function renderDropdowns(mode) {
     else if (mode === "Uzunluk") { currentInputUnit = "Metre (10⁰)"; currentOutputUnit = "Arşın (12⁰)"; }
     else if (mode === "Alan") { currentInputUnit = "Metrekare (10⁰)"; currentOutputUnit = "Arşın² (12⁰)"; }
     else if (mode === "Kütle") { currentInputUnit = "Kilogram (10³)"; currentOutputUnit = "Okka (12⁰)"; }
-    else if (mode === "Konum") { currentInputUnit = "Boylam (Derece)"; currentOutputUnit = "Meridyen (Anatolya)"; }
     else if (mode === "Sıcaklık") { currentInputUnit = "Celsius"; currentOutputUnit = "Anatolya (Fahrenheit, 12)"; }
     else if (mode === "Hacim") { currentInputUnit = "Litre (10⁰)"; currentOutputUnit = "Şinik (12⁰)"; }
     else if (mode === "Hız") { currentInputUnit = "Kilometre/Saat"; currentOutputUnit = "Fersah/Saat (12)"; }
@@ -244,9 +249,13 @@ window.addEventListener('click', function(event) {
     }
 });
 
-// --- KLAVYE ETKİLEŞİMİ (İMLEÇ VE ODAK DÜZELTİLDİ) ---
+// --- KLAVYE ETKİLEŞİMİ (ODAĞI VE İMLECİ BOZMAYAN YENİ SİSTEM) ---
 document.querySelectorAll('.key').forEach(key => { 
-    key.addEventListener('mousedown', (e) => e.preventDefault()); // Butonun odağı çalmasını engeller
+    // mousedown kullanıyoruz çünkü click'ten önce çalışır ve odağı durdurabiliriz
+    key.addEventListener('mousedown', (e) => {
+        e.preventDefault(); // Metin kutusunun odağını kaybetmesini ve telefon klavyesinin tetiklenmesini engeller
+        disableSystemKeyboard(); // Site klavyesi kullanılıyorken sistem klavyesini "none" yap
+    });
 
     key.addEventListener('click', () => {
         const action = key.dataset.action;
@@ -277,7 +286,8 @@ document.querySelectorAll('.key').forEach(key => {
         }
 
         performConversion();
-        inputArea.focus(); // Metin kutusunda kal
+        // Mobilde imleç kaybolmaması için odağı geri veriyoruz ama inputmode="none" olduğu için klavye açılmıyor
+        inputArea.focus(); 
     }); 
 });
 
