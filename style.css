@@ -1,4 +1,5 @@
-/* --- GENEL AYARLAR --- */
+/* --- style.css --- */
+
 html, body { min-height: 100%; overflow-y: auto; margin: 0; padding: 0; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -7,15 +8,14 @@ html, body { min-height: 100%; overflow-y: auto; margin: 0; padding: 0; }
 .inactive-tab { background-color: transparent; color: #94a3b8; }
 .dark .inactive-tab { color: #64748b; }
 
-/* --- DROPDOWN (SEÇENEKLER) PANELİ --- */
+/* Seçenekler Paneli */
 .dropdown-panel {
     display: none; 
     position: absolute; 
     top: calc(100% + 5px); 
     left: 0;
-    min-width: 100%;        /* Buton genişliğinden az olamaz */
-    width: max-content;     /* İçindeki en uzun metne göre genişler */
-    max-width: 300px;       /* Ekran dışına taşmaması için sınır */
+    min-width: 100%;
+    width: max-content;
     background: white; 
     border-radius: 12px;
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); 
@@ -35,32 +35,38 @@ html, body { min-height: 100%; overflow-y: auto; margin: 0; padding: 0; }
     cursor: pointer; 
     transition: all 0.2s;
     text-transform: none !important; 
-    white-space: nowrap;    /* Metni alt satıra atmaz, kutuyu genişletir */
+    white-space: nowrap; 
 }
 .dark .dropdown-item { color: #94a3b8; }
 .dropdown-item:hover { background: #f1f5f9; color: #137fec; }
 .dark .dropdown-item:hover { background: #334155; color: white; }
 
-/* --- BİRİM BUTONLARI (PILL) --- */
+/* Birim Hapları */
 .unit-pill {
     display: flex; align-items: center; justify-content: center;
     padding: 6px 16px; background: #e2e8f0; color: #475569;
     border-radius: 9999px; font-size: 10px; font-weight: 800;
-    letter-spacing: 0.05em; transition: all 0.2s; cursor: pointer; 
-    border: 1px solid transparent; user-select: none;
-    max-width: 280px; 
-    text-transform: none !important;
+    letter-spacing: 0.05em;
+    transition: all 0.2s; cursor: pointer; border: 1px solid transparent;
+    user-select: none; -webkit-user-select: none; 
+    max-width: 250px;
+    text-transform: none !important; 
 }
 .dark .unit-pill { background: #1e293b; color: #94a3b8; border-color: #334155; }
 .unit-pill:hover { background: #137fec; color: white; transform: translateY(-1px); }
 
-.main-title { line-height: 1.4 !important; padding-bottom: 2px; }
+/* Başlık Ayarı */
+.main-title { 
+    line-height: 1.4 !important; 
+    padding-bottom: 2px;
+    white-space: nowrap; /* Kesilmeyi önler */
+}
 
-/* --- KLAVYE AYARLARI --- */
 header, .nav-tab, #kb-container, .key, .unit-pill, .dropdown-item {
     user-select: none; -webkit-user-select: none;
 }
 
+/* Klavye */
 .keyboard {
     display: flex; flex-direction: column; align-items: center; gap: 8px; 
     margin: 20px auto; width: 100%; max-width: 850px; padding: 15px;
@@ -85,66 +91,43 @@ header, .nav-tab, #kb-container, .key, .unit-pill, .dropdown-item {
 [data-action="reset"], [data-action="enter"] { grid-column: span 3 !important; }
 [data-action="space"] { grid-column: span 6 !important; }
 
-/* --- MASAÜSTÜ ÖZEL --- */
 @media (min-width: 1024px) {
     textarea { font-size: 1.5rem !important; }
     h2 { font-size: 1.5rem !important; }
 }
 
-/* --- MOBİL ÖZEL DÜZENLEMELER --- */
 @media (max-width: 768px) {
-    /* Üst Panel Sıkışıklık Giderme */
-    header .flex.items-center.justify-between {
+    /* Header mobilde sola kaydırma ve sıkışıklık giderme */
+    header .px-6 {
         padding-left: 10px !important;
         padding-right: 10px !important;
     }
+    
+    header .flex.items-center.gap-3 {
+        gap: 6px !important; /* Başlık ve tarih arasındaki boşluğu azaltır */
+    }
 
     .main-title {
-        font-size: 13px !important;
-        max-width: 90px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        font-size: 16px !important; /* Yazı boyutunu koruyoruz */
+        max-width: none !important; /* Kısıtlamayı kaldırdık */
+        overflow: visible !important;
+        text-overflow: clip !important;
     }
 
     #clock, #date {
-        font-size: 11px !important;
+        font-size: 14px !important; /* Tarih yazı boyutunu koruyoruz */
     }
 
-    header .border-l {
-        padding-left: 6px !important;
-        margin-left: 4px !important;
-    }
-
+    /* Tema tuşunu en sağa itmek için */
     #themeToggle {
-        margin-left: auto; /* Tema tuşunu en sağa iter */
+        margin-left: auto;
     }
 
-    /* Klavye Sabitleme */
-    .keyboard { 
-        position: fixed; 
-        bottom: 8px; 
-        left: 2%; 
-        width: 96% !important; 
-        max-width: 550px !important; 
-        margin: 0 !important; 
-        padding: 8px 4px 12px 4px !important; 
-        border-radius: 1rem !important; 
-        box-shadow: 0 -5px 20px rgba(0,0,0,0.3); 
-        z-index: 1000;
-    }
-
-    #kb-container { display: flex; justify-content: center; }
+    /* Klavye ayarları */
+    .keyboard { position: fixed; bottom: 8px; left: 2%; width: 96% !important; max-width: 550px !important; margin: 0 0 0 auto !important; padding: 8px 4px 12px 4px !important; border-radius: 1rem !important; box-shadow: 0 -5px 20px rgba(0,0,0,0.3); }
+    #kb-container { padding-top: 5px !important; padding-bottom: 0px !important; display: flex; justify-content: flex-end; }
     .row { gap: 4px; }
     .key { height: 38px !important; font-size: 1rem !important; border-bottom-width: 2px !important; }
-    
     textarea { font-size: 1.1rem !important; height: 140px !important; padding: 10px !important; }
-    
-    /* Klavye ekranın altını kapatacağı için ana içeriğe boşluk ekle */
-    main { padding-bottom: 240px !important; }
-
-    /* Mobilde dropdown dışarı taşmasın */
-    .dropdown-panel {
-        max-width: 80vw; 
-    }
+    main { padding-bottom: 260px !important; }
 }
