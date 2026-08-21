@@ -12,18 +12,20 @@ html {
     scroll-behavior: smooth;
 }
 
+/* --- Mobilde dokunma ve metin seçim optimizasyonu (Sözlük standardı) --- */
 * {
     -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
-/* Diğer kurumsal sitelerdeki o doğal dokunma akışını sağlar */
-body {
-    -webkit-touch-callout: default; /* iOS'te normal uzun basma menüsüne izin verir */
-    touch-action: manipulation;   /* Dokunma gecikmelerini ve yanıltıcı seçimleri engeller */
-}
-
-/* Sadece arayüz butonlarında ve menülerde gereksiz metin seçilmesini engeller, paragraflar serbest kalır */
-header, aside, footer, nav, button {
+/* Arayüz elemanları, butonlar, menüler ve başlıklar mobilde kazara bloklanmasın */
+header, nav, aside, footer, button, input, h1, h2, h3 {
     -webkit-user-select: none;
     user-select: none;
+}
+
+/* Ansiklopedi metinlerinde ve paragraflarda normal kopyalama/seçim serbest olsun */
+p {
+    -webkit-user-select: text;
+    user-select: text;
 }
