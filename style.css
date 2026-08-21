@@ -12,19 +12,18 @@ html {
     scroll-behavior: smooth;
 }
 
-/* Genel dokunma parlamasını kaldır */
 * {
     -webkit-tap-highlight-color: transparent;
 }
 
-/* Butonlar, menüler, başlıklar ve arayüz elemanlarında mobilde kazara kelime seçilmesini engeller */
-button, nav, header, aside, footer, h1, h2, h3, .infobox {
-    -webkit-user-select: none;
-    user-select: none;
+/* Diğer kurumsal sitelerdeki o doğal dokunma akışını sağlar */
+body {
+    -webkit-touch-callout: default; /* iOS'te normal uzun basma menüsüne izin verir */
+    touch-action: manipulation;   /* Dokunma gecikmelerini ve yanıltıcı seçimleri engeller */
 }
 
-/* Ancak ana paragraf metinlerinde kullanıcı dilediği gibi yazı seçip kopyalayabilir */
-p {
-    -webkit-user-select: text;
-    user-select: text;
+/* Sadece arayüz butonlarında ve menülerde gereksiz metin seçilmesini engeller, paragraflar serbest kalır */
+header, aside, footer, nav, button {
+    -webkit-user-select: none;
+    user-select: none;
 }
