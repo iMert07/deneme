@@ -69,7 +69,12 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-3">
+                <!-- Wikipedia Tarzı Farklı Dile Geçiş Butonu (Örn: İngilizce) -->
+                <a href="en.html" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-subtle-light dark:bg-subtle-dark border border-border-light/40 dark:border-border-dark/40 hover:border-primary transition-colors flex items-center gap-1" title="Read in English">
+                    <span>English</span>
+                </a>
+
                 <button id="theme-toggle" class="p-2.5 rounded-full bg-subtle-light dark:bg-subtle-dark hover:opacity-80 transition-opacity" title="Tema Değiştir">
                     <svg class="w-5 h-5 text-muted-light dark:text-muted-dark hidden" fill="currentColor" id="theme-toggle-dark-icon" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
                     <svg class="w-5 h-5 text-muted-light dark:text-muted-dark hidden" fill="none" id="theme-toggle-light-icon" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
@@ -149,92 +154,62 @@
             </section>
 
             <!-- Bölüm 2: Tarihçe -->
-            <section id="tarihce" class="mb-8 border-b border-border-light/40 dark:border-border-dark/40 pb-4">
-                <button onclick="toggleSection('tarihce-content', this)" class="w-full flex justify-between items-center text-left py-2 group cursor-pointer">
-                    <h2 class="text-2xl font-serif font-bold group-hover:text-primary transition-colors">2. Tarihçe</h2>
-                    <span class="transform transition-transform duration-200 text-xl font-bold">▾</span>
-                </button>
-                <div id="tarihce-content" class="accordion-content mt-2 font-serif leading-relaxed space-y-3">
-                    <p>
-                        Projenin kökleri, tarihimizin kırılma noktası kabul edilen 1071 yılına dayanır. Anatolya Birliği; bu topraklarda binlerce yıldır var olan Anadolulu yerlileri ve filozofları dışarıdan benimsenen yabancılar olarak değil, taşıdığımız genetik mirasın birinci dereceden sahipleri olarak görür. 1071, Oğuz atalarımızın kültürü ile bu toprağın köklü genetik kodlarının birleşerek oluşturduğu bu kopmaz bağın ve yeni bir kimliğin başlangıç yılıdır. Bu ortak bilinci dijital dünyada yaşatan topluluk, geçmişin kökleri üzerinde yükselerek yaşayan bir evrene dönüşmüştür.
-                    </p>
-                </div>
+            <section id="tarihce" class="mb-8">
+                <h2 class="text-2xl font-serif font-bold border-b border-border-light/40 dark:border-border-dark/40 pb-1 mb-3">Tarihçe</h2>
+                <p class="font-serif leading-relaxed mb-3">
+                    Projenin kökleri, tarihimizin kırılma noktası kabul edilen 1071 yılına dayanır. Anatolya Birliği; bu topraklarda binlerce yıldır var olan Anadolulu yerlileri ve filozofları dışarıdan benimsenen yabancılar olarak değil, taşıdığımız genetik mirasın birinci dereceden sahipleri olarak görür. 1071, Oğuz atalarımızın kültürü ile bu toprağın köklü genetik kodlarının birleşerek oluşturduğu bu kopmaz bağın ve yeni bir kimliğin başlangıç yılıdır. Bu ortak bilinci dijital dünyada yaşatan topluluk, geçmişin kökleri üzerinde yükselerek yaşayan bir evrene dönüşmüştür.
+                </p>
             </section>
 
             <!-- Bölüm 3: Coğrafya -->
-            <section id="cografi" class="mb-8 border-b border-border-light/40 dark:border-border-dark/40 pb-4">
-                <button onclick="toggleSection('cografi-content', this)" class="w-full flex justify-between items-center text-left py-2 group cursor-pointer">
-                    <h2 class="text-2xl font-serif font-bold group-hover:text-primary transition-colors">3. Coğrafya ve İklim</h2>
-                    <span class="transform transition-transform duration-200 text-xl font-bold">▾</span>
-                </button>
-                <div id="cografi-content" class="accordion-content mt-2 font-serif leading-relaxed space-y-3">
-                    <p>
-                        Anatolya Birliği toprakları, antik medeniyetlerin geçiş yolları üzerinde yer alır. Detaylı topoğrafik ve stratejik yerleşim planlarına <a href="https://haritamiz.vercel.app" target="_blank" class="wiki-link">Harita Portalı</a> üzerinden erişilebilmektedir. Bölge, stratejik konumu ve çeşitli iklim kuşaklarıyla kendine yeterli bir ekosistem sunar.
-                    </p>
-                </div>
+            <section id="cografi" class="mb-8">
+                <h2 class="text-2xl font-serif font-bold border-b border-border-light/40 dark:border-border-dark/40 pb-1 mb-3">Coğrafya ve İklim</h2>
+                <p class="font-serif leading-relaxed mb-3">
+                    Anatolya Birliği toprakları, antik medeniyetlerin geçiş yolları üzerinde yer alır. Detaylı topoğrafik ve stratejik yerleşim planlarına <a href="https://haritamiz.vercel.app" target="_blank" class="wiki-link">Harita Portalı</a> üzerinden erişilebilmektedir. Bölge, stratejik konumu ve çeşitli iklim kuşaklarıyla kendine yeterli bir ekosistem sunar.
+                </p>
             </section>
 
             <!-- Bölüm 4: Demografi ve Dil -->
-            <section id="demografi" class="mb-8 border-b border-border-light/40 dark:border-border-dark/40 pb-4">
-                <button onclick="toggleSection('demografi-content', this)" class="w-full flex justify-between items-center text-left py-2 group cursor-pointer">
-                    <h2 class="text-2xl font-serif font-bold group-hover:text-primary transition-colors">4. Demografi ve Dil (Orum Dili)</h2>
-                    <span class="transform transition-transform duration-200 text-xl font-bold">▾</span>
-                </button>
-                <div id="demografi-content" class="accordion-content mt-2 font-serif leading-relaxed space-y-3">
-                    <p>
-                        Birlik halkının ana iletişim aracı olan <b>Orum Dili</b>; Anadolu Türkçesinin özleştirilmesi, kolaylaştırılması ve Azerbaycan Türkçesinden esintilerle zenginleştirilmiş yapay bir dildir. Dilin köken dağılımını, kelime hazinesini ve detaylı sözlüğünü <a href="https://orumdili.vercel.app" target="_blank" class="wiki-link">Orum Dili Sözlüğü</a> aracılığıyla incelemek mümkündür. Ayrıca diller arası köprü kurmak amacıyla geliştirilen <a href="https://cevirici.vercel.app" target="_blank" class="wiki-link">Çeviri Uygulaması</a> aktif olarak kullanılmaktadır.
-                    </p>
-                </div>
+            <section id="demografi" class="mb-8">
+                <h2 class="text-2xl font-serif font-bold border-b border-border-light/40 dark:border-border-dark/40 pb-1 mb-3">Demografi ve Dil (Orum Dili)</h2>
+                <p class="font-serif leading-relaxed mb-3">
+                    Birlik halkının ana iletişim aracı olan <b>Orum Dili</b>; Anadolu Türkçesinin özleştirilmesi, kolaylaştırılması ve Azerbaycan Türkçesinden esintilerle zenginleştirilmiş yapay bir dildir. Dilin köken dağılımını, kelime hazinesini ve detaylı sözlüğünü <a href="https://orumdili.vercel.app" target="_blank" class="wiki-link">Orum Dili Sözlüğü</a> aracılığıyla incelemek mümkündür. Ayrıca diller arası köprü kurmak amacıyla geliştirilen <a href="https://cevirici.vercel.app" target="_blank" class="wiki-link">Çeviri Uygulaması</a> aktif olarak kullanılmaktadır.
+                </p>
             </section>
 
             <!-- Bölüm 5: Kültür -->
-            <section id="kultur" class="mb-8 border-b border-border-light/40 dark:border-border-dark/40 pb-4">
-                <button onclick="toggleSection('kultur-content', this)" class="w-full flex justify-between items-center text-left py-2 group cursor-pointer">
-                    <h2 class="text-2xl font-serif font-bold group-hover:text-primary transition-colors">5. Kültür, Takvim ve Semboller</h2>
-                    <span class="transform transition-transform duration-200 text-xl font-bold">▾</span>
-                </button>
-                <div id="kultur-content" class="accordion-content mt-2 font-serif leading-relaxed space-y-3">
-                    <p>
-                        Kültürel yaşam, geleneksel ile modernin sentezidir. Devletin resmi unsurları görsel arşivlerde saklanmaktadır:
-                    </p>
-                    <ul class="list-disc list-inside space-y-1 font-serif ml-4">
-                        <li><a href="https://i.hizliresim.com/oeji9uj.png" target="_blank" class="wiki-link">Özel Alfabe Tablosu</a></li>
-                        <li><a href="https://i.hizliresim.com/56igkow.png" target="_blank" class="wiki-link">Anatolya Saat Sistemi</a></li>
-                        <li><a href="https://i.hizliresim.com/phc9pr0.png" target="_blank" class="wiki-link">Özel Takvim Tasarımı</a></li>
-                        <li><a href="https://i.hizliresim.com/j3fgrfn.png" target="_blank" class="wiki-link">Milli Marş Notasyonları</a></li>
-                        <li><a href="https://i.hizliresim.com/fsjusat.png" target="_blank" class="wiki-link">Q Klavye Düzeni</a></li>
-                    </ul>
-                </div>
+            <section id="kultur" class="mb-8">
+                <h2 class="text-2xl font-serif font-bold border-b border-border-light/40 dark:border-border-dark/40 pb-1 mb-3">Kültür, Takvim ve Semboller</h2>
+                <p class="font-serif leading-relaxed mb-3">
+                    Kültürel yaşam, geleneksel ile modernin sentezidir. Devletin resmi unsurları görsel arşivlerde saklanmaktadır:
+                </p>
+                <ul class="list-disc list-inside space-y-1 font-serif ml-4">
+                    <li><a href="https://i.hizliresim.com/oeji9uj.png" target="_blank" class="wiki-link">Özel Alfabe Tablosu</a></li>
+                    <li><a href="https://i.hizliresim.com/56igkow.png" target="_blank" class="wiki-link">Anatolya Saat Sistemi</a></li>
+                    <li><a href="https://i.hizliresim.com/phc9pr0.png" target="_blank" class="wiki-link">Özel Takvim Tasarımı</a></li>
+                    <li><a href="https://i.hizliresim.com/j3fgrfn.png" target="_blank" class="wiki-link">Milli Marş Notasyonları</a></li>
+                    <li><a href="https://i.hizliresim.com/fsjusat.png" target="_blank" class="wiki-link">Q Klavye Düzeni</a></li>
+                </ul>
             </section>
 
             <!-- Bölüm 6: Dijital Araçlar -->
-            <section id="sistemler" class="mb-8 border-b border-border-light/40 dark:border-border-dark/40 pb-4">
-                <button onclick="toggleSection('sistemler-content', this)" class="w-full flex justify-between items-center text-left py-2 group cursor-pointer">
-                    <h2 class="text-2xl font-serif font-bold group-hover:text-primary transition-colors">6. Dijital Araçlar ve Sistemler</h2>
-                    <span class="transform transition-transform duration-200 text-xl font-bold">▾</span>
-                </button>
-                <div id="sistemler-content" class="accordion-content mt-2 font-serif leading-relaxed space-y-3">
-                    <p>
-                        Ülkenin işleyişi tamamen dijital ekosisteme entegre edilmiştir. Zaman akışı <a href="https://1071denberi.vercel.app" target="_blank" class="wiki-link">Zaman Sayacı</a> ile takip edilirken, günlük işler özelleştirilmiş yazılımlarla yürütülmektedir.
-                    </p>
-                </div>
+            <section id="sistemler" class="mb-8">
+                <h2 class="text-2xl font-serif font-bold border-b border-border-light/40 dark:border-border-dark/40 pb-1 mb-3">Dijital Araçlar ve Sistemler</h2>
+                <p class="font-serif leading-relaxed">
+                    Ülkenin işleyişi tamamen dijital ekosisteme entegre edilmiştir. Zaman akışı <a href="https://1071denberi.vercel.app" target="_blank" class="wiki-link">Zaman Sayacı</a> ile takip edilirken, günlük işler özelleştirilmiş yazılımlarla yürütülmektedir.
+                </p>
             </section>
 
             <!-- Bölüm 7: Bağlantılar -->
             <section id="baglantilar" class="mb-16">
-                <button onclick="toggleSection('baglantilar-content', this)" class="w-full flex justify-between items-center text-left py-2 group cursor-pointer">
-                    <h2 class="text-2xl font-serif font-bold group-hover:text-primary transition-colors">7. Topluluk ve İletişim</h2>
-                    <span class="transform transition-transform duration-200 text-xl font-bold">▾</span>
-                </button>
-                <div id="baglantilar-content" class="accordion-content mt-2 font-serif leading-relaxed space-y-3">
-                    <p>
-                        Anatolya Birliği vatandaşları ve katılımcıları resmi iletişim kanallarında bir araya gelmektedir:
-                    </p>
-                    <div class="flex gap-4 font-serif">
-                        <a href="https://t.me/+nUbTj-faHDhlMTJk" target="_blank" class="wiki-link font-semibold">Telegram Kanalı</a>
-                        <span>•</span>
-                        <a href="https://discord.gg/PDa4D6n6" target="_blank" class="wiki-link font-semibold">Discord Sunucusu</a>
-                    </div>
+                <h2 class="text-2xl font-serif font-bold border-b border-border-light/40 dark:border-border-dark/40 pb-1 mb-3">Topluluk ve İletişim</h2>
+                <p class="font-serif leading-relaxed mb-3">
+                    Anatolya Birliği vatandaşları ve katılımcıları resmi iletişim kanallarında bir araya gelmektedir:
+                </p>
+                <div class="flex gap-4 font-serif">
+                    <a href="https://t.me/+nUbTj-faHDhlMTJk" target="_blank" class="wiki-link font-semibold">Telegram Kanalı</a>
+                    <span>•</span>
+                    <a href="https://discord.gg/PDa4D6n6" target="_blank" class="wiki-link font-semibold">Discord Sunucusu</a>
                 </div>
             </section>
 
