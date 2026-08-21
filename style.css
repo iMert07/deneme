@@ -11,3 +11,16 @@
 html {
     scroll-behavior: smooth;
 }
+
+/* Mobilde basılı tutulduğunda metinlerin istenmeyen şekilde seçilmesini engeller */
+body {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* Bağlantılarda ve arama çubuğunda etkileşimin bozulmaması için */
+input, a {
+    -webkit-user-select: text;
+    user-select: text;
+}
