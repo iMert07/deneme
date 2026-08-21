@@ -43,19 +43,3 @@ searchInput?.addEventListener('input', (e) => {
         }
     });
 });
-
-// Açılır Kapanır Bölümler (Akordiyon) Fonksiyonu
-function toggleSection(contentId, buttonElement) {
-    const content = document.getElementById(contentId);
-    const arrow = buttonElement.querySelector('span');
-    
-    if (content.style.maxHeight && content.style.maxHeight !== "0px") {
-        content.style.maxHeight = "0px";
-        content.style.opacity = "0";
-        arrow.style.transform = "rotate(0deg)";
-    } else {
-        content.style.maxHeight = content.scrollHeight + "px";
-        content.style.opacity = "1";
-        arrow.style.transform = "rotate(180deg)";
-    }
-}
