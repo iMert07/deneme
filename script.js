@@ -12,6 +12,22 @@ document.getElementById('theme-toggle')?.addEventListener('click', () => {
 });
 updateThemeIcons();
 
+// Dil/Çeviri Menüsü Açma/Kapama
+const langBtn = document.getElementById('lang-menu-btn');
+const langDropdown = document.getElementById('lang-dropdown');
+
+langBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    langDropdown.classList.toggle('hidden');
+});
+
+// Sayfada başka bir yere tıklandığında menüyü kapat
+document.addEventListener('click', () => {
+    if (langDropdown && !langDropdown.classList.contains('hidden')) {
+        langDropdown.classList.add('hidden');
+    }
+});
+
 // Mobil Kenar Çubuğu Açma/Kapama
 const sidebar = document.getElementById('sidebar');
 const overlay = document.getElementById('sidebar-overlay');
