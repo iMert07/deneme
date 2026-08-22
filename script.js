@@ -10,7 +10,7 @@ let searchHistory = JSON.parse(localStorage.getItem('orum_history')) || [];
 
 const PAGE_SIZE = 36;
 const customAlphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVXYZ".split("");
-const latinToGreekMap = { "a":"Α","A":"Α", "b":"Β","B":"Β", "c":"J","C":"J", "ç":"C","Ç":"C", "d":"D","D":"D", "e":"Ε","E":"Ε", "f":"F","F":"F", "g":"G","G":"G", "ğ":"Γ","Ğ":"Γ", "h":"Η","H":"Η", "ı":"Ь","I":"Ь", "i":"Ͱ","İ":"Ͱ", "j":"Σ","J":"Σ", "k":"Κ","Κ":"Κ", "l":"L","L":"L", "m":"Μ","M":"Μ", "n":"Ν","N":"Ν", "o":"Q","O":"Q", "ö":"Ω","Ö":"Ω", "p":"Π","P":"Π", "r":"Ρ","R":"Ρ", "s":"S","S":"S", "ş":"Ш","Ş":"Ш", "t":"Τ","T":"Τ", "u":"U","U":"U", "ü":"Υ","Ü":"Υ", "v":"V","V":"V", "x":"Ψ","X":"Ψ", "y":"R","Y":"R", "z":"Ζ","Z":"Ζ" };
+const latinToGreekMap = { "a":"Α","A":"Α", "b":"Β","B":"Β", "c":"J","C":"J", "ç":"C","Ç":"C", "d":"D","D":"D", "e":"Ε","E":"Ε", "f":"F","F":"F", "g":"G","G":"G", "ğ":"Γ","Ğ":"Ğ", "h":"Η","H":"Η", "ı":"Ь","I":"Ь", "i":"Ͱ","İ":"Ͱ", "j":"Σ","J":"Σ", "k":"Κ","Κ":"Κ", "l":"L","L":"L", "m":"Μ","M":"Μ", "n":"Ν","N":"Ν", "o":"Q","O":"Q", "ö":"Ω","Ö":"Ω", "p":"Π","P":"Π", "r":"Ρ","R":"Ρ", "s":"S","S":"S", "ş":"Ш","Ş":"Ш", "t":"Τ","T":"Τ", "u":"U","U":"U", "ü":"Υ","Ü":"Ü", "v":"V","V":"V", "x":"Ψ","X":"Ψ", "y":"R","Y":"R", "z":"Ζ","Z":"Ζ" };
 
 const translations = { 
     'tr': { 
@@ -259,8 +259,6 @@ function renderEtymologyStats() {
 }
 
 function showEtymologyWordList(originName, page = 0) {
-    hideAllSections();
-    activeOriginFilter = originName;
     const section = document.getElementById('alphabet-section');
     section.classList.remove('hidden');
     
@@ -292,7 +290,7 @@ function showEtymologyWordList(originName, page = 0) {
         const b = document.createElement('button'); 
         b.className = "text-left p-3 rounded bg-white/5 border border-subtle-light dark:border-subtle-dark hover:border-primary transition-all truncate font-semibold text-sm select-none text-foreground-light dark:text-foreground-dark shadow-sm";
         b.innerText = isGreek ? convertToGreek(item.Sözcük) : item.Sözcük;
-        b.onclick = () => selectWord(item, item.Sözcük, false, null, false); 
+        b.onclick = () => selectWord(item, item.Sözcük, false, null, true); // Düzeltildi: fromSearch true yapılarak sayfa bölümleri gizlendi
         resultsDiv.appendChild(b);
     });
 
@@ -392,7 +390,7 @@ function showLetterResults(harf, page, showAll = false) {
     filtered.slice(start, end).forEach(item => {
         const b = document.createElement('button'); b.className = "text-left p-3 rounded bg-white/5 border border-subtle-light dark:border-subtle-dark hover:border-primary transition-all truncate font-semibold text-sm select-none text-foreground-light dark:text-foreground-dark shadow-sm";
         b.innerText = isGreek ? convertToGreek(item.Sözcük) : item.Sözcük;
-        b.onclick = () => selectWord(item, item.Sözcük, false, null, false); 
+        b.onclick = () => selectWord(item, item.Sözcük, false, null, true); // Düzeltildi: fromSearch true yapıldı
         resultsDiv.appendChild(b);
     });
     if (filtered.length > 0) {
@@ -479,12 +477,11 @@ function renderRandomWord(pickNew = true) {
     titleEl.textContent = displayWord;
     descEl.textContent = displayDesc;
     
-    card.onclick = () => selectWord(currentRandomWord, currentRandomWord.Sözcük, false, null, false);
+    card.onclick = () => selectWord(currentRandomWord, currentRandomWord.Sözcük, false, null, true);
 }
 
 function calculateStats() {
     const s = document.getElementById('stats-sentence'); 
-    const dateEl = document.getElementById('update-date-text');
     if (!s) return;
     const valid = allWords.filter(r => r.Sözcük && r.Sözcük.trim() !== "");
     const eCount = valid.length; let tWord = 0;
@@ -492,11 +489,6 @@ function calculateStats() {
     let sent = `Şu an bu sözlükte ${eCount} madde altında toplam ${tWord} kelime bulunmaktadır.`;
     if (isGreek) sent = convertToGreek(sent);
     s.innerHTML = sent.replace(eCount, `<span class="text-primary font-bold">${eCount}</span>`).replace(tWord, `<span class="text-primary font-bold">${tWord}</span>`);
-    
-    if (dateEl) {
-        const updateText = "Son Güncelleme: 22.08.2026";
-        dateEl.textContent = isGreek ? convertToGreek(updateText) : updateText;
-    }
 }
 
 function normalizeString(str) { return str ? str.toLocaleLowerCase('tr-TR') : ''; }
