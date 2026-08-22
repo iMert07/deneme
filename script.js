@@ -1,6 +1,6 @@
 let allWords = [];
 let lastSelectedWord = null;
-let currentRandomWord = null; // Rastgele seçilen kelimeyi hafızada tutmak için
+let currentRandomWord = null;
 let isGreek = false;
 let currentSelectedLetter = null;
 let sortConfig = { key: 'harf', direction: 'asc' }; 
@@ -32,8 +32,8 @@ const translations = {
 
 function showNotification(message, title = "Bilgilendirme") {
     const modal = document.getElementById('notificationModal');
-    document.getElementById('notificationTitle').innerText = title;
-    document.getElementById('notificationMessage').innerText = message;
+    document.getElementById('notificationTitle').innerText = isGreek ? convertToGreek(title) : title;
+    document.getElementById('notificationMessage').innerText = isGreek ? convertToGreek(message) : message;
     modal.classList.remove('hidden');
 }
 
@@ -61,8 +61,12 @@ function initButtons() {
         document.getElementById('alphabet-toggle-latin')?.classList.toggle('hidden', isGreek);
         document.getElementById('alphabet-toggle-cyrillic')?.classList.toggle('hidden', !isGreek);
         updateText(isGreek ? 'gr' : 'tr');
-        calculateStats(); 
-        renderRandomWord(false); // Harf çevirildiğinde rastgele kelime değişmesin ama dili (Yunanca/Türkçe) güncellensin
+        
+        // Sadece ana sayfa aktifse sayaç ve rastgele kelime metnini güncelle (diğer sayfalarda kartlar gizli kalır)
+        if (!document.getElementById('welcome-box').classList.contains('hidden')) {
+            calculateStats();
+            renderRandomWord(false);
+        }
 
         const resultDiv = document.getElementById('result');
         if (lastSelectedWord && resultDiv && resultDiv.innerHTML.trim() !== "") {
@@ -479,7 +483,6 @@ function renderRandomWord(pickNew = true) {
     descEl.textContent = displayDesc;
     
     card.onclick = () => selectWord(currentRandomWord, currentRandomWord.Sözcük, false, null, false);
-    card.classList.remove('hidden');
 }
 
 function calculateStats() {
