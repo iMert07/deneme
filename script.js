@@ -62,12 +62,7 @@ function initButtons() {
         document.getElementById('alphabet-toggle-cyrillic')?.classList.toggle('hidden', !isGreek);
         updateText(isGreek ? 'gr' : 'tr');
         calculateStats(); 
-        
-        // Sadece ana sayfa aktifse rastgele kelime kartını güncelle
-        const welcomeBox = document.getElementById('welcome-box');
-        if (welcomeBox && !welcomeBox.classList.contains('hidden')) {
-            renderRandomWord(false);
-        }
+        renderRandomWord(false);
 
         const resultDiv = document.getElementById('result');
         if (lastSelectedWord && resultDiv && resultDiv.innerHTML.trim() !== "") {
@@ -206,7 +201,7 @@ function showPage(pageId) {
         document.getElementById('random-word-card').classList.remove('hidden');
         document.getElementById('stats-card').classList.remove('hidden');
         document.getElementById('searchInput').value = '';
-        renderRandomWord(false); // Ana sayfaya dönüldüğünde mevcut rastgele kelimeyi koru
+        renderRandomWord(false);
     }
 }
 
