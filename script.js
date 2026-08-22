@@ -9,7 +9,7 @@ let searchHistory = JSON.parse(localStorage.getItem('orum_history')) || [];
 
 const PAGE_SIZE = 36;
 const customAlphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVXYZ".split("");
-const latinToGreekMap = { "a":"Α","A":"Α", "b":"Β","B":"Β", "c":"J","C":"J", "ç":"C","Ç":"C", "d":"D","D":"D", "e":"Ε","E":"Ε", "f":"F","F":"F", "g":"G","G":"G", "ğ":"Γ","Ğ":"Γ", "h":"Η","H":"Η", "ı":"Ь","I":"Ь", "i":"Ͱ","İ":"Ͱ", "j":"Σ","J":"Σ", "k":"Κ","Κ":"Κ", "l":"L","L":"L", "m":"Μ","M":"Μ", "n":"Ν","N":"Ν", "o":"Q","O":"Q", "ö":"Ω","Ö":"Ω", "p":"Π","P":"Π", "r":"Ρ","R":"Ρ", "s":"S","S":"S", "ş":"Ш","Ş":"Ш", "t":"Τ","T":"Τ", "u":"U","U":"U", "ü":"Υ","Ü":"Ü", "v":"V","V":"V", "x":"Ψ","X":"Ψ", "y":"R","Y":"R", "z":"Ζ","Z":"Ζ" };
+const latinToGreekMap = { "a":"Α","A":"Α", "b":"Β","B":"Β", "c":"J","C":"J", "ç":"C","Ç":"C", "d":"D","D":"D", "e":"Ε","E":"Ε", "f":"F","F":"F", "g":"G","G":"G", "ğ":"Γ","Ğ":"Ğ", "h":"Η","H":"Η", "ı":"Ь","I":"Ь", "i":"Ͱ","İ":"Ͱ", "j":"Σ","J":"Σ", "k":"Κ","Κ":"Κ", "l":"L","L":"L", "m":"Μ","M":"Μ", "n":"Ν","N":"Ν", "o":"Q","O":"Q", "ö":"Ω","Ö":"Ω", "p":"Π","P":"Π", "r":"Ρ","R":"Ρ", "s":"S","S":"S", "ş":"Ш","Ş":"Ш", "t":"Τ","T":"Τ", "u":"U","U":"U", "ü":"Υ","Ü":"Ü", "v":"V","V":"V", "x":"Ψ","X":"Ψ", "y":"R","Y":"R", "z":"Ζ","Z":"Ζ" };
 
 const translations = { 
     'tr': { 
@@ -58,7 +58,7 @@ function initButtons() {
         document.getElementById('alphabet-toggle-latin')?.classList.toggle('hidden', isGreek);
         document.getElementById('alphabet-toggle-cyrillic')?.classList.toggle('hidden', !isGreek);
         updateText(isGreek ? 'gr' : 'tr');
-        calculateStats();
+        // calculateStats buradan kaldırıldı (rastgele kelimeyi tetiklemesin diye)
 
         const resultDiv = document.getElementById('result');
         if (lastSelectedWord && resultDiv && resultDiv.innerHTML.trim() !== "") {
@@ -491,8 +491,6 @@ function calculateStats() {
         const updateText = "Son Güncelleme: 22.08.2026";
         dateEl.textContent = isGreek ? convertToGreek(updateText) : updateText;
     }
-
-    renderRandomWord();
 }
 
 function normalizeString(str) { return str ? str.toLocaleLowerCase('tr-TR') : ''; }
@@ -504,7 +502,7 @@ async function fetchWords() {
     const url = `https://opensheet.elk.sh/1R01aIajx6dzHlO-KBiUXUmld2AEvxjCQkUTFGYB3EDM/Sözlük`; 
     try { 
         const res = await fetch(url); allWords = await res.json(); 
-        initButtons(); setupSearch(); calculateStats(); updateText('tr');
+        initButtons(); setupSearch(); calculateStats(); renderRandomWord(); updateText('tr');
     } catch (e) { console.error(e); } 
 }
 fetchWords();
