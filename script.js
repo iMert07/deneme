@@ -290,7 +290,7 @@ function showEtymologyWordList(originName, page = 0) {
         const b = document.createElement('button'); 
         b.className = "text-left p-3 rounded bg-white/5 border border-subtle-light dark:border-subtle-dark hover:border-primary transition-all truncate font-semibold text-sm select-none text-foreground-light dark:text-foreground-dark shadow-sm";
         b.innerText = isGreek ? convertToGreek(item.Sözcük) : item.Sözcük;
-        b.onclick = () => selectWord(item, item.Sözcük, false, null, true); // Düzeltildi: fromSearch true yapılarak sayfa bölümleri gizlendi
+        b.onclick = () => selectWord(item, item.Sözcük, false, null, false); // Orijinal haline getirildi (listede kalınır)
         resultsDiv.appendChild(b);
     });
 
@@ -390,7 +390,7 @@ function showLetterResults(harf, page, showAll = false) {
     filtered.slice(start, end).forEach(item => {
         const b = document.createElement('button'); b.className = "text-left p-3 rounded bg-white/5 border border-subtle-light dark:border-subtle-dark hover:border-primary transition-all truncate font-semibold text-sm select-none text-foreground-light dark:text-foreground-dark shadow-sm";
         b.innerText = isGreek ? convertToGreek(item.Sözcük) : item.Sözcük;
-        b.onclick = () => selectWord(item, item.Sözcük, false, null, true); // Düzeltildi: fromSearch true yapıldı
+        b.onclick = () => selectWord(item, item.Sözcük, false, null, false); // Orijinal haline getirildi (listede kalınır)
         resultsDiv.appendChild(b);
     });
     if (filtered.length > 0) {
@@ -477,11 +477,12 @@ function renderRandomWord(pickNew = true) {
     titleEl.textContent = displayWord;
     descEl.textContent = displayDesc;
     
-    card.onclick = () => selectWord(currentRandomWord, currentRandomWord.Sözcük, false, null, true);
+    card.onclick = () => selectWord(currentRandomWord, currentRandomWord.Sözcük, false, null, false);
 }
 
 function calculateStats() {
     const s = document.getElementById('stats-sentence'); 
+    const dateEl = document.getElementById('update-date-text');
     if (!s) return;
     const valid = allWords.filter(r => r.Sözcük && r.Sözcük.trim() !== "");
     const eCount = valid.length; let tWord = 0;
@@ -489,6 +490,12 @@ function calculateStats() {
     let sent = `Şu an bu sözlükte ${eCount} madde altında toplam ${tWord} kelime bulunmaktadır.`;
     if (isGreek) sent = convertToGreek(sent);
     s.innerHTML = sent.replace(eCount, `<span class="text-primary font-bold">${eCount}</span>`).replace(tWord, `<span class="text-primary font-bold">${tWord}</span>`);
+    
+    if (dateEl) {
+        const rawDate = "Son Güncelleme: 22.08.2026";
+        const displayDate = isGreek ? convertToGreek(rawDate) : rawDate;
+        dateEl.innerHTML = displayDate.replace("22.08.2026", `<span class="text-primary font-bold">22.08.2026</span>`);
+    }
 }
 
 function normalizeString(str) { return str ? str.toLocaleLowerCase('tr-TR') : ''; }
@@ -504,6 +511,7 @@ function updateText(lang) {
             else el.textContent = f; 
         } 
     }); 
+    calculateStats(); // Tarih alanının da çeviriye anında tepki vermesi için eklendi
 }
 
 function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
