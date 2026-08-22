@@ -10,7 +10,7 @@ let searchHistory = JSON.parse(localStorage.getItem('orum_history')) || [];
 
 const PAGE_SIZE = 36;
 const customAlphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVXYZ".split("");
-const latinToGreekMap = { "a":"Α","A":"Α", "b":"Β","B":"Β", "c":"J","C":"J", "ç":"C","Ç":"C", "d":"D","D":"D", "e":"Ε","E":"Ε", "f":"F","F":"F", "g":"G","G":"G", "ğ":"Γ","Ğ":"Ğ", "h":"Η","H":"Η", "ı":"Ь","I":"Ь", "i":"Ͱ","İ":"Ͱ", "j":"Σ","J":"Σ", "k":"Κ","Κ":"Κ", "l":"L","L":"L", "m":"Μ","M":"Μ", "n":"Ν","N":"Ν", "o":"Q","O":"Q", "ö":"Ω","Ö":"Ω", "p":"Π","P":"Π", "r":"Ρ","R":"Ρ", "s":"S","S":"S", "ş":"Ш","Ş":"Ш", "t":"Τ","T":"Τ", "u":"U","U":"U", "ü":"Υ","Ü":"Ü", "v":"V","V":"V", "x":"Ψ","X":"Ψ", "y":"R","Y":"R", "z":"Ζ","Z":"Z" };
+const latinToGreekMap = { "a":"Α","A":"Α", "b":"Β","B":"Β", "c":"J","C":"J", "ç":"C","Ç":"C", "d":"D","D":"D", "e":"Ε","E":"Ε", "f":"F","F":"F", "g":"G","G":"G", "ğ":"Γ","Ğ":"Ğ", "h":"Η","H":"Η", "ı":"Ь","I":"Ь", "i":"Ͱ","İ":"Ͱ", "j":"Σ","J":"Σ", "k":"Κ","Κ":"Κ", "l":"L","L":"L", "m":"Μ","M":"Μ", "n":"Ν","N":"Ν", "o":"Q","O":"Q", "ö":"Ω","Ö":"Ω", "p":"Π","P":"Π", "r":"Ρ","R":"Ρ", "s":"S","S":"S", "ş":"Ш","Ş":"Ш", "t":"Τ","T":"Τ", "u":"U","U":"U", "ü":"Υ","Ü":"Ü", "v":"V","V":"V", "x":"Ψ","X":"Ψ", "y":"R","Y":"R", "z":"Ζ","Z":"Ζ" };
 
 const translations = { 
     'tr': { 
@@ -213,8 +213,17 @@ function showKelimelerPage(letter = "A") {
     showLetterResults(letter, 0); 
 }
 
-function showStatsPage() { hideAllSections(); document.getElementById('stats-section').classList.remove('hidden'); renderAlphabetStats(); }
-function showEtyPage() { hideAllSections(); document.getElementById('ety-section').classList.remove('hidden'); renderEtymologyStats(); }
+function showStatsPage() { 
+    hideAllSections(); 
+    document.getElementById('stats-section').classList.remove('hidden'); 
+    renderAlphabetStats(); 
+}
+
+function showEtyPage() { 
+    hideAllSections(); 
+    document.getElementById('ety-section').classList.remove('hidden'); 
+    renderEtymologyStats(); 
+}
 
 function showResult(word) {
     const resultDiv = document.getElementById('result');
@@ -223,8 +232,6 @@ function showResult(word) {
 }
 
 function renderEtymologyStats() {
-    hideAllSections();
-    document.getElementById('ety-section').classList.remove('hidden');
     const container = document.getElementById('ety-container'); if (!container) return;
     let etyMap = {}; let totalValidEntries = 0;
     
@@ -262,6 +269,7 @@ function renderEtymologyStats() {
 
 function showEtymologyWordList(originName, page = 0) {
     const section = document.getElementById('alphabet-section');
+    document.getElementById('ety-section').classList.add('hidden'); // Köken kutularını gizle
     section.classList.remove('hidden');
     
     currentSelectedLetter = null;
@@ -292,7 +300,7 @@ function showEtymologyWordList(originName, page = 0) {
         const b = document.createElement('button'); 
         b.className = "text-left p-3 rounded bg-white/5 border border-subtle-light dark:border-subtle-dark hover:border-primary transition-all truncate font-semibold text-sm select-none text-foreground-light dark:text-foreground-dark shadow-sm";
         b.innerText = isGreek ? convertToGreek(item.Sözcük) : item.Sözcük;
-        b.onclick = () => selectWord(item, item.Sözcük, false, null, false); // Kelimeler sekmesiyle aynı mantık (listeden çıkmıyor)
+        b.onclick = () => selectWord(item, item.Sözcük, false, null, false); 
         resultsDiv.appendChild(b);
     });
 
@@ -317,8 +325,6 @@ function setEtySort(key) { etySortConfig.key = key; renderEtymologyStats(); }
 function toggleEtyDirection() { etySortConfig.direction = etySortConfig.direction === 'asc' ? 'desc' : 'asc'; renderEtymologyStats(); }
 
 function renderAlphabetStats() {
-    hideAllSections();
-    document.getElementById('stats-section').classList.remove('hidden');
     const container = document.getElementById('stats-container'); if (!container) return;
     let totalChars = 0; let totalEntries = 0;
     allWords.forEach(w => { if (w.Sözcük) { totalEntries++; totalChars += w.Sözcük.replace(/\s/g, '').length; } });
@@ -363,7 +369,7 @@ function renderAlphabetStats() {
     
     statsData.forEach(item => {
         const box = document.createElement('div'); 
-        box.className = "bg-subtle-light dark:bg-subtle-dark rounded-xl border border-subtle-light dark:border-subtle-dark overflow-hidden shadow-sm select-none hover:border-primary transition-all flex flex-col h-full cursor-pointer group";
+        box.className = "bg-subtle-light dark:bg-subtle-dark rounded-xl border border-subtle-light dark:border-subtle-dark overflow-hidden shadow-sm select-none hover:border-primary transition-all cursor-pointer group";
         box.onclick = () => showKelimelerPage(item.harf);
         box.innerHTML = `<div class="bg-primary group-hover:opacity-90 text-white text-center py-2 font-bold text-xl transition-opacity">${isGreek ? convertToGreek(item.harf) : item.harf}</div><div class="flex divide-x divide-subtle-light dark:divide-subtle-dark text-center"><div class="flex-1 py-3 leading-tight"><p class="text-[10px] opacity-50 uppercase font-bold mb-1">${t_basta}</p><p class="text-lg font-bold text-primary">${item.başta}</p><p class="text-[11px] opacity-70 mt-0.5">%${item.baştaPct}</p></div><div class="flex-1 py-3 leading-tight"><p class="text-[10px] opacity-50 uppercase font-bold mb-1">${t_toplam}</p><p class="text-lg font-bold">${item.toplam}</p><p class="text-[11px] opacity-70 mt-0.5">%${item.toplamPct}</p></div></div>`;
         container.appendChild(box);
