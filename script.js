@@ -32,8 +32,8 @@ const translations = {
 
 function showNotification(message, title = "Bilgilendirme") {
     const modal = document.getElementById('notificationModal');
-    document.getElementById('notificationTitle').innerText = isGreek ? convertToGreek(title) : title;
-    document.getElementById('notificationMessage').innerText = isGreek ? convertToGreek(message) : message;
+    document.getElementById('notificationTitle').innerText = title;
+    document.getElementById('notificationMessage').innerText = message;
     modal.classList.remove('hidden');
 }
 
@@ -61,10 +61,11 @@ function initButtons() {
         document.getElementById('alphabet-toggle-latin')?.classList.toggle('hidden', isGreek);
         document.getElementById('alphabet-toggle-cyrillic')?.classList.toggle('hidden', !isGreek);
         updateText(isGreek ? 'gr' : 'tr');
+        calculateStats(); 
         
-        // Sadece ana sayfa aktifse sayaç ve rastgele kelime metnini güncelle (diğer sayfalarda kartlar gizli kalır)
-        if (!document.getElementById('welcome-box').classList.contains('hidden')) {
-            calculateStats();
+        // Sadece ana sayfa aktifse rastgele kelime kartını güncelle
+        const welcomeBox = document.getElementById('welcome-box');
+        if (welcomeBox && !welcomeBox.classList.contains('hidden')) {
             renderRandomWord(false);
         }
 
@@ -205,6 +206,7 @@ function showPage(pageId) {
         document.getElementById('random-word-card').classList.remove('hidden');
         document.getElementById('stats-card').classList.remove('hidden');
         document.getElementById('searchInput').value = '';
+        renderRandomWord(false); // Ana sayfaya dönüldüğünde mevcut rastgele kelimeyi koru
     }
 }
 
