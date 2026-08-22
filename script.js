@@ -223,6 +223,8 @@ function showResult(word) {
 }
 
 function renderEtymologyStats() {
+    hideAllSections();
+    document.getElementById('ety-section').classList.remove('hidden');
     const container = document.getElementById('ety-container'); if (!container) return;
     let etyMap = {}; let totalValidEntries = 0;
     
@@ -259,6 +261,8 @@ function renderEtymologyStats() {
 }
 
 function showEtymologyWordList(originName, page = 0) {
+    hideAllSections();
+    activeOriginFilter = originName;
     const section = document.getElementById('alphabet-section');
     section.classList.remove('hidden');
     
@@ -290,7 +294,7 @@ function showEtymologyWordList(originName, page = 0) {
         const b = document.createElement('button'); 
         b.className = "text-left p-3 rounded bg-white/5 border border-subtle-light dark:border-subtle-dark hover:border-primary transition-all truncate font-semibold text-sm select-none text-foreground-light dark:text-foreground-dark shadow-sm";
         b.innerText = isGreek ? convertToGreek(item.Sözcük) : item.Sözcük;
-        b.onclick = () => selectWord(item, item.Sözcük, false, null, false); // Orijinal haline getirildi (listede kalınır)
+        b.onclick = () => selectWord(item, item.Sözcük, false, null, false); 
         resultsDiv.appendChild(b);
     });
 
@@ -315,6 +319,8 @@ function setEtySort(key) { etySortConfig.key = key; renderEtymologyStats(); }
 function toggleEtyDirection() { etySortConfig.direction = etySortConfig.direction === 'asc' ? 'desc' : 'asc'; renderEtymologyStats(); }
 
 function renderAlphabetStats() {
+    hideAllSections();
+    document.getElementById('stats-section').classList.remove('hidden');
     const container = document.getElementById('stats-container'); if (!container) return;
     let totalChars = 0; let totalEntries = 0;
     allWords.forEach(w => { if (w.Sözcük) { totalEntries++; totalChars += w.Sözcük.replace(/\s/g, '').length; } });
@@ -390,7 +396,7 @@ function showLetterResults(harf, page, showAll = false) {
     filtered.slice(start, end).forEach(item => {
         const b = document.createElement('button'); b.className = "text-left p-3 rounded bg-white/5 border border-subtle-light dark:border-subtle-dark hover:border-primary transition-all truncate font-semibold text-sm select-none text-foreground-light dark:text-foreground-dark shadow-sm";
         b.innerText = isGreek ? convertToGreek(item.Sözcük) : item.Sözcük;
-        b.onclick = () => selectWord(item, item.Sözcük, false, null, false); // Orijinal haline getirildi (listede kalınır)
+        b.onclick = () => selectWord(item, item.Sözcük, false, null, false); 
         resultsDiv.appendChild(b);
     });
     if (filtered.length > 0) {
@@ -511,7 +517,7 @@ function updateText(lang) {
             else el.textContent = f; 
         } 
     }); 
-    calculateStats(); // Tarih alanının da çeviriye anında tepki vermesi için eklendi
+    calculateStats(); 
 }
 
 function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
