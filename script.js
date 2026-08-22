@@ -23,7 +23,9 @@ const translations = {
         'synonyms_title': 'Eş Anlamlılar', 'description_title': 'Açıklama', 
         'example_title': 'Örnek', 'etymology_title': 'Köken', 'no_result': 'Sonuç bulunamadı',
         'random_title': 'Rastgele Keşfet',
-        'update_date_label': 'Son Güncelleme'
+        'update_date_text': 'Son Güncelleme: 22.08.2026',
+        'feedback_contact_label': 'Size Nasıl Ulaşabilirim?',
+        'feedback_contact_placeholder': 'İsteğe bağlı'
     } 
 };
 
@@ -58,7 +60,7 @@ function initButtons() {
         document.getElementById('alphabet-toggle-latin')?.classList.toggle('hidden', isGreek);
         document.getElementById('alphabet-toggle-cyrillic')?.classList.toggle('hidden', !isGreek);
         updateText(isGreek ? 'gr' : 'tr');
-        // calculateStats buradan kaldırıldı (rastgele kelimeyi tetiklemesin diye)
+        calculateStats(); // Harf çevirisi anında sayaç ve tarih yazılarını da dönüştürmek için eklendi
 
         const resultDiv = document.getElementById('result');
         if (lastSelectedWord && resultDiv && resultDiv.innerHTML.trim() !== "") {
@@ -412,8 +414,8 @@ function toggleFeedbackForm() {
     if (!modal.classList.contains('hidden')) {
         messageInput.value = '';
         contactInput.value = '';
-        messageInput.placeholder = "Mesajınız...";
-        contactInput.placeholder = "İsteğe bağlı";
+        messageInput.placeholder = isGreek ? convertToGreek("Mesajınız...") : "Mesajınız...";
+        contactInput.placeholder = isGreek ? convertToGreek("İsteğe bağlı") : "İsteğe bağlı";
     }
 }
 
@@ -495,7 +497,19 @@ function calculateStats() {
 
 function normalizeString(str) { return str ? str.toLocaleLowerCase('tr-TR') : ''; }
 function convertToGreek(str) { if(!str) return ""; return str.split('').map(char => latinToGreekMap[char] || char).join(''); }
-function updateText(lang) { document.querySelectorAll('[data-key]').forEach(el => { const key = el.getAttribute('data-key'); if (translations['tr'][key]) { let f = translations['tr'][key]; if (lang === 'gr') f = convertToGreek(f); if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = f; else el.textContent = f; } }); }
+
+function updateText(lang) { 
+    document.querySelectorAll('[data-key]').forEach(el => { 
+        const key = el.getAttribute('data-key'); 
+        if (translations['tr'][key]) { 
+            let f = translations['tr'][key]; 
+            if (lang === 'gr') f = convertToGreek(f); 
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = f; 
+            else el.textContent = f; 
+        } 
+    }); 
+}
+
 function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
 
 async function fetchWords() { 
