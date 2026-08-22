@@ -1,5 +1,6 @@
 let allWords = [];
 let lastSelectedWord = null;
+let currentRandomWord = null; // Rastgele seçilen kelimeyi hafızada tutmak için
 let isGreek = false;
 let currentSelectedLetter = null;
 let sortConfig = { key: 'harf', direction: 'asc' }; 
@@ -60,7 +61,8 @@ function initButtons() {
         document.getElementById('alphabet-toggle-latin')?.classList.toggle('hidden', isGreek);
         document.getElementById('alphabet-toggle-cyrillic')?.classList.toggle('hidden', !isGreek);
         updateText(isGreek ? 'gr' : 'tr');
-        calculateStats(); // Harf çevirisi anında sayaç ve tarih yazılarını da dönüştürmek için eklendi
+        calculateStats(); 
+        renderRandomWord(false); // Harf çevirildiğinde rastgele kelime değişmesin ama dili (Yunanca/Türkçe) güncellensin
 
         const resultDiv = document.getElementById('result');
         if (lastSelectedWord && resultDiv && resultDiv.innerHTML.trim() !== "") {
@@ -455,12 +457,14 @@ function submitFeedback() {
     });
 }
 
-function renderRandomWord() {
+function renderRandomWord(pickNew = true) {
     const validWords = allWords.filter(w => w.Sözcük && w.Sözcük.trim() !== "" && w.Açıklama && w.Açıklama.trim() !== "");
     if (validWords.length === 0) return;
     
-    const randomIndex = Math.floor(Math.random() * validWords.length);
-    const word = validWords[randomIndex];
+    if (pickNew || !currentRandomWord) {
+        const randomIndex = Math.floor(Math.random() * validWords.length);
+        currentRandomWord = validWords[randomIndex];
+    }
     
     const card = document.getElementById('random-word-card');
     const titleEl = document.getElementById('random-word-title');
@@ -468,13 +472,13 @@ function renderRandomWord() {
     
     if (!card || !titleEl || !descEl) return;
     
-    const displayWord = isGreek ? convertToGreek(word.Sözcük) : word.Sözcük;
-    const displayDesc = isGreek ? convertToGreek(word.Açıklama) : word.Açıklama;
+    const displayWord = isGreek ? convertToGreek(currentRandomWord.Sözcük) : currentRandomWord.Sözcük;
+    const displayDesc = isGreek ? convertToGreek(currentRandomWord.Açıklama) : currentRandomWord.Açıklama;
     
     titleEl.textContent = displayWord;
     descEl.textContent = displayDesc;
     
-    card.onclick = () => selectWord(word, word.Sözcük, false, null, false);
+    card.onclick = () => selectWord(currentRandomWord, currentRandomWord.Sözcük, false, null, false);
     card.classList.remove('hidden');
 }
 
@@ -516,7 +520,7 @@ async function fetchWords() {
     const url = `https://opensheet.elk.sh/1R01aIajx6dzHlO-KBiUXUmld2AEvxjCQkUTFGYB3EDM/Sözlük`; 
     try { 
         const res = await fetch(url); allWords = await res.json(); 
-        initButtons(); setupSearch(); calculateStats(); renderRandomWord(); updateText('tr');
+        initButtons(); setupSearch(); calculateStats(); renderRandomWord(true); updateText('tr');
     } catch (e) { console.error(e); } 
 }
 fetchWords();
