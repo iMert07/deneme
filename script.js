@@ -7,6 +7,7 @@ let sortConfig = { key: 'harf', direction: 'asc' };
 let etySortConfig = { key: 'label', direction: 'asc' }; 
 let activeOriginFilter = null;
 let searchHistory = JSON.parse(localStorage.getItem('orum_history')) || [];
+let lastUpdatedDateStr = "Bilinmiyor";
 
 const PAGE_SIZE = 36;
 const customAlphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVXYZ".split("");
@@ -23,7 +24,7 @@ const translations = {
         'synonyms_title': 'Eş Anlamlılar', 'description_title': 'Açıklama', 
         'example_title': 'Örnek', 'etymology_title': 'Köken', 'no_result': 'Sonuç bulunamadı',
         'random_title': 'Keşfet',
-        'update_date_text': 'Son Güncelleme: 22.08.2026',
+        'update_date_text': 'Son Güncelleme: {date}',
         'feedback_contact_label': 'Size Nasıl Ulaşabilirim?',
         'feedback_contact_placeholder': 'İsteğe bağlı'
     } 
@@ -506,9 +507,9 @@ function calculateStats() {
     s.innerHTML = sent.replace(eCount, `<span class="text-primary font-bold">${eCount}</span>`).replace(tWord, `<span class="text-primary font-bold">${tWord}</span>`);
     
     if (dateEl) {
-        const rawDate = "Son Güncelleme: 22.08.2026";
-        const displayDate = isGreek ? convertToGreek(rawDate) : rawDate;
-        dateEl.innerHTML = displayDate.replace("22.08.2026", `<span class="text-primary font-bold">22.08.2026</span>`);
+        let rawDateText = `Son Güncelleme: ${lastUpdatedDateStr}`;
+        const displayDateText = isGreek ? convertToGreek(rawDateText) : rawDateText;
+        dateEl.innerHTML = displayDateText.replace(lastUpdatedDateStr, `<span class="text-primary font-bold">${lastUpdatedDateStr}</span>`);
     }
 }
 
@@ -520,6 +521,9 @@ function updateText(lang) {
         const key = el.getAttribute('data-key'); 
         if (translations['tr'][key]) { 
             let f = translations['tr'][key]; 
+            if (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA' && key === 'update_date_text') {
+                f = f.replace('{date}', lastUpdatedDateStr);
+            }
             if (lang === 'gr') f = convertToGreek(f); 
             if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = f; 
             else el.textContent = f; 
@@ -530,10 +534,33 @@ function updateText(lang) {
 
 function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
 
+async function fetchSheetMetadata() {
+    try {
+        // Opensheet URL'sinden tablonun Spreadsheet ID'sini alıyoruz: 1R01aIajx6dzHlO-KBiUXUmld2AEvxjCQkUTFGYB3EDM
+        const sheetId = "1R01aIajx6dzHlO-KBiUXUmld2AEvxjCQkUTFGYB3EDM";
+        // Herkese açık Google E-Tabloların güncellenme tarihini public Drive v3 endpoint'i üzerinden çekiyoruz (API anahtarı gerektirmez)
+        const res = await fetch(`https://www.googleapis.com/drive/v3/files/${sheetId}?fields=modifiedTime`);
+        if (res.ok) {
+            const data = await res.json();
+            if (data.modifiedTime) {
+                const dateObj = new Date(data.modifiedTime);
+                const day = String(dateObj.getDate()).padStart(2, '0');
+                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                const year = dateObj.getFullYear();
+                lastUpdatedDateStr = `${day}.${month}.${year}`;
+            }
+        }
+    } catch (e) {
+        console.error("Güncelleme tarihi alınamadı:", e);
+    }
+}
+
 async function fetchWords() { 
     const url = `https://opensheet.elk.sh/1R01aIajx6dzHlO-KBiUXUmld2AEvxjCQkUTFGYB3EDM/Sözlük`; 
     try { 
-        const res = await fetch(url); allWords = await res.json(); 
+        await fetchSheetMetadata();
+        const res = await fetch(url); 
+        allWords = await res.json(); 
         initButtons(); setupSearch(); calculateStats(); renderRandomWord(true); updateText('tr');
     } catch (e) { console.error(e); } 
 }
