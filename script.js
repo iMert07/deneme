@@ -7,11 +7,10 @@ let sortConfig = { key: 'harf', direction: 'asc' };
 let etySortConfig = { key: 'label', direction: 'asc' }; 
 let activeOriginFilter = null;
 let searchHistory = JSON.parse(localStorage.getItem('orum_history')) || [];
-let lastUpdatedDateStr = "Bilinmiyor";
 
 const PAGE_SIZE = 36;
 const customAlphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVXYZ".split("");
-const latinToGreekMap = { "a":"Α","A":"Α", "b":"Β","B":"Β", "c":"J","C":"J", "ç":"C","Ç":"C", "d":"D","D":"D", "e":"Ε","E":"Ε", "f":"F","F":"F", "g":"G","G":"G", "ğ":"Γ","Ğ":"Γ", "h":"Η","H":"Η", "ı":"Ь","I":"Ь", "i":"Ͱ","İ":"Ͱ", "j":"Σ","J":"Σ", "k":"Κ","Κ":"Κ", "l":"L","L":"L", "m":"Μ","M":"Μ", "n":"Ν","N":"Ν", "o":"Q","O":"Q", "ö":"Ω","Ö":"Ω", "p":"Π","P":"Π", "r":"Ρ","R":"Ρ", "s":"S","S":"S", "ş":"Ш","Ş":"Ш", "t":"Τ","T":"Τ", "u":"U","U":"U", "ü":"Υ","Ü":"Υ", "v":"V","V":"V", "x":"Ψ","X":"Ψ", "y":"R","Y":"R", "z":"Ζ","Z":"Ζ" };
+const latinToGreekMap = { "a":"Α","A":"Α", "b":"Β","B":"Β", "c":"J","C":"J", "ç":"C","Ç":"C", "d":"D","D":"D", "e":"Ε","E":"Ε", "f":"F","F":"F", "g":"G","G":"G", "ğ":"Γ","Ğ":"Γ", "h":"Η","H":"Η", "ı":"Ь","I":"Ь", "i":"Ͱ","İ":"Ͱ", "j":"Σ","J":"Σ", "k":"Κ","Κ":"Κ", "l":"L","L":"L", "m":"Μ","M":"Μ", "n":"Ν","N":"Ν", "o":"Q","O":"Q", "ö":"Ω","Ö":"Ω", "p":"Π","P":"Π", "r":"Ρ","R":"Ρ", "s":"S","S":"S", "ş":"Ш","Ş":"Ш", "t":"Τ","T":"Τ", "u":"U","U":"U", "ü":"Υ","Ü":"Υ", "v":"V","V":"V", "x":"Ψ","X":"Ψ", "y":"R","Y":"R", "z":"Ζ","Z":"Z" };
 const translations = { 
     'tr': { 
         'title': 'Orum Dili', 'nav_words': 'Kelimeler', 'nav_stats': 'Harf Dağılımı', 'nav_ety': 'Köken Dağılımı',
@@ -24,7 +23,6 @@ const translations = {
         'synonyms_title': 'Eş Anlamlılar', 'description_title': 'Açıklama', 
         'example_title': 'Örnek', 'etymology_title': 'Köken', 'no_result': 'Sonuç bulunamadı',
         'random_title': 'Keşfet',
-        'update_date_text': 'Son Güncelleme: {date}',
         'feedback_contact_label': 'Size Nasıl Ulaşabilirim?',
         'feedback_contact_placeholder': 'İsteğe bağlı'
     } 
@@ -497,7 +495,6 @@ function renderRandomWord(pickNew = true) {
 
 function calculateStats() {
     const s = document.getElementById('stats-sentence'); 
-    const dateEl = document.getElementById('update-date-text');
     if (!s) return;
     const valid = allWords.filter(r => r.Sözcük && r.Sözcük.trim() !== "");
     const eCount = valid.length; let tWord = 0;
@@ -505,12 +502,6 @@ function calculateStats() {
     let sent = `Şu an bu sözlükte ${eCount} madde altında toplam ${tWord} kelime bulunmaktadır.`;
     if (isGreek) sent = convertToGreek(sent);
     s.innerHTML = sent.replace(eCount, `<span class="text-primary font-bold">${eCount}</span>`).replace(tWord, `<span class="text-primary font-bold">${tWord}</span>`);
-    
-    if (dateEl) {
-        let rawDateText = `Son Güncelleme: ${lastUpdatedDateStr}`;
-        const displayDateText = isGreek ? convertToGreek(rawDateText) : rawDateText;
-        dateEl.innerHTML = displayDateText.replace(lastUpdatedDateStr, `<span class="text-primary font-bold">${lastUpdatedDateStr}</span>`);
-    }
 }
 
 function normalizeString(str) { return str ? str.toLocaleLowerCase('tr-TR') : ''; }
@@ -521,9 +512,6 @@ function updateText(lang) {
         const key = el.getAttribute('data-key'); 
         if (translations['tr'][key]) { 
             let f = translations['tr'][key]; 
-            if (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA' && key === 'update_date_text') {
-                f = f.replace('{date}', lastUpdatedDateStr);
-            }
             if (lang === 'gr') f = convertToGreek(f); 
             if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = f; 
             else el.textContent = f; 
@@ -534,33 +522,10 @@ function updateText(lang) {
 
 function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
 
-async function fetchSheetMetadata() {
-    try {
-        // Opensheet URL'sinden tablonun Spreadsheet ID'sini alıyoruz: 1R01aIajx6dzHlO-KBiUXUmld2AEvxjCQkUTFGYB3EDM
-        const sheetId = "1R01aIajx6dzHlO-KBiUXUmld2AEvxjCQkUTFGYB3EDM";
-        // Herkese açık Google E-Tabloların güncellenme tarihini public Drive v3 endpoint'i üzerinden çekiyoruz (API anahtarı gerektirmez)
-        const res = await fetch(`https://www.googleapis.com/drive/v3/files/${sheetId}?fields=modifiedTime`);
-        if (res.ok) {
-            const data = await res.json();
-            if (data.modifiedTime) {
-                const dateObj = new Date(data.modifiedTime);
-                const day = String(dateObj.getDate()).padStart(2, '0');
-                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-                const year = dateObj.getFullYear();
-                lastUpdatedDateStr = `${day}.${month}.${year}`;
-            }
-        }
-    } catch (e) {
-        console.error("Güncelleme tarihi alınamadı:", e);
-    }
-}
-
 async function fetchWords() { 
     const url = `https://opensheet.elk.sh/1R01aIajx6dzHlO-KBiUXUmld2AEvxjCQkUTFGYB3EDM/Sözlük`; 
     try { 
-        await fetchSheetMetadata();
-        const res = await fetch(url); 
-        allWords = await res.json(); 
+        const res = await fetch(url); allWords = await res.json(); 
         initButtons(); setupSearch(); calculateStats(); renderRandomWord(true); updateText('tr');
     } catch (e) { console.error(e); } 
 }
