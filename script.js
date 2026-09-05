@@ -6,6 +6,7 @@ let currentSelectedLetter = null;
 let sortConfig = { key: 'harf', direction: 'asc' }; 
 let etySortConfig = { key: 'label', direction: 'asc' }; 
 let activeOriginFilter = null;
+let activeTypeConfig = null; // { type: "Canlı", title: "Canlılar" } vb.
 let searchHistory = JSON.parse(localStorage.getItem('orum_history')) || [];
 
 const PAGE_SIZE = 36;
@@ -14,7 +15,7 @@ const latinToGreekMap = { "a":"Α","A":"Α", "b":"Β","B":"Β", "c":"J","C":"J",
 const translations = { 
     'tr': { 
         'title': 'Orum Dili', 'nav_stats': 'Harf Dağılımı', 'nav_ety': 'Köken Dağılımı',
-        'nav_canlilar': 'Canlılar', 'nav_renkler': 'Renkler',
+        'nav_canlilar': 'Canlılar', 'nav_renkler': 'Renkler', 'nav_fiiller': 'Fiiller',
         'about_page_text': 'Çeviri', 'feedback_button_text': 'Geri Bildirim', 
         'search_placeholder': 'Kelime ara...', 'about_title': 'Hoş Geldiniz', 
         'about_text_1': 'Bu sözlük, Orum Diline ait kelimeleri ve kökenlerini keşfetmeniz için hazırlanmıştır. Bu dil, Anadolu Türkçesinin özleştirilmesiyle ve kolaylaştırılmasıyla ve ayrıca Azerbaycan Türkçesinden esintilerle oluşturulan yapay bir dildir. Amacım, dilimizin öz zenginliğini kanıtlamaktır. Ancak yapay etkiler görebileceğinizi de unutmayın.',
@@ -71,6 +72,8 @@ function initButtons() {
         if (!document.getElementById('alphabet-section').classList.contains('hidden')) {
             if (activeOriginFilter) {
                 showEtymologyWordList(activeOriginFilter, 0);
+            } else if (activeTypeConfig) {
+                showTypeWordList(activeTypeConfig.type, activeTypeConfig.title, 0);
             } else if (currentSelectedLetter) {
                 renderAlphabet();
                 showLetterResults(currentSelectedLetter, 0);
@@ -186,6 +189,7 @@ function selectWord(wordData, pText, forceNoHistory = false, subText = null, fro
 
 function hideAllSections() {
     activeOriginFilter = null;
+    activeTypeConfig = null;
     ['welcome-box', 'random-word-card', 'stats-card', 'alphabet-section', 'stats-section', 'ety-section'].forEach(id => {
         document.getElementById(id)?.classList.add('hidden');
     });
@@ -232,7 +236,12 @@ function showRenklerPage() {
     showTypeWordList("Renk", "Renkler", 0);
 }
 
+function showFiillerPage() {
+    showTypeWordList("Fiil", "Fiiller", 0);
+}
+
 function showTypeWordList(targetType, titleName, page = 0) {
+    activeTypeConfig = { type: targetType, title: titleName };
     hideAllSections();
     const section = document.getElementById('alphabet-section');
     section.classList.remove('hidden');
