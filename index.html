@@ -76,9 +76,9 @@
         </div>
     </section>
 
-    <!-- Gelişmiş Tarih/Yıl Seçimli Takvim Bölümü -->
-    <section id="calendar-view" class="hidden flex flex-col gap-3 max-w-4xl mx-auto w-full">
-        <!-- Üst Seçim & Yıl Kontrolleri -->
+    <!-- Takvim Çeviri Bölümü -->
+    <section id="calendar-view" style="display: none;" class="flex-col gap-3 max-w-4xl mx-auto w-full">
+        <!-- Takvim Üst Kontrol Paneli -->
         <div class="flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-[#192633] p-4 rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm">
             
             <div class="flex items-center gap-2 relative">
@@ -87,58 +87,46 @@
                     <div class="dropdown-item" onclick="selectCalendarMode('greg-to-ana')">Gregoryen → Anatolya</div>
                     <div class="dropdown-item" onclick="selectCalendarMode('ana-to-greg')">Anatolya → Gregoryen</div>
                 </div>
-                <button id="todayBtn" class="text-xs font-bold px-3 py-1.5 rounded-full bg-slate-100 dark:bg-[#111a22] hover:bg-primary hover:text-white transition-all text-slate-600 dark:text-slate-300">Bugün</button>
+                <button id="todayBtn" class="text-xs font-bold px-3 py-1.5 rounded-full bg-slate-100 dark:bg-[#111a22] hover:bg-primary hover:text-white transition-all text-slate-600 dark:text-slate-300 cursor-pointer">Bugün</button>
             </div>
 
-            <!-- Doğrudan Yıl Girişi ve Ay Atlama -->
+            <!-- Ay ve Yıl Başlığı + Sayı ile Doğrudan Yıl Girişi -->
             <div class="flex items-center gap-2">
-                <button id="prevMonthBtn" class="p-1.5 sm:p-2 rounded-lg bg-slate-100 dark:bg-[#111a22] hover:bg-primary hover:text-white transition-colors">
+                <button id="prevMonthBtn" class="p-1.5 sm:p-2 rounded-lg bg-slate-100 dark:bg-[#111a22] hover:bg-primary hover:text-white transition-colors cursor-pointer">
                     <span class="material-symbols-outlined leading-none text-base sm:text-lg">chevron_left</span>
                 </button>
 
-                <div class="flex items-center gap-1.5">
-                    <select id="monthSelect" class="bg-slate-100 dark:bg-[#111a22] text-xs sm:text-sm font-bold py-1.5 px-2.5 rounded-lg border border-slate-200 dark:border-[#324d67] focus:ring-1 focus:ring-primary focus:outline-none cursor-pointer">
-                        <option value="0">Ocak</option>
-                        <option value="1">Şubat</option>
-                        <option value="2">Mart</option>
-                        <option value="3">Nisan</option>
-                        <option value="4">Mayıs</option>
-                        <option value="5">Haziran</option>
-                        <option value="6">Temmuz</option>
-                        <option value="7">Ağustos</option>
-                        <option value="8">Eylül</option>
-                        <option value="9">Ekim</option>
-                        <option value="10">Kasım</option>
-                        <option value="11">Aralık</option>
-                    </select>
-
-                    <div class="relative flex items-center">
-                        <input type="number" id="yearInput" class="w-20 sm:w-24 bg-slate-100 dark:bg-[#111a22] text-xs sm:text-sm font-bold py-1.5 px-2 rounded-lg border border-slate-200 dark:border-[#324d67] text-center focus:ring-1 focus:ring-primary focus:outline-none font-mono" placeholder="Yıl" min="1" max="9999"/>
-                    </div>
+                <!-- Başlık Görünümü -->
+                <div id="calendarMonthHeader" class="text-sm sm:text-base font-bold min-w-[130px] text-center select-none text-slate-800 dark:text-slate-100">
+                    Ocak 2026
                 </div>
 
-                <button id="nextMonthBtn" class="p-1.5 sm:p-2 rounded-lg bg-slate-100 dark:bg-[#111a22] hover:bg-primary hover:text-white transition-colors">
+                <!-- Sayı ile Yıl Girişi -->
+                <div class="flex items-center gap-1 bg-slate-100 dark:bg-[#111a22] px-2 py-1 rounded-lg border border-slate-200 dark:border-[#324d67]">
+                    <span class="text-xs text-slate-400 font-medium">Yıl:</span>
+                    <input type="number" id="yearInput" class="w-16 sm:w-20 bg-transparent text-xs sm:text-sm font-bold text-center border-none p-0 focus:ring-0 focus:outline-none font-mono text-slate-900 dark:text-white" placeholder="Yıl" min="1" max="9999"/>
+                </div>
+
+                <button id="nextMonthBtn" class="p-1.5 sm:p-2 rounded-lg bg-slate-100 dark:bg-[#111a22] hover:bg-primary hover:text-white transition-colors cursor-pointer">
                     <span class="material-symbols-outlined leading-none text-base sm:text-lg">chevron_right</span>
                 </button>
             </div>
         </div>
 
-        <!-- Yatay Kaydırılabilir Ay Şeridi -->
-        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 select-none" id="monthCarousel">
-            <!-- Dinamik hap butonlar JavaScript ile buraya eklenir -->
-        </div>
+        <!-- Kaydırmalı Hızlı Ay Seçici -->
+        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 select-none" id="monthCarousel"></div>
 
         <!-- Aylık Takvim Izgarası -->
         <div class="bg-white dark:bg-[#192633] p-4 rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm flex flex-col gap-2">
             <div class="grid grid-cols-7 gap-1 text-center font-bold text-xs sm:text-sm text-slate-500 dark:text-slate-400 py-1" id="calendarDaysHeader">
                 <div>Pzt</div><div>Sal</div><div>Çar</div><div>Per</div><div>Cum</div><div>Cmt</div><div>Paz</div>
             </div>
-            <div class="grid grid-cols-7 gap-1.5" id="calendarGrid"></div>
+            <div class="grid grid-cols-7 gap-1.5 min-h-[300px]" id="calendarGrid"></div>
         </div>
 
-        <!-- Seçili Tarih Detay Paneli -->
+        <!-- Seçili Tarih Dönüşüm Bilgisi -->
         <div id="selectedDateInfo" class="bg-slate-100 dark:bg-[#111a22] p-4 rounded-xl border border-slate-200 dark:border-[#324d67] text-sm flex flex-col sm:flex-row justify-between items-center gap-2">
-            <span class="text-slate-500 dark:text-slate-400">Bir güne tıklayarak ayrıntılı dönüşümü görüntüleyin.</span>
+            <span class="text-slate-500 dark:text-slate-400">Bir güne tıklayarak Anatolya takvimindeki karşılığını detaylı görün.</span>
         </div>
     </section>
 
