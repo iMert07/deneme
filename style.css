@@ -28,7 +28,7 @@ html, body {
     color: #64748b; 
 }
 
-/* Seçenekler Paneli */
+/* Seçenekler Menüsü */
 .dropdown-panel {
     display: none; 
     position: absolute; 
@@ -110,7 +110,7 @@ html, body {
     transform: translateY(-1px); 
 }
 
-/* Başlık Ayarı */
+/* Başlık */
 .main-title { 
     line-height: 1.4 !important; 
     padding-bottom: 2px;
@@ -122,9 +122,9 @@ header, .nav-tab, #kb-container, .key, .unit-pill, .dropdown-item {
     -webkit-user-select: none;
 }
 
-/* Takvim Ay Kaydırma Şeridi Butonları */
+/* Takvim Hızlı Ay Şeridi */
 .month-chip {
-    padding: 5px 12px;
+    padding: 5px 14px;
     border-radius: 9999px;
     font-size: 11px;
     font-weight: 700;
@@ -155,7 +155,7 @@ header, .nav-tab, #kb-container, .key, .unit-pill, .dropdown-item {
     color: #ffffff;
 }
 
-/* Input number oklarını gizleme */
+/* Input number oklarını kaldırma */
 input[type=number]::-webkit-inner-spin-button, 
 input[type=number]::-webkit-outer-spin-button { 
     -webkit-appearance: none; 
@@ -165,7 +165,7 @@ input[type=number] {
     -moz-appearance: textfield;
 }
 
-/* Klavye */
+/* Klavye Bölümü */
 .keyboard {
     display: flex; 
     flex-direction: column; 
