@@ -43,8 +43,8 @@
         <div class="flex items-center gap-3 sm:gap-4 overflow-hidden">
             <h2 class="main-title text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white">Anatolya'ya Dönüş</h2>
             <div class="flex items-center gap-2.5 border-l border-slate-300 dark:border-slate-700 pl-3 sm:pl-4 leading-none font-mono font-bold">
-                <span id="clock" class="text-xs sm:text-base text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/50 px-2 py-1 rounded-md border border-sky-200/50 dark:border-sky-800/50">θθ.θθ.θθ</span>
-                <span id="date" class="text-xs sm:text-base text-slate-500 dark:text-slate-400">θθ.θθ.θθθθ</span>
+                <span id="clock" class="text-xs sm:text-base text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/50 px-2 py-1 rounded-md border border-sky-200/50 dark:border-sky-800/50">00.00.00</span>
+                <span id="date" class="text-xs sm:text-base text-slate-500 dark:text-slate-400">00.00.0000</span>
             </div>
         </div>
         <button id="themeToggle" class="p-2 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-card-dark text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-all cursor-pointer">
@@ -73,8 +73,8 @@
 </header>
 
 <main class="flex-1 max-w-7xl mx-auto w-full flex flex-col p-4 sm:p-6 gap-6">
-    <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-        <!-- Girdi Alanı -->
+    <!-- Dönüştürücü Alanı -->
+    <section id="converter-section" class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <div class="flex flex-col gap-2 relative bg-white dark:bg-card-dark p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Girdi</span>
@@ -86,7 +86,6 @@
             <textarea id="input-area" class="w-full h-[150px] sm:h-[200px] lg:h-[260px] p-4 bg-slate-50 dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-700/60 focus:outline-none focus:ring-2 focus:ring-sky-500/50 resize-none font-medium leading-relaxed" placeholder="Metin veya sayı girin..."></textarea>
         </div>
 
-        <!-- Çıktı Alanı -->
         <div class="flex flex-col gap-2 relative bg-white dark:bg-card-dark p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Sonuç</span>
@@ -99,10 +98,15 @@
         </div>
     </section>
 
+    <!-- Görsel Takvim Alanı (Varsayılan Olarak Gizli) -->
+    <section id="calendar-view" class="hidden flex-col items-center gap-4 w-full">
+        <div id="anatolya-calendar" class="w-full max-w-2xl bg-white dark:bg-card-dark p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm"></div>
+    </section>
+
     <!-- Klavye -->
     <section id="kb-container" class="select-none flex justify-center pb-2">
         <div class="keyboard" id="mainKeyboard">
-            <div class="row"><div class="key">θ</div><div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">Φ</div><div class="key">Λ</div></div>
+            <div class="row"><div class="key">0</div><div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">Φ</div><div class="key">Λ</div></div>
             <div class="row"><div class="key">Ϙ</div><div class="key">Ш</div><div class="key">E</div><div class="key">R</div><div class="key">T</div><div class="key">Y</div><div class="key">U</div><div class="key">Ͱ</div><div class="key">Ω</div><div class="key">P</div><div class="key">Γ</div><div class="key">Σ</div></div>
             <div class="row"><div class="key fn-key">,</div><div class="key">A</div><div class="key">S</div><div class="key">D</div><div class="key">F</div><div class="key">G</div><div class="key">H</div><div class="key">J</div><div class="key">K</div><div class="key">L</div><div class="key">Ь</div><div class="key fn-key">.</div></div>
             <div class="row"><div class="key wide fn-key" data-action="shift">Shift</div><div class="key">Z</div><div class="key">Ψ</div><div class="key">C</div><div class="key">V</div><div class="key">B</div><div class="key">N</div><div class="key">M</div><div class="key">Π</div><div class="key wide fn-key" data-action="delete"><span class="material-symbols-outlined">backspace</span></div></div>
