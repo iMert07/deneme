@@ -1,4 +1,4 @@
-// --- FORMAT FONKSİYONU ---
+// --- YARDIMCI FORMAT FONKSİYONU ---
 function formatCompact(num) {
     if (num === 0) return "0";
     let absNum = Math.abs(num);
@@ -41,8 +41,8 @@ const conversionRates = {
     "Uzunluk": { "Kerrab (12⁻³)": 0.00041666666, "Milimetre (10⁻³)": 0.001, "Rubu (12⁻²)": 0.005, "Santimetre (10⁻²)": 0.01, "İnç": 0.0254, "Endaze (12⁻¹)": 0.06, "Fit": 0.3048, "Arşın (12⁰)": 0.72, "Yard": 0.9144, "Metre (10⁰)": 1, "Berid (12¹)": 8.64, "Menzil (12²)": 103.68, "Kilometre (10³)": 1000, "Fersah (12³)": 1244.16, "Mil": 1609.34, "Merhale (12⁴)": 14929.92 },
     "Alan": { "Santimetrekare (10⁻⁴)": 0.0001, "Rubu² (12⁻⁴)": 0.000025, "Arşın² (12⁰)": 0.5184, "Metrekare (10⁰)": 1, "Dönüm (Anatolya)": 895.7952, "Dönüm (10³)": 1000, "Hektar (10⁴)": 10000, "Menzil² (12⁴)": 10749.5424, "Kilometrekare (10⁶)": 1000000, "Fersah² (12⁶)": 1547934.0544 },
     "Hız": { "Kilometre/Saat": 1, "Fersah/Saat (12)": 0.62208, "Mil/Saat": 1.60934 },
-    "Kütle": { "Miligram (10⁻³)": 0.000001, "Dirhem (12⁻³)": 0.0005, "Gram (10⁰)": 0.001, "Miskal (12⁻²)", "Batman (12⁻¹)": 0.072, "Paund": 0.45359, "Okka (12⁰)": 0.864, "Kilogram (10³)": 1, "Kantar (12¹)", "Ton (10⁶)": 1000 },
-    "Hacim": { "Mililitre (10⁻³)": 0.001, "Sıvı Ons (ABD)": 0.0295735, "Miskal (12⁻¹)": 0.018, "Şinik (12⁰)": 0.216, "Litre (10⁰)": 1, "Kıyye (12¹)", "Galon (ABD)": 3.78541, "Kile (12²)": 31.104, "Metreküp (10³)": 1000 },
+    "Kütle": { "Miligram (10⁻³)": 0.000001, "Dirhem (12⁻³)": 0.0005, "Gram (10⁰)": 0.001, "Miskal (12⁻²)": 0.006, "Batman (12⁻¹)": 0.072, "Paund": 0.45359, "Okka (12⁰)": 0.864, "Kilogram (10³)": 1, "Kantar (12¹)": 10.368, "Ton (10⁶)": 1000 },
+    "Hacim": { "Mililitre (10⁻³)": 0.001, "Sıvı Ons (ABD)": 0.0295735, "Miskal (12⁻¹)": 0.018, "Şinik (12⁰)": 0.216, "Litre (10⁰)": 1, "Kıyye (12¹)": 2.592, "Galon (ABD)": 3.78541, "Kile (12²)": 31.104, "Metreküp (10³)": 1000 },
     "Para": { "Lira": 1, "Akçe": 9, "Dollar": 43, "Euro": 51, "Gümüş (Ons)": 2735, "Altın (Ons)": 183787 },
     "Veri": { "Byte": 1, "Kilobyte": 1024, "Megabyte": 1048576, "Gigabyte": 1073741824, "Terabyte": 1099511627776, "Anatolya Verisi": 1200 },
     "Zaman": { "Milisaniye": 0.001, "Salise (Anatolya)": 1/240, "Salise": 1/60, "Saniye (Anatolya)": 0.5, "Saniye": 1, "Dakika": 60, "Saat": 3600, "Saat (Anatolya)": 7200, "Gün": 86400, "Hafta (Anatolya)": 432000, "Hafta": 604800, "Ay": 2592000 }
@@ -275,7 +275,7 @@ window.addEventListener('click', function(event) {
     }
 });
 
-// --- TAKVİM ÇEVİRİ VE DİNAMİK YIL/AY YÖNETİMİ ---
+// --- TAKVİM ÇEVİRİ VE GÖRÜNÜM SİSTEMİ ---
 let calendarCurrentDate = new Date();
 let calendarMode = 'greg-to-ana';
 
@@ -293,7 +293,6 @@ function selectCalendarMode(mode) {
     renderCalendar();
 }
 
-// 1071 bazlı Anatolya Takvimi Hesap Motoru
 function convertGregorianToAnatolya(dateObj) {
     const gregBase = new Date(1071, 2, 21);
     const diff = dateObj.getTime() - gregBase.getTime();
@@ -301,29 +300,16 @@ function convertGregorianToAnatolya(dateObj) {
     
     let year = 0;
     let daysCounter = 0;
-    
-    if (daysPassed >= 0) {
-        while (true) {
-            let yearDays = 365;
-            let nextYear = year + 1;
-            if (nextYear % 20 === 0 && nextYear % 640 !== 0) yearDays += 5;
-            if (daysCounter + yearDays > daysPassed) break;
-            daysCounter += yearDays;
-            year++;
-        }
-    } else {
-        while (daysCounter > daysPassed) {
-            let yearDays = 365;
-            let prevYear = year;
-            if (prevYear % 20 === 0 && prevYear % 640 !== 0) yearDays += 5;
-            daysCounter -= yearDays;
-            year--;
-        }
+    while (true) {
+        let yearDays = 365;
+        let nextYear = year + 1;
+        if (nextYear % 20 === 0 && nextYear % 640 !== 0) yearDays += 5;
+        if (daysCounter + yearDays > daysPassed) break;
+        daysCounter += yearDays;
+        year++;
     }
     
-    let remainingDays = daysPassed - daysCounter;
-    if (remainingDays < 0) remainingDays = 0;
-    
+    const remainingDays = daysPassed - daysCounter;
     const day = (remainingDays % 30) + 1;
     const month = Math.floor(remainingDays / 30) + 1;
     const anaYear = year + 10369;
@@ -336,56 +322,20 @@ function convertGregorianToAnatolya(dateObj) {
     };
 }
 
-function renderMonthCarousel() {
-    const carousel = document.getElementById('monthCarousel');
-    if (!carousel) return;
-    carousel.innerHTML = '';
-    const currentMonth = calendarCurrentDate.getMonth();
-
-    monthNamesTR.forEach((name, idx) => {
-        const chip = document.createElement('button');
-        const isActive = idx === currentMonth;
-        chip.className = `month-chip ${isActive ? 'month-chip-active' : 'month-chip-inactive'}`;
-        chip.textContent = name;
-        chip.onclick = () => {
-            calendarCurrentDate.setMonth(idx);
-            renderCalendar();
-        };
-        carousel.appendChild(chip);
-        if (isActive) {
-            setTimeout(() => chip.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' }), 30);
-        }
-    });
-}
-
 function renderCalendar() {
     const grid = document.getElementById('calendarGrid');
     const header = document.getElementById('calendarMonthHeader');
-    const yearInput = document.getElementById('yearInput');
-    if (!grid) return;
+    if (!grid || !header) return;
 
+    grid.innerHTML = '';
     const year = calendarCurrentDate.getFullYear();
     const month = calendarCurrentDate.getMonth();
 
-    // Üst Ay-Yıl Başlığını ve Giriş Kutusunu Güncelle
-    if (header) header.textContent = `${monthNamesTR[month]} ${year}`;
-    if (yearInput && document.activeElement !== yearInput) yearInput.value = year;
+    header.textContent = `${monthNamesTR[month]} ${year}`;
 
-    renderMonthCarousel();
+    const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7;
+    const totalDays = new Date(year, month + 1, 0).getDate();
 
-    grid.innerHTML = '';
-
-    // Ayın ilk gününün indeksi (Pzt: 0, Paz: 6)
-    const firstDayDate = new Date(year, month, 1);
-    firstDayDate.setFullYear(year, month, 1);
-    const firstDayIndex = (firstDayDate.getDay() + 6) % 7;
-
-    // Ayın toplam gün sayısı
-    const lastDayDate = new Date(year, month + 1, 0);
-    lastDayDate.setFullYear(year, month + 1, 0);
-    const totalDays = lastDayDate.getDate();
-
-    // Önceki ayın boşlukları
     for (let i = 0; i < firstDayIndex; i++) {
         const emptyCell = document.createElement('div');
         emptyCell.className = 'h-16 sm:h-20 bg-transparent rounded-lg opacity-20';
@@ -394,11 +344,8 @@ function renderCalendar() {
 
     const today = new Date();
 
-    // Gün Hücreleri
     for (let d = 1; d <= totalDays; d++) {
         const cellDate = new Date(year, month, d);
-        cellDate.setFullYear(year, month, d);
-        
         const ana = convertGregorianToAnatolya(cellDate);
         const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
 
@@ -444,7 +391,6 @@ function renderCalendar() {
     }
 }
 
-// --- TAKVİM KONTROL ETKİLEŞİMLERİ ---
 document.getElementById('prevMonthBtn')?.addEventListener('click', () => {
     calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() - 1);
     renderCalendar();
@@ -453,28 +399,6 @@ document.getElementById('prevMonthBtn')?.addEventListener('click', () => {
 document.getElementById('nextMonthBtn')?.addEventListener('click', () => {
     calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() + 1);
     renderCalendar();
-});
-
-document.getElementById('todayBtn')?.addEventListener('click', () => {
-    calendarCurrentDate = new Date();
-    renderCalendar();
-});
-
-function applyYearInput() {
-    const yInput = document.getElementById('yearInput');
-    const val = parseInt(yInput.value, 10);
-    if (!isNaN(val) && val > 0 && val < 10000) {
-        calendarCurrentDate.setFullYear(val);
-        renderCalendar();
-    }
-}
-
-document.getElementById('yearInput')?.addEventListener('change', applyYearInput);
-document.getElementById('yearInput')?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        applyYearInput();
-        e.target.blur();
-    }
 });
 
 // --- KLAVYE ETKİLEŞİMİ ---
@@ -519,7 +443,7 @@ document.querySelectorAll('.key').forEach(key => {
 
 inputArea.addEventListener('input', performConversion);
 
-// --- SEKME GEÇİŞLERİ ---
+// --- SEKME DEĞİŞİMİ ---
 document.querySelectorAll('.nav-tab').forEach(tab => { 
     tab.addEventListener('click', function() {
         document.querySelectorAll('.nav-tab').forEach(t => t.classList.replace('active-tab', 'inactive-tab'));
@@ -531,14 +455,14 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
         const kbContainer = document.getElementById('kb-container');
 
         if (mode === "Takvim") {
-            converterView.style.display = 'none';
-            calendarView.style.display = 'flex';
-            kbContainer.style.display = 'none';
+            converterView.classList.add('hidden');
+            calendarView.classList.remove('hidden');
+            kbContainer.classList.add('hidden');
             renderCalendar();
         } else {
-            converterView.style.display = 'grid';
-            calendarView.style.display = 'none';
-            kbContainer.style.display = 'block';
+            converterView.classList.remove('hidden');
+            calendarView.classList.add('hidden');
+            kbContainer.classList.remove('hidden');
             renderDropdowns(mode);
         }
     }); 
