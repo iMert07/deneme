@@ -38,10 +38,10 @@ const unitData = {
 
 // --- KATSAYILAR ---
 const conversionRates = {
-    "Uzunluk": { "Kerrab (12⁻³)": 0.00041666666, "Milimetre (10⁻³)": 0.001, "Rubu (12⁻²)": 0.005, "Santimetre (10⁻²)": 0.01, "İnç": 0.0254, "Endaze (12⁻¹)": 0.06, "Fit": 0.3048, "Arşın (12⁰)": 0.72, "Yard": 0.9144, "Metre (10⁰)": 1, "Berid (12¹)": 8.64, "Menzil (12²)": 103.68, "Kilometre (10³)": 1000, "Fersah (12³)": 1244.16, "Mil": 1609.34, "Merhale (12⁴)": 14929.92 },
+    "Uzunluk": { "Kerrab (12⁻³)": 0.00041666666, "Milimetre (10⁻³)": 0.001, "Rubu (12⁻²)", "Santimetre (10⁻²)": 0.01, "İnç": 0.0254, "Endaze (12⁻¹)": 0.06, "Fit": 0.3048, "Arşın (12⁰)": 0.72, "Yard": 0.9144, "Metre (10⁰)": 1, "Berid (12¹)": 8.64, "Menzil (12²)": 103.68, "Kilometre (10³)": 1000, "Fersah (12³)": 1244.16, "Mil": 1609.34, "Merhale (12⁴)": 14929.92 },
     "Alan": { "Santimetrekare (10⁻⁴)": 0.0001, "Rubu² (12⁻⁴)": 0.000025, "Arşın² (12⁰)": 0.5184, "Metrekare (10⁰)": 1, "Dönüm (Anatolya)": 895.7952, "Dönüm (10³)": 1000, "Hektar (10⁴)": 10000, "Menzil² (12⁴)": 10749.5424, "Kilometrekare (10⁶)": 1000000, "Fersah² (12⁶)": 1547934.0544 },
     "Hız": { "Kilometre/Saat": 1, "Fersah/Saat (12)": 0.62208, "Mil/Saat": 1.60934 },
-    "Kütle": { "Miligram (10⁻³)": 0.000001, "Dirhem (12⁻³)": 0.0005, "Gram (10⁰)": 0.001, "Miskal (12⁻²)": 0.006, "Batman (12⁻¹)": 0.072, "Paund": 0.45359, "Okka (12⁰)": 0.864, "Kilogram (10³)": 1, "Kantar (12¹)": 10.368, "Ton (10⁶)": 1000 },
+    "Kütle": { "Miligram (10⁻³)": 0.000001, "Dirhem (12⁻³)": 0.0005, "Gram (10⁰)": 0.001, "Miskal (12⁻²)": 0.006, "Batman (12⁻¹)", "Paund": 0.45359, "Okka (12⁰)": 0.864, "Kilogram (10³)": 1, "Kantar (12¹)": 10.368, "Ton (10⁶)": 1000 },
     "Hacim": { "Mililitre (10⁻³)": 0.001, "Sıvı Ons (ABD)": 0.0295735, "Miskal (12⁻¹)": 0.018, "Şinik (12⁰)": 0.216, "Litre (10⁰)": 1, "Kıyye (12¹)": 2.592, "Galon (ABD)": 3.78541, "Kile (12²)": 31.104, "Metreküp (10³)": 1000 },
     "Para": { "Lira": 1, "Akçe": 9, "Dollar": 43, "Euro": 51, "Gümüş (Ons)": 2735, "Altın (Ons)": 183787 },
     "Veri": { "Byte": 1, "Kilobyte": 1024, "Megabyte": 1048576, "Gigabyte": 1073741824, "Terabyte": 1099511627776, "Anatolya Verisi": 1200 },
@@ -275,6 +275,40 @@ window.addEventListener('click', function(event) {
     }
 });
 
+// --- ORTAK ANATOLYA TAKVİM HESAPLAMA MOTORU (SENKRON) ---
+function getAnatolyaDate(targetDate) {
+    const d = new Date(targetDate);
+    // Header gün dönümü (04:30) ile tam senkronize olması için saati 04:30 baz alıyoruz
+    d.setHours(4, 30, 0, 0);
+
+    const gregBase = new Date(1071, 2, 21, 4, 30, 0, 0);
+    const diff = d.getTime() - gregBase.getTime();
+    const daysPassed = Math.floor(diff / 86400000);
+
+    let year = 0;
+    let daysCounter = 0;
+    while (true) {
+        let yearDays = 365;
+        let nextYear = year + 1;
+        if (nextYear % 20 === 0 && nextYear % 640 !== 0) yearDays += 5;
+        if (daysCounter + yearDays > daysPassed) break;
+        daysCounter += yearDays;
+        year++;
+    }
+
+    const remainingDays = daysPassed - daysCounter;
+    const day = (remainingDays % 30) + 1;
+    const month = Math.floor(remainingDays / 30) + 1;
+    const anaYear = year + 10369;
+
+    return {
+        day,
+        month,
+        year: anaYear,
+        formatted: `${toBase12(day, 2, true)}.${toBase12(month, 2, true)}.${toBase12(anaYear, 4, true)}`
+    };
+}
+
 // --- TAKVİM ÇEVİRİ VE GÖRÜNÜM SİSTEMİ ---
 let calendarCurrentDate = new Date();
 let calendarMode = 'greg-to-ana';
@@ -291,35 +325,6 @@ function selectCalendarMode(mode) {
     const dd = document.getElementById('dropdown-calendar');
     if (dd) dd.classList.remove('show');
     renderCalendar();
-}
-
-function convertGregorianToAnatolya(dateObj) {
-    const gregBase = new Date(1071, 2, 21);
-    const diff = dateObj.getTime() - gregBase.getTime();
-    const daysPassed = Math.floor(diff / 86400000);
-    
-    let year = 0;
-    let daysCounter = 0;
-    while (true) {
-        let yearDays = 365;
-        let nextYear = year + 1;
-        if (nextYear % 20 === 0 && nextYear % 640 !== 0) yearDays += 5;
-        if (daysCounter + yearDays > daysPassed) break;
-        daysCounter += yearDays;
-        year++;
-    }
-    
-    const remainingDays = daysPassed - daysCounter;
-    const day = (remainingDays % 30) + 1;
-    const month = Math.floor(remainingDays / 30) + 1;
-    const anaYear = year + 10369;
-
-    return {
-        day,
-        month,
-        year: anaYear,
-        formatted: `${toBase12(day, 2, true)}.${toBase12(month, 2, true)}.${toBase12(anaYear, 4, true)}`
-    };
 }
 
 function renderCalendar() {
@@ -342,12 +347,17 @@ function renderCalendar() {
         grid.appendChild(emptyCell);
     }
 
-    const today = new Date();
+    const now = new Date();
+    // Header gün dönümü 04:30 kontrolüne göre bugünün tarihi:
+    const activeHeaderDay = new Date(now);
+    if (now.getHours() < 4 || (now.getHours() === 4 && now.getMinutes() < 30)) {
+        activeHeaderDay.setDate(activeHeaderDay.getDate() - 1);
+    }
 
     for (let d = 1; d <= totalDays; d++) {
         const cellDate = new Date(year, month, d);
-        const ana = convertGregorianToAnatolya(cellDate);
-        const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
+        const ana = getAnatolyaDate(cellDate);
+        const isToday = activeHeaderDay.getFullYear() === year && activeHeaderDay.getMonth() === month && activeHeaderDay.getDate() === d;
 
         const cell = document.createElement('div');
         cell.className = `h-16 sm:h-20 p-1.5 rounded-lg border flex flex-col justify-between cursor-pointer transition-all ${
@@ -363,7 +373,7 @@ function renderCalendar() {
             </div>
             <div class="text-right">
                 <span class="text-[10px] sm:text-xs font-mono font-semibold text-primary block leading-none">
-                    ${ana.formatted.split('.')[0]}.${ana.formatted.split('.')[1]}
+                    ${toBase12(ana.day, 2, true)}.${toBase12(ana.month, 2, true)}
                 </span>
                 <span class="text-[8px] text-slate-400 leading-none">Ay: ${ana.month}</span>
             </div>
@@ -481,22 +491,9 @@ function updateHeader() {
     const s = totalSecs % 120;
     document.getElementById('clock').textContent = `${toBase12(h, 2, true)}.${toBase12(m, 2, true)}.${toBase12(s, 2, true)}`;
     
-    const gregBase = new Date(1071, 2, 21);
-    const diff = now - gregBase;
-    const daysPassed = Math.floor(diff / 86400000);
-    let year = 0; 
-    let daysCounter = 0;
-    while (true) {
-        let yearDays = 365;
-        let nextYear = year + 1;
-        if (nextYear % 20 === 0 && nextYear % 640 !== 0) yearDays += 5;
-        if (daysCounter + yearDays > daysPassed) break;
-        daysCounter += yearDays; 
-        year++;
-    }
-    const day = (daysPassed - daysCounter) % 30 + 1;
-    const month = Math.floor((daysPassed - daysCounter) / 30) + 1;
-    document.getElementById('date').textContent = `${toBase12(day, 2, true)}.${toBase12(month, 2, true)}.${toBase12(year + 10369, 4, true)}`;
+    // Ortak motor ile hesaplama (header ile birebir senkron)
+    const ana = getAnatolyaDate(todayStart);
+    document.getElementById('date').textContent = ana.formatted;
 }
 
 setInterval(updateHeader, 500);
