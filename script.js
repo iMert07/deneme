@@ -22,7 +22,7 @@ const latinToGreekMap = { "a":"Α","A":"Α", "b":"Β","B":"Β", "c":"J","C":"J",
 const translations = { 
     'tr': { 
         'title': 'Orum Dili', 'nav_stats': 'Harf Dağılımı', 'nav_ety': 'Köken Dağılımı',
-        'nav_canlilar': 'Canlılar', 'nav_renkler': 'Renkler', 'nav_fiiller': 'Fiiller',
+        'nav_fiiller': 'Fiiller', 'nav_canlilar': 'Canlılar', 'nav_renkler': 'Renkler', 'nav_elementler': 'Elementler',
         'about_page_text': 'Çeviri', 'feedback_button_text': 'Geri Bildirim', 
         'search_placeholder': 'Kelime ara...', 'about_title': 'Hoş Geldiniz', 
         'about_text_1': 'Bu sözlük, Orum Diline ait kelimeleri ve kökenlerini keşfetmeniz için hazırlanmıştır. Bu dil, Anadolu Türkçesinin özleştirilmesiyle ve kolaylaştırılmasıyla ve ayrıca Azerbaycan Türkçesinden esintilerle oluşturulan yapay bir dildir. Amacım, dilimizin öz zenginliğini kanıtlamaktır. Ancak yapay etkiler görebileceğinizi de unutmayın.',
@@ -57,12 +57,14 @@ function handleRoute(path) {
 
     if (path === '/' || path === '' || cleanPath === 'home' || cleanPath === 'orumdili') {
         showPage('home', false);
-    } else if (cleanPath === 'renkler') {
-        showRenklerPage(false);
-    } else if (cleanPath === 'canlilar') {
-        showCanlilarPage(false);
     } else if (cleanPath === 'fiiller') {
         showFiillerPage(false);
+    } else if (cleanPath === 'canlilar') {
+        showCanlilarPage(false);
+    } else if (cleanPath === 'renkler') {
+        showRenklerPage(false);
+    } else if (cleanPath === 'elementler') {
+        showElementlerPage(false);
     } else if (cleanPath === 'koken-dagilimi') {
         showEtyPage(false);
     } else if (cleanPath === 'harf-dagilimi') {
@@ -134,7 +136,7 @@ function showCanliRenkFiilRoute(targetType, titleName, page = 0) {
             pBtn.className = `w-10 h-10 flex items-center justify-center rounded font-bold transition-all select-none ${i === page ? 'bg-primary text-white' : 'bg-subtle-light/50 dark:bg-subtle-dark hover:bg-primary/20'}`;
             pBtn.innerText = i + 1; 
             pBtn.onclick = () => { 
-                const routePath = targetType === "Canlı" ? 'canlilar' : (targetType === "Renk" ? 'renkler' : 'fiiller');
+                const routePath = targetType === "Canlı" ? 'canlilar' : (targetType === "Renk" ? 'renkler' : (targetType === "Fiil" ? 'fiiller' : 'elementler'));
                 navigateTo('/' + routePath, true);
                 showCanliRenkFiilRoute(targetType, titleName, i); 
                 document.getElementById('alphabet-menu').scrollIntoView({ behavior: 'smooth' }); 
@@ -354,6 +356,11 @@ function showEtyPage(push = true) {
     if (push) navigateTo('/koken-dagilimi', true);
 }
 
+function showFiillerPage(push = true) {
+    showCanliRenkFiilRoute("Fiil", "Fiiller", 0);
+    if (push) navigateTo('/fiiller', true);
+}
+
 function showCanlilarPage(push = true) {
     showCanliRenkFiilRoute("Canlı", "Canlılar", 0);
     if (push) navigateTo('/canlilar', true);
@@ -364,9 +371,9 @@ function showRenklerPage(push = true) {
     if (push) navigateTo('/renkler', true);
 }
 
-function showFiillerPage(push = true) {
-    showCanliRenkFiilRoute("Fiil", "Fiiller", 0);
-    if (push) navigateTo('/fiiller', true);
+function showElementlerPage(push = true) {
+    showCanliRenkFiilRoute("Element", "Elementler", 0);
+    if (push) navigateTo('/elementler', true);
 }
 
 function showResult(word) {
