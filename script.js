@@ -10,8 +10,8 @@ let etySortConfig = { key: 'label', direction: 'asc' };
 let activeOriginFilter = null;
 let currentOriginPage = 0;
 
-let activeTypeFilter = null; // "Canlı", "Renk", "Fiil", "Element"
-let activeTypeTitle = null;  // "Canlılar", "Renkler", "Fiiller", "Elementler"
+let activeTypeFilter = null; // "Fiil", "Canlı", "Renk", "Element"
+let activeTypeTitle = null;  // "Fiiller", "Canlılar", "Renkler", "Elementler"
 let currentTypePage = 0;
 
 let searchHistory = JSON.parse(localStorage.getItem('orum_history')) || [];
@@ -74,6 +74,7 @@ function initButtons() {
         const resultDiv = document.getElementById('result');
         if (lastSelectedWord && resultDiv && resultDiv.innerHTML.trim() !== "") {
             showResult(lastSelectedWord);
+            return; // Kelime kartı açıkken arkadaki listelerin tetiklenip kartı kapatmasını önler
         }
 
         if (!document.getElementById('alphabet-section').classList.contains('hidden')) {
@@ -323,20 +324,28 @@ function showResult(word) {
         colorHex = colorMatch[0];
     }
 
+    // Bilimsel alanında sadece renk kodu varsa metin olarak tekrar yazdırılmasın
+    let bilimselText = word.Bilimsel || "";
+    if (colorHex && bilimselText.trim().replace(/\//g, '') === colorHex.replace('#', '')) {
+        bilimselText = "";
+    }
+
     resultDiv.innerHTML = `
-        <div class="bg-subtle-light dark:bg-subtle-dark rounded-lg sm:rounded-xl overflow-hidden p-4 sm:p-6 shadow-md border border-subtle-light dark:border-subtle-dark mt-8 animate-fade-in relative">
-            ${colorHex ? `<div class="absolute top-0 right-0 w-24 h-4 rounded-bl-lg shadow-sm" style="background-color: ${colorHex};" title="${colorHex}"></div>` : ''}
-            <div class="mb-5">
-                <h2 class="text-4xl font-bold text-primary">${convert(word.Sözcük)}</h2>
-                ${word.Bilimsel ? `<p class="text-base text-muted-light dark:text-muted-dark opacity-70 mt-1">${convert(word.Bilimsel)}</p>` : ''}
-                ${word.Tür ? `<p class="text-sm opacity-60 mt-0.5">${convert(word.Tür)}</p>` : ''}
-            </div>
-            <hr class="border-t border-subtle-light dark:border-subtle-dark my-5">
-            <div class="space-y-6">
-                ${word.Açıklama ? `<div><h3 class="text-primary font-bold text-lg mb-1">Açıklama</h3><p class="text-base leading-relaxed">${convert(word.Açıklama)}</p></div>` : ''}
-                ${word.Köken ? `<div><h3 class="text-primary font-bold text-lg mb-1">Köken</h3><p class="text-base leading-relaxed">${convert(word.Köken)}</p></div>` : ''}
-                ${word.Örnek ? `<div><h3 class="text-primary font-bold text-lg mb-1">Örnek</h3><p class="text-base border-l-4 border-primary/40 pl-4 py-1">${convert(word.Örnek)}</p></div>` : ''}
-                ${word['Eş Anlamlılar'] ? `<div><h3 class="text-primary font-bold text-lg mb-1">Eş Anlamlılar</h3><p class="text-base">${convert(word['Eş Anlamlılar'])}</p></div>` : ''}
+        <div class="bg-subtle-light dark:bg-subtle-dark rounded-lg sm:rounded-xl overflow-hidden shadow-md border border-subtle-light dark:border-subtle-dark mt-8 animate-fade-in">
+            ${colorHex ? `<div class="w-full h-4" style="background-color: ${colorHex};" title="${colorHex}"></div>` : ''}
+            <div class="p-4 sm:p-6">
+                <div class="mb-5">
+                    <h2 class="text-4xl font-bold text-primary">${convert(word.Sözcük)}</h2>
+                    ${bilimselText ? `<p class="text-base text-muted-light dark:text-muted-dark opacity-70 mt-1">${convert(bilimselText)}</p>` : ''}
+                    ${word.Tür ? `<p class="text-sm opacity-60 mt-0.5">${convert(word.Tür)}</p>` : ''}
+                </div>
+                <hr class="border-t border-subtle-light dark:border-subtle-dark my-5">
+                <div class="space-y-6">
+                    ${word.Açıklama ? `<div><h3 class="text-primary font-bold text-lg mb-1">Açıklama</h3><p class="text-base leading-relaxed">${convert(word.Açıklama)}</p></div>` : ''}
+                    ${word.Köken ? `<div><h3 class="text-primary font-bold text-lg mb-1">Köken</h3><p class="text-base leading-relaxed">${convert(word.Köken)}</p></div>` : ''}
+                    ${word.Örnek ? `<div><h3 class="text-primary font-bold text-lg mb-1">Örnek</h3><p class="text-base border-l-4 border-primary/40 pl-4 py-1">${convert(word.Örnek)}</p></div>` : ''}
+                    ${word['Eş Anlamlılar'] ? `<div><h3 class="text-primary font-bold text-lg mb-1">Eş Anlamlılar</h3><p class="text-base">${convert(word['Eş Anlamlılar'])}</p></div>` : ''}
+                </div>
             </div>
         </div>`;
 }
