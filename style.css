@@ -34,7 +34,7 @@ html, body {
     position: absolute; 
     top: calc(100% + 5px); 
     left: 0;
-    min-width: 100%;
+    min-width: 140px;
     width: max-content;
     background: white; 
     border-radius: 12px;
@@ -211,6 +211,12 @@ header, .nav-tab, #kb-container, .key, .unit-pill, .dropdown-item {
     #themeToggle {
         margin-left: auto;
     }
+
+    /* Mobilde klavye açıkken içerik çakışmasını engelleme */
+    body:has(#kb-container:not(.hidden)) main {
+        padding-bottom: 260px !important;
+    }
+    
     .keyboard { 
         position: fixed; 
         bottom: 8px; 
@@ -221,6 +227,7 @@ header, .nav-tab, #kb-container, .key, .unit-pill, .dropdown-item {
         padding: 8px 4px 12px 4px !important; 
         border-radius: 1rem !important; 
         box-shadow: 0 -5px 20px rgba(0,0,0,0.3); 
+        z-index: 40;
     }
     #kb-container { 
         padding-top: 5px !important; 
@@ -231,5 +238,4 @@ header, .nav-tab, #kb-container, .key, .unit-pill, .dropdown-item {
     .row { gap: 4px; }
     .key { height: 38px !important; font-size: 1rem !important; border-bottom-width: 2px !important; }
     textarea { font-size: 1.1rem !important; height: 140px !important; padding: 10px !important; }
-    main { padding-bottom: 260px !important; }
 }
