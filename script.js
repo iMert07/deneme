@@ -63,6 +63,7 @@ function initButtons() {
         updateThemeIcons();
     });
 
+    // Harf çevirisi butonuna basıldığında tüm aktif sekmeleri ve açık kartı kusursuz günceller
     document.getElementById('alphabet-toggle')?.addEventListener('click', () => {
         isGreek = !isGreek;
         document.getElementById('alphabet-toggle-latin')?.classList.toggle('hidden', isGreek);
@@ -152,7 +153,7 @@ function displaySuggestions(matches, q) {
     div.innerHTML = '';
     if (matches.length === 0) { 
         div.innerHTML = `<div class="p-4 text-sm opacity-50 bg-transparent">Sonuç bulunamadı</div>`; 
-        cont.classList.add('hidden'); return; 
+        cont.classList.remove('hidden'); return; 
     }
     matches.slice(0, 15).forEach(m => {
         const d = document.createElement('div');
@@ -257,14 +258,11 @@ function showTypeWordList(targetType, titleName, page = 0) {
     currentTypePage = page;
     activeOriginFilter = null;
     currentSelectedLetter = null;
-    lastSelectedWord = null;
 
     ['welcome-box', 'random-word-card', 'stats-card', 'stats-section', 'ety-section'].forEach(id => {
         document.getElementById(id)?.classList.add('hidden');
     });
-    const res = document.getElementById('result');
-    if(res) res.innerHTML = '';
-
+    
     const section = document.getElementById('alphabet-section');
     section.classList.remove('hidden');
     
@@ -358,7 +356,6 @@ function showEtymologyWordList(originName, page = 0) {
     activeTypeFilter = null;
     activeTypeTitle = null;
     currentSelectedLetter = null;
-    lastSelectedWord = null;
 
     ['welcome-box', 'random-word-card', 'stats-card', 'stats-section', 'ety-section'].forEach(id => {
         document.getElementById(id)?.classList.add('hidden');
@@ -485,7 +482,6 @@ function renderAlphabet() {
         btn.onclick = () => { 
             currentSelectedLetter = harf; 
             currentLetterPage = 0;
-            lastSelectedWord = null;
             document.getElementById('result').innerHTML = ''; 
             renderAlphabet(); 
             showLetterResults(harf, 0); 
