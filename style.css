@@ -28,7 +28,7 @@ html, body {
     color: #64748b; 
 }
 
-/* Seçenekler Menüsü */
+/* Seçenekler Paneli */
 .dropdown-panel {
     display: none; 
     position: absolute; 
@@ -110,7 +110,7 @@ html, body {
     transform: translateY(-1px); 
 }
 
-/* Başlık */
+/* Başlık Ayarı */
 .main-title { 
     line-height: 1.4 !important; 
     padding-bottom: 2px;
@@ -122,50 +122,7 @@ header, .nav-tab, #kb-container, .key, .unit-pill, .dropdown-item {
     -webkit-user-select: none;
 }
 
-/* Takvim Hızlı Ay Şeridi */
-.month-chip {
-    padding: 5px 14px;
-    border-radius: 9999px;
-    font-size: 11px;
-    font-weight: 700;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    border: 1px solid transparent;
-}
-.month-chip-active {
-    background-color: #137fec !important;
-    color: #ffffff !important;
-}
-.month-chip-inactive {
-    background-color: #e2e8f0;
-    color: #64748b;
-}
-.dark .month-chip-inactive {
-    background-color: #1e293b;
-    color: #94a3b8;
-    border-color: #334155;
-}
-.month-chip-inactive:hover {
-    background-color: #cbd5e1;
-    color: #0f172a;
-}
-.dark .month-chip-inactive:hover {
-    background-color: #334155;
-    color: #ffffff;
-}
-
-/* Input number oklarını kaldırma */
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-    -webkit-appearance: none; 
-    margin: 0; 
-}
-input[type=number] {
-    -moz-appearance: textfield;
-}
-
-/* Klavye Bölümü */
+/* Klavye */
 .keyboard {
     display: flex; 
     flex-direction: column; 
