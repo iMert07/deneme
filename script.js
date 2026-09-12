@@ -185,10 +185,6 @@ function selectWord(wordData, pText, forceNoHistory = false, subText = null, fro
     if (!forceNoHistory) addToHistory(wordData, pText, subText);
     if (fromSearch) {
         hideAllSections();
-    } else {
-        document.getElementById('welcome-box')?.classList.add('hidden');
-        document.getElementById('random-word-card')?.classList.add('hidden');
-        document.getElementById('stats-card')?.classList.add('hidden');
     }
     showResult(wordData); 
     setTimeout(() => { document.getElementById('result')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100); 
@@ -208,6 +204,7 @@ function hideAllSections() {
 
 function showPage(pageId) {
     hideAllSections();
+    lastSelectedWord = null;
     if (pageId === 'home') {
         document.getElementById('welcome-box').classList.remove('hidden');
         document.getElementById('random-word-card').classList.remove('hidden');
@@ -219,6 +216,7 @@ function showPage(pageId) {
 
 function showKelimelerPage(letter = "A") { 
     hideAllSections(); 
+    lastSelectedWord = null;
     document.getElementById('alphabet-section').classList.remove('hidden'); 
     currentSelectedLetter = letter; 
     currentLetterPage = 0;
@@ -228,12 +226,14 @@ function showKelimelerPage(letter = "A") {
 
 function showStatsPage() { 
     hideAllSections(); 
+    lastSelectedWord = null;
     document.getElementById('stats-section').classList.remove('hidden'); 
     renderAlphabetStats(); 
 }
 
 function showEtyPage() { 
     hideAllSections(); 
+    lastSelectedWord = null;
     document.getElementById('ety-section').classList.remove('hidden'); 
     renderEtymologyStats(); 
 }
@@ -260,6 +260,7 @@ function showTypeWordList(targetType, titleName, page = 0) {
     currentTypePage = page;
     activeOriginFilter = null;
     currentSelectedLetter = null;
+    lastSelectedWord = null;
 
     ['welcome-box', 'random-word-card', 'stats-card', 'stats-section', 'ety-section'].forEach(id => {
         document.getElementById(id)?.classList.add('hidden');
@@ -360,6 +361,7 @@ function showEtymologyWordList(originName, page = 0) {
     activeTypeFilter = null;
     activeTypeTitle = null;
     currentSelectedLetter = null;
+    lastSelectedWord = null;
 
     ['welcome-box', 'random-word-card', 'stats-card', 'stats-section', 'ety-section'].forEach(id => {
         document.getElementById(id)?.classList.add('hidden');
@@ -488,6 +490,7 @@ function renderAlphabet() {
         btn.onclick = () => { 
             currentSelectedLetter = harf; 
             currentLetterPage = 0;
+            lastSelectedWord = null;
             document.getElementById('result').innerHTML = ''; 
             renderAlphabet(); 
             showLetterResults(harf, 0); 
