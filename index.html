@@ -5,29 +5,15 @@
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
     <title>Anatolya'ya Dönüş</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com"/>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script>
+    <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#0284c7",
-                        "primary-hover": "#0369a1",
-                        "bg-dark": "#0b131e",
-                        "card-dark": "#131f2e",
-                        "surface-dark": "#18273a"
-                    },
-                    fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace']
-                    }
-                }
-            }
+            theme: { extend: { colors: { "primary": "#137fec", "background-dark": "#101922" } } }
         }
         if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
@@ -36,77 +22,97 @@
         }
     </script>
 </head>
-<body class="bg-slate-100 dark:bg-bg-dark text-slate-800 dark:text-slate-100 font-sans flex flex-col min-h-screen antialiased transition-colors duration-200">
+<body class="bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white font-sans flex flex-col min-h-screen">
 
-<header class="sticky top-0 bg-white/90 dark:bg-bg-dark/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 z-50 select-none shadow-sm">
-    <div class="flex items-center justify-between px-4 sm:px-6 py-2.5 max-w-7xl mx-auto w-full">
-        <div class="flex items-center gap-3 sm:gap-4 overflow-hidden">
-            <h2 class="main-title text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white">Anatolya'ya Dönüş</h2>
-            <div class="flex items-center gap-2.5 border-l border-slate-300 dark:border-slate-700 pl-3 sm:pl-4 leading-none font-mono font-bold">
-                <span id="clock" class="text-xs sm:text-base text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/50 px-2 py-1 rounded-md border border-sky-200/50 dark:border-sky-800/50">00.00.00</span>
-                <span id="date" class="text-xs sm:text-base text-slate-500 dark:text-slate-400">00.00.0000</span>
+<header class="sticky top-0 bg-white dark:bg-[#111a22] border-b border-slate-200 dark:border-[#233648] z-50 select-none">
+    <div class="flex items-center justify-between px-6 py-2">
+        <div class="flex items-center gap-3">
+            <h2 class="main-title text-base sm:text-lg font-bold truncate">Anatolya'ya Dönüş</h2>
+            <div class="flex items-center gap-3 border-l border-slate-200 dark:border-slate-700 pl-3 leading-none font-mono font-bold pointer-events-none">
+                <span id="clock" class="text-sm sm:text-lg text-primary">θθ.θθ.θθ</span>
+                <span id="date" class="text-sm sm:text-lg text-slate-500 dark:text-slate-400">θθ.θθ.θθθθ</span>
             </div>
         </div>
-        <button id="themeToggle" class="p-2 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-card-dark text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-all cursor-pointer">
-            <span class="material-symbols-outlined text-[22px]">dark_mode</span>
+        <button id="themeToggle" class="p-1 flex items-center justify-center bg-transparent border-none text-slate-500 dark:text-slate-400 focus:outline-none cursor-pointer">
+            <span class="material-symbols-outlined text-[26px]">globe_book</span>
         </button>
     </div>
 
-    <div class="max-w-7xl mx-auto w-full px-4 sm:px-6">
-        <div class="flex items-center gap-1.5 py-2 overflow-x-auto no-scrollbar scroll-smooth select-none">
-            <button class="nav-tab active-tab" data-value="Alfabe"><span class="material-symbols-outlined text-[17px]">translate</span><span>Alfabe</span></button>
-            <button class="nav-tab inactive-tab" data-value="Sayı"><span class="material-symbols-outlined text-[17px]">123</span><span>Sayı</span></button>
-            <button class="nav-tab inactive-tab" data-value="Takvim"><span class="material-symbols-outlined text-[17px]">calendar_month</span><span>Takvim</span></button>
-            <button class="nav-tab inactive-tab" data-value="Zaman"><span class="material-symbols-outlined text-[17px]">schedule</span><span>Zaman</span></button>
-            <button class="nav-tab inactive-tab" data-value="Uzunluk"><span class="material-symbols-outlined text-[17px]">straighten</span><span>Uzunluk</span></button>
-            <button class="nav-tab inactive-tab" data-value="Kütle"><span class="material-symbols-outlined text-[17px]">fitness_center</span><span>Kütle</span></button>
-            <button class="nav-tab inactive-tab" data-value="Sıcaklık"><span class="material-symbols-outlined text-[17px]">thermostat</span><span>Sıcaklık</span></button>
-            <button class="nav-tab inactive-tab" data-value="Hacim"><span class="material-symbols-outlined text-[17px]">opacity</span><span>Hacim</span></button>
-            <button class="nav-tab inactive-tab" data-value="Hız"><span class="material-symbols-outlined text-[17px]">speed</span><span>Hız</span></button>
-            <button class="nav-tab inactive-tab" data-value="Alan"><span class="material-symbols-outlined text-[17px]">texture</span><span>Alan</span></button>
-            <button class="nav-tab inactive-tab" data-value="Veri"><span class="material-symbols-outlined text-[17px]">database</span><span>Veri</span></button>
-            <button class="nav-tab inactive-tab" data-value="Meridyen"><span class="material-symbols-outlined text-[17px]">explore</span><span>Meridyen</span></button>
-            <button class="nav-tab inactive-tab" data-value="Paralel"><span class="material-symbols-outlined text-[17px]">language</span><span>Paralel</span></button>
-            <button class="nav-tab inactive-tab" data-value="Para"><span class="material-symbols-outlined text-[17px]">payments</span><span>Para</span></button>
-        </div>
+    <div class="flex items-center gap-2 px-4 pb-2 overflow-x-auto no-scrollbar scroll-smooth select-none">
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all active-tab cursor-pointer" data-value="Alfabe"><span class="material-symbols-outlined text-[18px]">translate</span><span class="text-sm font-medium">Alfabe</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Sayı"><span class="material-symbols-outlined text-[18px]">123</span><span class="text-sm font-medium">Sayı</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Takvim"><span class="material-symbols-outlined text-[18px]">calendar_month</span><span class="text-sm font-medium">Takvim</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Zaman"><span class="material-symbols-outlined text-[18px]">schedule</span><span class="text-sm font-medium">Zaman</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Uzunluk"><span class="material-symbols-outlined text-[18px]">straighten</span><span class="text-sm font-medium">Uzunluk</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Kütle"><span class="material-symbols-outlined text-[18px]">fitness_center</span><span class="text-sm font-medium">Kütle</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Sıcaklık"><span class="material-symbols-outlined text-[18px]">thermostat</span><span class="text-sm font-medium">Sıcaklık</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Hacim"><span class="material-symbols-outlined text-[18px]">opacity</span><span class="text-sm font-medium">Hacim</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Hız"><span class="material-symbols-outlined text-[18px]">speed</span><span class="text-sm font-medium">Hız</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Alan"><span class="material-symbols-outlined text-[18px]">texture</span><span class="text-sm font-medium">Alan</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Veri"><span class="material-symbols-outlined text-[18px]">database</span><span class="text-sm font-medium">Veri</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Meridyen"><span class="material-symbols-outlined text-[18px]">explore</span><span class="text-sm font-medium">Meridyen</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Paralel"><span class="material-symbols-outlined text-[18px]">language</span><span class="text-sm font-medium">Paralel</span></button>
+        <button class="nav-tab flex items-center gap-2 px-4 py-1.5 rounded-full whitespace-nowrap transition-all inactive-tab cursor-pointer" data-value="Para"><span class="material-symbols-outlined text-[18px]">payments</span><span class="text-sm font-medium">Para</span></button>
     </div>
 </header>
 
-<main class="flex-1 max-w-7xl mx-auto w-full flex flex-col p-4 sm:p-6 gap-6">
-    <!-- Dönüştürücü Alanı -->
-    <section id="converter-section" class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-        <div class="flex flex-col gap-2 relative bg-white dark:bg-card-dark p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div class="flex items-center justify-between">
-                <span class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Girdi</span>
-                <div class="relative">
-                    <div class="unit-pill" id="pill-input-label" onclick="toggleDropdown('input')">Eski Alfabe</div>
-                    <div id="dropdown-input" class="dropdown-panel select-none"></div>
-                </div>
+<main class="flex-1 flex flex-col p-3 gap-4 lg:gap-8">
+    <!-- Standart Dönüştürücü Bölümü -->
+    <section id="converter-view" class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
+        <div class="flex flex-col gap-2 relative">
+            <div class="w-max ml-1 relative">
+                <div class="unit-pill" id="pill-input-label" onclick="toggleDropdown('input')">Eski Alfabe</div>
+                <div id="dropdown-input" class="dropdown-panel select-none"></div>
             </div>
-            <textarea id="input-area" class="w-full h-[150px] sm:h-[200px] lg:h-[260px] p-4 bg-slate-50 dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-700/60 focus:outline-none focus:ring-2 focus:ring-sky-500/50 resize-none font-medium leading-relaxed" placeholder="Metin veya sayı girin..."></textarea>
+            <textarea id="input-area" class="w-full h-[180px] lg:h-[300px] p-5 bg-white dark:bg-[#192633] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm focus:ring-2 focus:ring-primary/50 resize-none text-slate-900 dark:text-white" placeholder="Buraya yazın..."></textarea>
         </div>
 
-        <div class="flex flex-col gap-2 relative bg-white dark:bg-card-dark p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div class="flex items-center justify-between">
-                <span class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Sonuç</span>
-                <div class="relative">
-                    <div class="unit-pill" id="pill-output-label" onclick="toggleDropdown('output')">Yeni Alfabe</div>
-                    <div id="dropdown-output" class="dropdown-panel select-none"></div>
-                </div>
+        <div class="flex flex-col gap-2 relative">
+            <div class="w-max ml-1 relative">
+                <div class="unit-pill" id="pill-output-label" onclick="toggleDropdown('output')">Yeni Alfabe</div>
+                <div id="dropdown-output" class="dropdown-panel select-none"></div>
             </div>
-            <textarea id="output-area" class="w-full h-[150px] sm:h-[200px] lg:h-[260px] p-4 bg-slate-100 dark:bg-bg-dark rounded-xl border border-dashed border-slate-300 dark:border-slate-700/80 resize-none font-medium leading-relaxed text-sky-900 dark:text-sky-300" placeholder="Sonuç burada görünecek..." readonly></textarea>
+            <textarea id="output-area" class="w-full h-[180px] lg:h-[300px] p-5 bg-slate-100 dark:bg-[#111a22] rounded-xl border border-slate-200 dark:border-[#324d67] shadow-inner resize-none text-slate-900 dark:text-white" placeholder="Sonuç..." readonly></textarea>
         </div>
     </section>
 
-    <!-- Görsel Takvim Alanı (Varsayılan Olarak Gizli) -->
-    <section id="calendar-view" class="hidden flex-col items-center gap-4 w-full">
-        <div id="anatolya-calendar" class="w-full max-w-2xl bg-white dark:bg-card-dark p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm"></div>
+    <!-- Takvim Çeviri ve Görsel Izgara Bölümü -->
+    <section id="calendar-view" class="hidden flex flex-col gap-4 max-w-4xl mx-auto w-full">
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-[#192633] p-4 rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm">
+            <div class="flex items-center gap-2 relative">
+                <div class="unit-pill !max-w-none" id="pill-calendar-mode" onclick="toggleDropdown('calendar')">Gregoryen → Anatolya</div>
+                <div id="dropdown-calendar" class="dropdown-panel select-none">
+                    <div class="dropdown-item" onclick="selectCalendarMode('greg-to-ana')">Gregoryen → Anatolya</div>
+                    <div class="dropdown-item" onclick="selectCalendarMode('ana-to-greg')">Anatolya → Gregoryen</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button id="prevMonthBtn" class="p-2 rounded-lg bg-slate-100 dark:bg-[#111a22] hover:bg-primary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined leading-none">chevron_left</span>
+                </button>
+                <div id="calendarMonthHeader" class="text-base sm:text-lg font-bold min-w-[180px] text-center">...</div>
+                <button id="nextMonthBtn" class="p-2 rounded-lg bg-slate-100 dark:bg-[#111a22] hover:bg-primary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined leading-none">chevron_right</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-[#192633] p-4 rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm flex flex-col gap-2">
+            <div class="grid grid-cols-7 gap-1 text-center font-bold text-xs sm:text-sm text-slate-500 dark:text-slate-400 py-1" id="calendarDaysHeader">
+                <div>Pzt</div><div>Sal</div><div>Çar</div><div>Per</div><div>Cum</div><div>Cmt</div><div>Paz</div>
+            </div>
+            <div class="grid grid-cols-7 gap-1.5" id="calendarGrid"></div>
+        </div>
+
+        <div id="selectedDateInfo" class="bg-slate-100 dark:bg-[#111a22] p-4 rounded-xl border border-slate-200 dark:border-[#324d67] text-sm flex flex-col sm:flex-row justify-between items-center gap-2">
+            <span class="text-slate-500 dark:text-slate-400">Bir güne tıklayarak ayrıntılı dönüşümü görüntüleyin.</span>
+        </div>
     </section>
 
-    <!-- Klavye -->
-    <section id="kb-container" class="select-none flex justify-center pb-2">
-        <div class="keyboard" id="mainKeyboard">
-            <div class="row"><div class="key">0</div><div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">Φ</div><div class="key">Λ</div></div>
+    <!-- Klavye Bölümü -->
+    <section id="kb-container" class="select-none">
+        <div class="keyboard !my-0" id="mainKeyboard">
+            <div class="row"><div class="key">θ</div><div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">Φ</div><div class="key">Λ</div></div>
             <div class="row"><div class="key">Ϙ</div><div class="key">Ш</div><div class="key">E</div><div class="key">R</div><div class="key">T</div><div class="key">Y</div><div class="key">U</div><div class="key">Ͱ</div><div class="key">Ω</div><div class="key">P</div><div class="key">Γ</div><div class="key">Σ</div></div>
             <div class="row"><div class="key fn-key">,</div><div class="key">A</div><div class="key">S</div><div class="key">D</div><div class="key">F</div><div class="key">G</div><div class="key">H</div><div class="key">J</div><div class="key">K</div><div class="key">L</div><div class="key">Ь</div><div class="key fn-key">.</div></div>
             <div class="row"><div class="key wide fn-key" data-action="shift">Shift</div><div class="key">Z</div><div class="key">Ψ</div><div class="key">C</div><div class="key">V</div><div class="key">B</div><div class="key">N</div><div class="key">M</div><div class="key">Π</div><div class="key wide fn-key" data-action="delete"><span class="material-symbols-outlined">backspace</span></div></div>
