@@ -152,7 +152,7 @@ function displaySuggestions(matches, q) {
     div.innerHTML = '';
     if (matches.length === 0) { 
         div.innerHTML = `<div class="p-4 text-sm opacity-50 bg-transparent">Sonuç bulunamadı</div>`; 
-        cont.classList.remove('hidden'); return; 
+        cont.classList.add('hidden'); return; 
     }
     matches.slice(0, 15).forEach(m => {
         const d = document.createElement('div');
@@ -195,6 +195,7 @@ function hideAllSections() {
     activeTypeFilter = null;
     activeTypeTitle = null;
     currentSelectedLetter = null;
+    lastSelectedWord = null;
     ['welcome-box', 'random-word-card', 'stats-card', 'alphabet-section', 'stats-section', 'ety-section'].forEach(id => {
         document.getElementById(id)?.classList.add('hidden');
     });
@@ -204,7 +205,6 @@ function hideAllSections() {
 
 function showPage(pageId) {
     hideAllSections();
-    lastSelectedWord = null;
     if (pageId === 'home') {
         document.getElementById('welcome-box').classList.remove('hidden');
         document.getElementById('random-word-card').classList.remove('hidden');
@@ -216,7 +216,6 @@ function showPage(pageId) {
 
 function showKelimelerPage(letter = "A") { 
     hideAllSections(); 
-    lastSelectedWord = null;
     document.getElementById('alphabet-section').classList.remove('hidden'); 
     currentSelectedLetter = letter; 
     currentLetterPage = 0;
@@ -226,14 +225,12 @@ function showKelimelerPage(letter = "A") {
 
 function showStatsPage() { 
     hideAllSections(); 
-    lastSelectedWord = null;
     document.getElementById('stats-section').classList.remove('hidden'); 
     renderAlphabetStats(); 
 }
 
 function showEtyPage() { 
     hideAllSections(); 
-    lastSelectedWord = null;
     document.getElementById('ety-section').classList.remove('hidden'); 
     renderEtymologyStats(); 
 }
@@ -260,11 +257,14 @@ function showTypeWordList(targetType, titleName, page = 0) {
     currentTypePage = page;
     activeOriginFilter = null;
     currentSelectedLetter = null;
+    lastSelectedWord = null;
 
     ['welcome-box', 'random-word-card', 'stats-card', 'stats-section', 'ety-section'].forEach(id => {
         document.getElementById(id)?.classList.add('hidden');
     });
-    
+    const res = document.getElementById('result');
+    if(res) res.innerHTML = '';
+
     const section = document.getElementById('alphabet-section');
     section.classList.remove('hidden');
     
@@ -358,6 +358,7 @@ function showEtymologyWordList(originName, page = 0) {
     activeTypeFilter = null;
     activeTypeTitle = null;
     currentSelectedLetter = null;
+    lastSelectedWord = null;
 
     ['welcome-box', 'random-word-card', 'stats-card', 'stats-section', 'ety-section'].forEach(id => {
         document.getElementById(id)?.classList.add('hidden');
