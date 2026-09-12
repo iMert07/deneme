@@ -190,6 +190,68 @@ html, body {
 [data-action="reset"], [data-action="enter"] { grid-column: span 3 !important; }
 [data-action="space"] { grid-column: span 6 !important; }
 
+/* Anatolya Takvim Arayüz Stilleri */
+.cal-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.dark .cal-btn {
+    background: #18273a;
+    border-color: #334155;
+    color: #e2e8f0;
+}
+.cal-btn:hover {
+    background: #0284c7;
+    color: #ffffff;
+    border-color: #0284c7;
+}
+.cal-weekday {
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 8px 0;
+    color: #64748b;
+}
+.dark .cal-weekday { color: #94a3b8; }
+.cal-cell {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #1e293b;
+    font-family: "JetBrains Mono", monospace;
+    transition: all 0.15s ease;
+}
+.dark .cal-cell {
+    background: #18273a;
+    border-color: #24354a;
+    color: #f1f5f9;
+}
+.cal-cell.today {
+    background: #0284c7 !important;
+    color: #ffffff !important;
+    border-color: #0284c7 !important;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+}
+.cal-cell.today span { color: #ffffff !important; }
+.cal-cell.empty {
+    border: none !important;
+    background: transparent !important;
+}
+
 /* Mobil Düzenlemeler */
 @media (max-width: 768px) {
     .keyboard {
