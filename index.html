@@ -57,7 +57,7 @@
 </header>
 
 <main class="flex-1 flex flex-col p-3 gap-4 lg:gap-8">
-    <!-- Standart Çevirici Bölümü -->
+    <!-- Standart Dönüştürücü Bölümü -->
     <section id="converter-view" class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
         <div class="flex flex-col gap-2 relative">
             <div class="w-max ml-1 relative">
@@ -76,57 +76,36 @@
         </div>
     </section>
 
-    <!-- Takvim Çeviri Bölümü -->
-    <section id="calendar-view" style="display: none;" class="flex-col gap-3 max-w-4xl mx-auto w-full">
-        <!-- Takvim Üst Kontrol Paneli -->
+    <!-- Takvim Çeviri ve Görsel Izgara Bölümü -->
+    <section id="calendar-view" class="hidden flex flex-col gap-4 max-w-4xl mx-auto w-full">
         <div class="flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-[#192633] p-4 rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm">
-            
             <div class="flex items-center gap-2 relative">
                 <div class="unit-pill !max-w-none" id="pill-calendar-mode" onclick="toggleDropdown('calendar')">Gregoryen → Anatolya</div>
                 <div id="dropdown-calendar" class="dropdown-panel select-none">
                     <div class="dropdown-item" onclick="selectCalendarMode('greg-to-ana')">Gregoryen → Anatolya</div>
                     <div class="dropdown-item" onclick="selectCalendarMode('ana-to-greg')">Anatolya → Gregoryen</div>
                 </div>
-                <button id="todayBtn" class="text-xs font-bold px-3 py-1.5 rounded-full bg-slate-100 dark:bg-[#111a22] hover:bg-primary hover:text-white transition-all text-slate-600 dark:text-slate-300 cursor-pointer">Bugün</button>
             </div>
-
-            <!-- Ay ve Yıl Başlığı + Sayı ile Doğrudan Yıl Girişi -->
-            <div class="flex items-center gap-2">
-                <button id="prevMonthBtn" class="p-1.5 sm:p-2 rounded-lg bg-slate-100 dark:bg-[#111a22] hover:bg-primary hover:text-white transition-colors cursor-pointer">
-                    <span class="material-symbols-outlined leading-none text-base sm:text-lg">chevron_left</span>
+            <div class="flex items-center gap-3">
+                <button id="prevMonthBtn" class="p-2 rounded-lg bg-slate-100 dark:bg-[#111a22] hover:bg-primary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined leading-none">chevron_left</span>
                 </button>
-
-                <!-- Başlık Görünümü -->
-                <div id="calendarMonthHeader" class="text-sm sm:text-base font-bold min-w-[130px] text-center select-none text-slate-800 dark:text-slate-100">
-                    Ocak 2026
-                </div>
-
-                <!-- Sayı ile Yıl Girişi -->
-                <div class="flex items-center gap-1 bg-slate-100 dark:bg-[#111a22] px-2 py-1 rounded-lg border border-slate-200 dark:border-[#324d67]">
-                    <span class="text-xs text-slate-400 font-medium">Yıl:</span>
-                    <input type="number" id="yearInput" class="w-16 sm:w-20 bg-transparent text-xs sm:text-sm font-bold text-center border-none p-0 focus:ring-0 focus:outline-none font-mono text-slate-900 dark:text-white" placeholder="Yıl" min="1" max="9999"/>
-                </div>
-
-                <button id="nextMonthBtn" class="p-1.5 sm:p-2 rounded-lg bg-slate-100 dark:bg-[#111a22] hover:bg-primary hover:text-white transition-colors cursor-pointer">
-                    <span class="material-symbols-outlined leading-none text-base sm:text-lg">chevron_right</span>
+                <div id="calendarMonthHeader" class="text-base sm:text-lg font-bold min-w-[180px] text-center">...</div>
+                <button id="nextMonthBtn" class="p-2 rounded-lg bg-slate-100 dark:bg-[#111a22] hover:bg-primary hover:text-white transition-colors">
+                    <span class="material-symbols-outlined leading-none">chevron_right</span>
                 </button>
             </div>
         </div>
 
-        <!-- Kaydırmalı Hızlı Ay Seçici -->
-        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 select-none" id="monthCarousel"></div>
-
-        <!-- Aylık Takvim Izgarası -->
         <div class="bg-white dark:bg-[#192633] p-4 rounded-xl border border-slate-200 dark:border-[#324d67] shadow-sm flex flex-col gap-2">
             <div class="grid grid-cols-7 gap-1 text-center font-bold text-xs sm:text-sm text-slate-500 dark:text-slate-400 py-1" id="calendarDaysHeader">
                 <div>Pzt</div><div>Sal</div><div>Çar</div><div>Per</div><div>Cum</div><div>Cmt</div><div>Paz</div>
             </div>
-            <div class="grid grid-cols-7 gap-1.5 min-h-[300px]" id="calendarGrid"></div>
+            <div class="grid grid-cols-7 gap-1.5" id="calendarGrid"></div>
         </div>
 
-        <!-- Seçili Tarih Dönüşüm Bilgisi -->
         <div id="selectedDateInfo" class="bg-slate-100 dark:bg-[#111a22] p-4 rounded-xl border border-slate-200 dark:border-[#324d67] text-sm flex flex-col sm:flex-row justify-between items-center gap-2">
-            <span class="text-slate-500 dark:text-slate-400">Bir güne tıklayarak Anatolya takvimindeki karşılığını detaylı görün.</span>
+            <span class="text-slate-500 dark:text-slate-400">Bir güne tıklayarak ayrıntılı dönüşümü görüntüleyin.</span>
         </div>
     </section>
 
